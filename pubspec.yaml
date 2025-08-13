@@ -116,4 +116,11 @@ flutter:
     - assets/
     - assets/icons/
     - assets/images/
+  fonts:
+    - family: MontserratRegular
+      fonts:
+        - asset: fonts/Montserrat-Regular.ttf
+    - family: MontserratSemiBold
+      fonts:
+        - asset: fonts/Montserrat-SemiBold.ttf
 

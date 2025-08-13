@@ -30,7 +30,7 @@ class App extends StatelessWidget {
     return Sizer(
       builder: (context, orientation, deviceType) {
         return GetMaterialApp(
-          title: "Name to Decide",
+          title: "Quick Cab",
           debugShowCheckedModeBanner: false,
           theme: ThemeConfig.lightTheme(),
           initialRoute: AppPages.initialRoute,

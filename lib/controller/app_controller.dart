@@ -40,12 +40,12 @@ class AppController extends GetxController {
 
     if (userToken != null) {
       if (isExistingUser) {
-        Get.offAllNamed(Routes.LANDING_PAGE);
+        Get.offAllNamed(Routes.LOGIN_SCREEN);
       } else {
-        Get.offAllNamed(Routes.LANDING_PAGE);
+        Get.offAllNamed(Routes.LOGIN_SCREEN);
       }
     } else {
-      Get.offAllNamed(Routes.LANDING_PAGE);
+      Get.offAllNamed(Routes.LOGIN_SCREEN);
     }
   }
 

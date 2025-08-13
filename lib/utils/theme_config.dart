@@ -123,7 +123,7 @@ class ThemeConfig {
         if (states.contains(WidgetState.selected)) {
           return colorScheme.primary;
         }
-        return colorScheme.onSurface.withOpacity(0.5);
+        return colorScheme.onSurface.withValues(alpha: 0.5);
       }),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       overlayColor: WidgetStateProperty.all(colorScheme.surface),
@@ -183,9 +183,9 @@ class ThemeConfig {
       selectedItemColor: colorScheme.primary,
       selectedIconTheme: IconThemeData(size: 18.sp),
       unselectedIconTheme: IconThemeData(size: 16.sp),
-      unselectedItemColor: colorScheme.onSurface.withOpacity(0.75),
+      unselectedItemColor: colorScheme.onSurface.withValues(alpha: 0.75),
       selectedLabelStyle: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600, color: colorScheme.primaryFixedDim),
-      unselectedLabelStyle: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w500, color: colorScheme.onSurface.withOpacity(0.75)),
+      unselectedLabelStyle: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w500, color: colorScheme.onSurface.withValues(alpha: 0.75)),
     );
   }
 
@@ -225,8 +225,8 @@ class ThemeConfig {
     );
   }
 
-  static DialogTheme _createDialogTheme(ColorScheme colorScheme) {
-    return DialogTheme(
+  static DialogThemeData _createDialogTheme(ColorScheme colorScheme) {
+    return DialogThemeData(
       backgroundColor: colorScheme.surface,
       surfaceTintColor: Colors.grey,
       shape: RoundedRectangleBorder(
@@ -243,7 +243,7 @@ class ThemeConfig {
       contentTextStyle: TextStyle(
         fontFamily: _font,
         fontSize: 11.sp,
-        color: colorScheme.onSurfaceVariant.withOpacity(0.8),
+        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
       ),
     );
   }
@@ -258,7 +258,7 @@ class ThemeConfig {
 
   static DividerThemeData _createDividerTheme(ColorScheme colorScheme) {
     return DividerThemeData(
-      color: colorScheme.onSurface.withOpacity(0.4),
+      color: colorScheme.onSurface.withValues(alpha: 0.4),
       thickness: 0.5,
     );
   }

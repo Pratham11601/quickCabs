@@ -1,20 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
+
+import 'app_colors.dart';
+
+const String semiBoldFont = 'MontserratSemiBold';
+const String regularFont = 'MontserratRegular';
 
 class TextHelper {
-  TextHelper._();
-  static TextStyle size28(BuildContext context) => Theme.of(context).textTheme.displayLarge!;
-  static TextStyle size26(BuildContext context) => Theme.of(context).textTheme.displayMedium!;
-  static TextStyle size24(BuildContext context) => Theme.of(context).textTheme.displaySmall!;
-  static TextStyle size22(BuildContext context) => Theme.of(context).textTheme.headlineLarge!;
-  static TextStyle size20(BuildContext context) => Theme.of(context).textTheme.headlineMedium!;
-  static TextStyle size18(BuildContext context) => Theme.of(context).textTheme.headlineSmall!;
-  static TextStyle size16(BuildContext context) => Theme.of(context).textTheme.titleLarge!;
-  static TextStyle size15(BuildContext context) => Theme.of(context).textTheme.titleMedium!;
-  static TextStyle size14(BuildContext context) => Theme.of(context).textTheme.titleSmall!;
-  static TextStyle size13(BuildContext context) => Theme.of(context).textTheme.bodyLarge!;
-  static TextStyle size12(BuildContext context) => Theme.of(context).textTheme.bodyMedium!;
-  static TextStyle size11(BuildContext context) => Theme.of(context).textTheme.bodySmall!;
-  static TextStyle size10(BuildContext context) => Theme.of(context).textTheme.labelLarge!;
-  static TextStyle size9(BuildContext context) => Theme.of(context).textTheme.labelMedium!;
-  static TextStyle size8(BuildContext context) => Theme.of(context).textTheme.labelSmall!;
+  static String fontFamily = regularFont;
+  static var h1 = TextStyle(fontSize: 32, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var h2 = TextStyle(fontSize: 28, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var h3 = TextStyle(fontSize: 26, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var h4 = TextStyle(fontSize: 24, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var h5 = TextStyle(fontSize: 22, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var h6 = TextStyle(fontSize: 20, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var size10 = TextStyle(fontSize: 7.sp, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var size11 = TextStyle(fontSize: 8.sp, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var size12 = TextStyle(fontSize: 9.sp, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var size13 = TextStyle(fontSize: 10.sp, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var size14 = TextStyle(fontSize: 11.sp, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var size15 = TextStyle(fontSize: 12.sp, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var size16 = TextStyle(fontSize: 13.sp, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var size17 = TextStyle(fontSize: 14.sp, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var size18 = TextStyle(fontSize: 15.sp, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var size19 = TextStyle(fontSize: 16.sp, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var size20 = TextStyle(fontSize: 17.sp, color: ColorsForApp.blackColor, fontFamily: fontFamily);
 }

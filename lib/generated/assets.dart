@@ -2,11 +2,13 @@
 class Assets {
   Assets._();
 
+  static const String iconsA = 'assets/icons/A.java';
   static const String iconsCamera = 'assets/icons/camera.png';
   static const String iconsCoin = 'assets/icons/coin.png';
   static const String iconsDestinationMarker = 'assets/icons/destinationMarker.png';
   static const String iconsIncoming = 'assets/icons/incoming.png';
   static const String iconsLicense = 'assets/icons/license.png';
+  static const String iconsLogo = 'assets/icons/logo.png';
   static const String iconsNavigation = 'assets/icons/navigation.svg';
   static const String iconsOutgoing = 'assets/icons/outgoing.png';
   static const String iconsReferral = 'assets/icons/referral.png';

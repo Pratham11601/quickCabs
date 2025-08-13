@@ -106,13 +106,13 @@ class CustomDialog {
                 Text(
                   title,
                   textAlign: TextAlign.center,
-                  style: TextHelper.size18(context).copyWith(fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextHelper.size18.copyWith(fontWeight: FontWeight.bold, color: Colors.white),
                 ),
                 height(1.h),
                 Text(
                   message,
                   textAlign: TextAlign.center,
-                  style: TextHelper.size15(context).copyWith(color: Colors.white70),
+                  style: TextHelper.size15.copyWith(color: Colors.white70),
                 ),
                 height(3.h),
                 GestureDetector(
@@ -137,7 +137,7 @@ class CustomDialog {
                     ),
                     child: Text(
                       'Close',
-                      style: TextHelper.size14(context).copyWith(fontWeight: FontWeight.bold, color: Colors.redAccent),
+                      style: TextHelper.size14.copyWith(fontWeight: FontWeight.bold, color: Colors.redAccent),
                     ),
                   ),
                 ),
