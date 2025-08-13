@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../routes/routes.dart';
+
 class LoginController extends GetxController {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController otpController = TextEditingController();
@@ -69,6 +71,7 @@ class LoginController extends GetxController {
 
   void verifyOtp() {
     // Your verify logic here
+    Get.offAllNamed(Routes.DOCUMENT_VERIFICATION_PAGE);
   }
 
   @override

@@ -24,13 +24,13 @@ class ColorsForApp {
   static const Color shadowColor = Color(0xffd5d5d5);
   static const Color subTitleColor = Color(0xff9f9f9f);
   static const Color backGroundColor = Color(0xffffffff);
-  static const Color yellow = Colors.yellow;
 
   // todo name should proper as written above
   static const Color colorBlackShade = Color(0xff2a2a2a);
   static const Color colorYellowShade = Colors.amber;
   static Color whiteColor = Colors.white;
   static Color blackColor = Colors.black;
+
   // gradient colors for login screen
   static const Color gradientTop = Color(0xFFFF3E2E); // deep orange-red
   static const Color gradientBottom = Color(0xFFfc8503); // lighter orange
@@ -39,4 +39,21 @@ class ColorsForApp {
   static const Color headline = Color(0xFF111111);
   static const Color subtle = Color(0xFF6B7280);
   static const Color cta = Color(0xFFFF9B86);
+
+  //Colors for Document Verification Screen
+  static const bg = Color(0xFFF7F7F9);
+  static const card = Colors.white;
+  static const stroke = Color(0xFFE6E6E9);
+  static const strokeSoft = Color(0xFFD9E8FF);
+  static const title = Color(0xFF101314);
+  static const subtitle = Color(0xFF585E66);
+  static const ctaStrong = Color(0xFFFF8E7D);
+  static const orange = Color(0xFFFF5722);
+  static const green = Color(0xFF0F9D58);
+  static const greenDeep = Color(0xFF127F3D);
+  static const yellow = Color(0xFFF5B400);
+  static const red = Color(0xFFE53935);
+  static const pill = Color(0x33FFFFFF);
+  static const helpBg = Color(0xFFFFF8E7);
+  static const helpBorder = Color(0xFFF5E2AE);
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/Screens/login_module/login_controller.dart';
+import 'package:own_idea/Screens/login_module/controller/login_controller.dart';
 import 'package:own_idea/utils/app_colors.dart';
 import 'package:own_idea/utils/text_styles.dart';
 
-import '../../generated/assets.dart';
+import '../../../generated/assets.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -285,7 +285,7 @@ class PhoneTextFieldState extends State<PhoneTextField> {
                     const SizedBox(width: 10),
                     const Icon(Icons.call_outlined, color: ColorsForApp.primaryColor, size: 24),
                     const SizedBox(width: 10),
-                    Text('+91', style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor)),
+                    Text('+91', style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
                     const SizedBox(width: 10),
                     Container(width: 1, height: 28, color: Colors.grey),
                     const SizedBox(width: 15),
@@ -295,16 +295,18 @@ class PhoneTextFieldState extends State<PhoneTextField> {
                         focusNode: loginController.phoneFocusNode,
                         keyboardType: TextInputType.phone,
                         maxLength: 10,
-                        style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor),
-                        decoration: const InputDecoration(
+                        style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+                        decoration: InputDecoration(
                           counterText: '',
                           isDense: true,
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
                           focusedBorder: InputBorder.none,
                           hintText: 'Enter 10-digit mobile num',
-                          hintStyle: TextStyle(fontSize: 20, color: Color(0xFF585E66)),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 18),
+                          hintStyle: TextHelper.size20.copyWith(
+                            color: ColorsForApp.subtle,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 18),
                         ),
                       ),
                     )

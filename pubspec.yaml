@@ -48,6 +48,7 @@ dependencies:
   dio: ^5.7.0
   get: ^4.6.6
   image_picker: ^1.1.2
+  file_picker: ^8.0.5
   lottie:
   intl:
   flutter_easyloading: ^3.0.5

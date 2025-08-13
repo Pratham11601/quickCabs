@@ -8,5 +8,7 @@ class Routes {
 
   // Authentication
   static const LOGIN_SCREEN = "/login_module";
-  static const REGISTRATION = "/registration_screen";
+
+  //Document Verification
+  static const DOCUMENT_VERIFICATION_PAGE = "/document_verification_page";
 }
