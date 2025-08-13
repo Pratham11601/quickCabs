@@ -100,7 +100,9 @@ class Header extends StatelessWidget {
                       borderRadius: BorderRadius.circular(26),
                       border: Border.all(color: Colors.white.withValues(alpha: .4)),
                     ),
-                    child: Text('$pct% \nComplete', textAlign: TextAlign.center, style: TextHelper.size16.copyWith(color: Colors.white)),
+                    child: Text('$pct% \nComplete',
+                        textAlign: TextAlign.center,
+                        style: TextHelper.size16.copyWith(color: ColorsForApp.whiteColor, fontFamily: semiBoldFont)),
                   );
                 }),
               ],
