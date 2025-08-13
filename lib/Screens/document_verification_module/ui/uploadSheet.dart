@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:own_idea/utils/app_colors.dart';
+import 'package:own_idea/utils/text_styles.dart';
 
 import '../model/upload_source.dart';
 
@@ -12,12 +14,18 @@ class UploadSheet extends StatelessWidget {
       children: [
         ListTile(
           leading: const Icon(Icons.camera_alt),
-          title: const Text("Take Photo"),
+          title: Text(
+            "Take Photo",
+            style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+          ),
           onTap: () => onPick(UploadSource.camera),
         ),
         ListTile(
           leading: const Icon(Icons.photo_library),
-          title: const Text("Choose from Gallery"),
+          title: Text(
+            "Choose from Gallery",
+            style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+          ),
           onTap: () => onPick(UploadSource.gallery),
         ),
         // ListTile(
