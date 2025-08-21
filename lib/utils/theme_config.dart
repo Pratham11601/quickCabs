@@ -225,8 +225,8 @@ class ThemeConfig {
     );
   }
 
-  static DialogTheme _createDialogTheme(ColorScheme colorScheme) {
-    return DialogTheme(
+  static DialogThemeData? _createDialogTheme(ColorScheme colorScheme) {
+    return DialogThemeData(
       backgroundColor: colorScheme.surface,
       surfaceTintColor: Colors.grey,
       shape: RoundedRectangleBorder(
