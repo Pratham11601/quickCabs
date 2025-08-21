@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Chip;
 import 'package:get/get.dart';
 import 'package:own_idea/Screens/document_verification_module/controller/document_verification_controller.dart';
 import 'package:own_idea/utils/app_colors.dart';
 import 'package:own_idea/utils/text_styles.dart';
 
+import '../../../routes/routes.dart';
+import '../../../widgets/common_widgets.dart';
 import '../model/docItemModel.dart';
 
 class DocumentVerificationPage extends StatelessWidget {
@@ -17,7 +19,7 @@ class DocumentVerificationPage extends StatelessWidget {
       backgroundColor: ColorsForApp.bg,
       body: Column(
         children: [
-          Header(controller: docVerifyController),
+          DocHeader(controller: docVerifyController),
           Expanded(
             child: Obx(() => ListView(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
@@ -31,9 +33,9 @@ class DocumentVerificationPage extends StatelessWidget {
                       );
                     }),
                     const SizedBox(height: 16),
-                    HelpBox(),
+                    DocHelpBox(),
                     const SizedBox(height: 16),
-                    FooterBanner(controller: docVerifyController),
+                    FooterProceedButton(controller: docVerifyController),
                     const SizedBox(height: 18),
                     Text(
                       'All required documents must be uploaded to continue',
@@ -49,150 +51,9 @@ class DocumentVerificationPage extends StatelessWidget {
   }
 }
 
-/// ---------- HEADER ----------
-class Header extends StatelessWidget {
-  const Header({required this.controller});
-  final DocVerifyController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 18),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [ColorsForApp.gradientTop, ColorsForApp.gradientBottom],
-        ),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Top Row: back + title + logo + progress pill
-            Row(
-              children: [
-                IconButton(
-                  padding: const EdgeInsets.only(right: 10),
-                  onPressed: Get.back,
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
-                ),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Document Verification',
-                          style: TextHelper.h6.copyWith(color: Colors.white, fontFamily: semiBoldFont),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Obx(() {
-                  final pct = (controller.progress.value * 100).round();
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: ColorsForApp.pill,
-                      borderRadius: BorderRadius.circular(26),
-                      border: Border.all(color: Colors.white.withValues(alpha: .4)),
-                    ),
-                    child: Text('$pct% \nComplete',
-                        textAlign: TextAlign.center,
-                        style: TextHelper.size16.copyWith(color: ColorsForApp.whiteColor, fontFamily: semiBoldFont)),
-                  );
-                }),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            // Subtitle with icon
-            Row(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: .2),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  alignment: Alignment.center,
-                  child: const Icon(Icons.description_rounded, color: Colors.white),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Document Upload',
-                        style: TextHelper.size20.copyWith(color: Colors.white, fontFamily: semiBoldFont),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Complete required documents to\ncontinue',
-                        style: TextHelper.size17.copyWith(color: Colors.white, fontFamily: semiBoldFont),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-            const SizedBox(height: 14),
-
-            // progress bar + labels
-            Obx(() => Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: LinearProgressIndicator(
-                        minHeight: 8,
-                        value: controller.progress.value.clamp(0, 1),
-                        backgroundColor: ColorsForApp.whiteColor.withValues(alpha: .25),
-                        valueColor: AlwaysStoppedAnimation<Color>(ColorsForApp.whiteColor),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        dotLabel('Driving', left: true),
-                        const Spacer(),
-                        dotLabel('Commercial', left: false),
-                      ],
-                    ),
-                  ],
-                )),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget dotLabel(String text, {required bool left}) {
-    return Column(
-      children: [
-        Container(
-          width: 18,
-          height: 18,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white.withValues(alpha: .25),
-            border: Border.all(color: Colors.white.withValues(alpha: .7), width: 2),
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(text, style: const TextStyle(color: Colors.white)),
-      ],
-    );
-  }
-}
-
 /// ---------- LEAD BY CARD ----------
 class LeadByCard extends StatelessWidget {
-  const LeadByCard({required this.controller});
+  const LeadByCard({super.key, required this.controller});
   final DocVerifyController controller;
 
   @override
@@ -200,19 +61,17 @@ class LeadByCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F3FF),
+        color: ColorsForApp.subTitleColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: ColorsForApp.strokeSoft),
-        boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 10, offset: Offset(0, 8))],
       ),
       child: Row(
         children: [
           Container(
             width: 56,
             height: 56,
-            decoration: BoxDecoration(color: const Color(0xFFB8ECFF), borderRadius: BorderRadius.circular(16)),
+            decoration: BoxDecoration(color: ColorsForApp.subtle.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(16)),
             alignment: Alignment.center,
-            child: const Icon(Icons.person_outline_rounded, color: Colors.blue, size: 28),
+            child: const Icon(Icons.person_outline_rounded, color: Colors.black54, size: 28),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -234,16 +93,17 @@ class LeadByCard extends StatelessWidget {
                         fillColor: Colors.white,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: ColorsForApp.orange, width: 2),
+                          borderSide: BorderSide(color: ColorsForApp.blackColor.withValues(alpha: 0.3), width: 1),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: ColorsForApp.orange, width: 2),
+                          borderSide: const BorderSide(color: ColorsForApp.orange, width: 1),
                         ),
                       ),
+                      style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
                       hint: Text(
                         'Select who referred you',
-                        style: TextHelper.size17.copyWith(color: ColorsForApp.subTitleColor),
+                        style: TextHelper.size19.copyWith(color: ColorsForApp.subTitleColor, fontFamily: semiBoldFont),
                       ),
                       items: [
                         DropdownMenuItem(
@@ -284,7 +144,7 @@ class LeadByCard extends StatelessWidget {
 
 /// ---------- DOCUMENT CARD ----------
 class DocCard extends StatelessWidget {
-  const DocCard({required this.index, required this.controller});
+  const DocCard({super.key, required this.index, required this.controller});
   final int index;
   final DocVerifyController controller;
 
@@ -341,7 +201,7 @@ class DocCard extends StatelessWidget {
                 height: 52,
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: ColorsForApp.orange, width: 2),
+                    side: const BorderSide(color: ColorsForApp.orange, width: 1),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: () => controller.openUploadSheet(index),
@@ -424,120 +284,60 @@ class DocCard extends StatelessWidget {
   }
 }
 
-/// ---------- HELP BOX ----------
-class HelpBox extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
-      decoration: BoxDecoration(
-        color: ColorsForApp.helpBg,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: ColorsForApp.helpBorder),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Need Help?', style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
-          SizedBox(height: 10),
-          Bullet('Documents should be clear and readable'),
-          Bullet('Supported formats: JPG, PNG, PDF'),
-          Bullet('Maximum file size: 5MB per document'),
-          Bullet('Verification typically takes 24–48 hours'),
-        ],
-      ),
-    );
-  }
-}
-
-class Bullet extends StatelessWidget {
-  const Bullet(this.text);
-  final String text;
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          const Text('•  ', style: TextStyle(fontSize: 18, height: 1.2)),
-          Expanded(child: Text(text, style: TextHelper.size18.copyWith(height: 1.2, color: ColorsForApp.title))),
-        ],
-      ),
-    );
-  }
-}
-
-/// ---------- FOOTER BANNER ----------
-class FooterBanner extends StatelessWidget {
-  const FooterBanner({required this.controller});
+/// ---------- FOOTER Button for proceed ----------
+class FooterProceedButton extends StatelessWidget {
+  const FooterProceedButton({super.key, required this.controller});
   final DocVerifyController controller;
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       final remaining = controller.remainingRequiredCount();
-      final text = remaining == 0 ? 'All required documents uploaded' : '$remaining more documents needed';
+      final allUploaded = remaining == 0;
 
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(
-          color: ColorsForApp.cta,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
-            const SizedBox(width: 12),
-            Text(text, style: TextHelper.size19.copyWith(color: Colors.white, fontFamily: semiBoldFont)),
-          ],
+      final text = allUploaded ? 'Proceed to verify' : '$remaining more documents needed';
+
+      return GestureDetector(
+        onTap: allUploaded
+            ? () {
+                // Show dialog when all docs uploaded
+                showAppDialog(
+                  title: 'Document uploaded successfully',
+                  message: 'Your verification is in process.',
+                  icon: Icons.check_circle_rounded,
+                  buttonText: 'OK',
+                  onConfirm: () {
+                    Get.offAllNamed(Routes.DASHBOARD_PAGE);
+                  },
+                );
+              }
+            : null, // disabled when docs missing
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: BoxDecoration(
+            color: allUploaded ? ColorsForApp.primaryColor : ColorsForApp.cta, // toggle background
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.check_circle_outline_rounded,
+                color: Colors.white,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                text,
+                style: TextHelper.size19.copyWith(
+                  color: Colors.white,
+                  fontFamily: semiBoldFont,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     });
-  }
-}
-
-/// ---------- SMALL WIDGETS ----------
-class Chip extends StatelessWidget {
-  const Chip({required this.text, required this.color});
-  final String text;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: color.withValues(alpha: .6)),
-      ),
-      child: Text(text, style: TextHelper.size16.copyWith(color: color, fontFamily: semiBoldFont)),
-    );
-  }
-}
-
-class ActionLink extends StatelessWidget {
-  const ActionLink({required this.icon, required this.color, required this.label, required this.onTap});
-  final IconData icon;
-  final Color color;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-        child: Row(
-          children: [
-            Icon(icon, color: color),
-            const SizedBox(width: 8),
-            Text(label, style: TextHelper.size19.copyWith(color: color, fontFamily: semiBoldFont)),
-          ],
-        ),
-      ),
-    );
   }
 }

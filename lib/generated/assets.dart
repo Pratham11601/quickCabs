@@ -2,15 +2,21 @@
 class Assets {
   Assets._();
 
-  static const String iconsA = 'assets/icons/A.java';
+  static const String iconsCab = 'assets/icons/cab.png';
   static const String iconsCamera = 'assets/icons/camera.png';
+  static const String iconsCarSell = 'assets/icons/car_sell.png';
   static const String iconsCoin = 'assets/icons/coin.png';
   static const String iconsDestinationMarker = 'assets/icons/destinationMarker.png';
+  static const String iconsDriver = 'assets/icons/driver.png';
+  static const String iconsFuel = 'assets/icons/fuel.png';
+  static const String iconsHospital = 'assets/icons/hospital.png';
+  static const String iconsHotel = 'assets/icons/hotel.png';
   static const String iconsIncoming = 'assets/icons/incoming.png';
   static const String iconsLicense = 'assets/icons/license.png';
   static const String iconsLogo = 'assets/icons/logo.png';
   static const String iconsNavigation = 'assets/icons/navigation.svg';
   static const String iconsOutgoing = 'assets/icons/outgoing.png';
+  static const String iconsPuncture = 'assets/icons/puncture.png';
   static const String iconsReferral = 'assets/icons/referral.png';
   static const String iconsRikshaIcon = 'assets/icons/rikshaIcon.png';
   static const String iconsRikshaMarker = 'assets/icons/rikshaMarker.png';
@@ -18,6 +24,7 @@ class Assets {
   static const String iconsSmallMarker = 'assets/icons/small_marker.png';
   static const String iconsSos = 'assets/icons/sos.png';
   static const String iconsSourceMarker = 'assets/icons/sourceMarker.png';
+  static const String iconsTowing = 'assets/icons/towing.png';
   static const String imagesAppBarBg = 'assets/images/appBarBg.svg';
   static const String imagesSelect = 'assets/images/select.png';
   static const String imagesWalletBalanceImage = 'assets/images/walletBalanceImage.jpeg';

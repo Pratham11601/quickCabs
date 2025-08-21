@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../utils/app_colors.dart';
-import '../utils/text_style.dart';
+import '../utils/text_styles.dart';
 
 class CommonTextfiled extends StatelessWidget {
   final double? height;
@@ -56,11 +56,11 @@ class CommonTextfiled extends StatelessWidget {
     return TextField(
       decoration: InputDecoration(
         hintText: hintText ?? "Data",
-        hintStyle: TextHelper.size16(context).copyWith(color: ColorsForApp.colorBlackShade, fontWeight: FontWeight.w400),
+        hintStyle: TextHelper.size16.copyWith(color: ColorsForApp.colorBlackShade, fontWeight: FontWeight.w400),
         focusedBorder: InputBorder.none,
         enabledBorder: InputBorder.none,
       ),
-      style: TextHelper.size16(context).copyWith(color: ColorsForApp.colorBlackShade, fontWeight: FontWeight.w400),
+      style: TextHelper.size16.copyWith(color: ColorsForApp.colorBlackShade, fontWeight: FontWeight.w400),
       keyboardType: keyboardType ?? TextInputType.text,
     );
   }

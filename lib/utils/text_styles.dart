@@ -4,7 +4,9 @@ import 'package:sizer/sizer.dart';
 import 'app_colors.dart';
 
 const String semiBoldFont = 'MontserratSemiBold';
-const String regularFont = 'MontserratRegular';
+const String regularFont = 'MontserratMedium';
+const String boldFont = 'MontserratBold';
+const String mediumFont = 'MontserratRegular';
 
 class TextHelper {
   static String fontFamily = regularFont;
@@ -14,6 +16,7 @@ class TextHelper {
   static var h4 = TextStyle(fontSize: 24, color: ColorsForApp.blackColor, fontFamily: fontFamily);
   static var h5 = TextStyle(fontSize: 22, color: ColorsForApp.blackColor, fontFamily: fontFamily);
   static var h6 = TextStyle(fontSize: 20, color: ColorsForApp.blackColor, fontFamily: fontFamily);
+  static var h7 = TextStyle(fontSize: 18, color: ColorsForApp.blackColor, fontFamily: fontFamily);
   static var size10 = TextStyle(fontSize: 7.sp, color: ColorsForApp.blackColor, fontFamily: fontFamily);
   static var size11 = TextStyle(fontSize: 8.sp, color: ColorsForApp.blackColor, fontFamily: fontFamily);
   static var size12 = TextStyle(fontSize: 9.sp, color: ColorsForApp.blackColor, fontFamily: fontFamily);
