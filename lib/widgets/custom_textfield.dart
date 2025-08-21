@@ -68,7 +68,7 @@ class CustomTextField extends StatelessWidget {
       autofocus: autofocus,
       enabled: enabled,
       readOnly: readOnly,
-      style: TextHelper.size16(context).merge(style),
+      style: TextHelper.size16.merge(style),
       cursorWidth: 1,
       maxLength: maxLength,
       maxLines: maxLines,
@@ -81,9 +81,9 @@ class CustomTextField extends StatelessWidget {
             labelText: labelText,
             counterText: counterText ?? '',
             contentPadding: EdgeInsets.symmetric(vertical: 2.h, horizontal: prefixIcon == null ? 2.w : 0),
-            labelStyle: TextHelper.size16(context).merge(labelStyle),
+            labelStyle: TextHelper.size16.merge(labelStyle),
             hintText: isMandatory ? '$hintText *' : hintText,
-            hintStyle: TextHelper.size14(context).copyWith(color: Colors.grey.withOpacity(0.75)).merge(hintStyle),
+            hintStyle: TextHelper.size14.copyWith(color: Colors.grey.withValues(alpha: 0.75)).merge(hintStyle),
             errorStyle: TextStyle(fontSize: 13.sp).merge(errorStyle),
             prefixIcon: prefixIcon == null
                 ? null
@@ -98,7 +98,7 @@ class CustomTextField extends StatelessWidget {
                             VerticalDivider(
                               indent: 1.h,
                               endIndent: 1.h,
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                             ),
                           ],
                         ),
@@ -115,7 +115,7 @@ class CustomTextField extends StatelessWidget {
                                 indent: 1.h,
                                 endIndent: 1.h,
                                 width: 0,
-                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                               ),
                               width(2.w),
                             ],
@@ -127,21 +127,21 @@ class CustomTextField extends StatelessWidget {
                 OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ),
             enabledBorder: border ??
                 OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ),
             disabledBorder: border ??
                 OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.25),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.25),
                   ),
                 ),
             errorBorder: OutlineInputBorder(
@@ -154,7 +154,7 @@ class CustomTextField extends StatelessWidget {
                 OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+                    color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5),
                     width: 1.5,
                   ),
                 ),
@@ -169,7 +169,6 @@ class CustomTextField extends StatelessWidget {
     );
   }
 }
-
 
 class CustomSearchLocationTextField extends StatelessWidget {
   final void Function()? onTap;

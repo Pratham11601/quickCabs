@@ -1,0 +1,4 @@
+enum UploadSource {
+  camera,
+  gallery,
+}

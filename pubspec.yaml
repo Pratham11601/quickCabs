@@ -48,6 +48,7 @@ dependencies:
   dio: ^5.7.0
   get: ^4.6.6
   image_picker: ^1.1.2
+  file_picker: ^8.0.5
   lottie:
   intl:
   flutter_easyloading: ^3.0.5
@@ -116,4 +117,18 @@ flutter:
     - assets/
     - assets/icons/
     - assets/images/
+  fonts:
+    - family: MontserratRegular
+      fonts:
+        - asset: fonts/Montserrat-Regular.ttf
+    - family: MontserratSemiBold
+      fonts:
+        - asset: fonts/Montserrat-SemiBold.ttf
+    - family: MontserratBold
+      fonts:
+        - asset: fonts/Montserrat-Bold.ttf
+    - family: MontserratMedium
+      fonts:
+        - asset: fonts/Montserrat-Medium.ttf
+
 

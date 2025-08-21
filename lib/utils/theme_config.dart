@@ -225,7 +225,7 @@ class ThemeConfig {
     );
   }
 
-  static DialogThemeData? _createDialogTheme(ColorScheme colorScheme) {
+  static DialogThemeData _createDialogTheme(ColorScheme colorScheme) {
     return DialogThemeData(
       backgroundColor: colorScheme.surface,
       surfaceTintColor: Colors.grey,

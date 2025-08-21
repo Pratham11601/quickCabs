@@ -92,7 +92,6 @@ class CustomScaffold extends StatelessWidget {
       body: Stack(
         alignment: Alignment.topCenter,
         children: [
-
           if (appBar != null)
             Container(
               clipBehavior: Clip.hardEdge,
@@ -189,7 +188,7 @@ class CustomSwitch extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 1.w),
                   child: Text(
                     value ? 'Offline' : 'Online',
-                    style: TextHelper.size14(context).copyWith(color: Theme.of(context).colorScheme.tertiaryFixedDim),
+                    style: TextHelper.size14.copyWith(color: Theme.of(context).colorScheme.tertiaryFixedDim),
                   ),
                 ),
               ),

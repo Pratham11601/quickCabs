@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:own_idea/utils/text_style.dart';
+
+import '../utils/text_styles.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -8,7 +9,7 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-        children: [Text("text", style: TextHelper.size14(context))],
+        children: [Text("text", style: TextHelper.size14)],
       ),
     );
   }
