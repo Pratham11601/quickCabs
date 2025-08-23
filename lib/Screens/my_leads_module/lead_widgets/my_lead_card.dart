@@ -3,86 +3,33 @@ import 'package:flutter/material.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
 
-/// LeadCard Widget
-/// ----------------
-/// A reusable card widget to display ride/lead information.
-/// Cleaned spacing, removed hardcoded widths, and used Expanded/Spacer
-/// for proper alignment.
 class LeadCard extends StatelessWidget {
   final Map<String, dynamic> lead;
-  final VoidCallback? onAccept; // Callback when "Accept Lead" button is pressed
+  final VoidCallback onShare;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   const LeadCard({
-    super.key,
+    Key? key,
     required this.lead,
-    this.onAccept,
-  });
+    required this.onShare,
+    required this.onEdit,
+    required this.onDelete,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
-      margin: const EdgeInsets.all(4), // elevation from all sides
+      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// ---------------- Header Row ----------------
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
-                      child: Icon(
-                        Icons.handshake,
-                        color: ColorsForApp.primaryColor,
-                        size: 22,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      "Shared by ${lead['name']}",
-                      style: TextHelper.size19.copyWith(
-                        color: ColorsForApp.primaryDarkColor,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: semiBoldFont,
-                      ),
-                    ),
-                  ],
-                ),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                      onPressed: onAccept,
-                      style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(ColorsForApp.primaryColor), // forcefully applies
-                        foregroundColor: WidgetStateProperty.all(ColorsForApp.whiteColor),
-                        padding: WidgetStateProperty.all(
-                          const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                        ),
-                        shape: WidgetStateProperty.all(
-                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        ),
-                      ),
-                      child: Text(
-                        "Accept",
-                        style: TextHelper.size18.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.whiteColor),
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-            const SizedBox(height: 6),
+            // Route Row
 
-            /// ---------------- Route Info ----------------
             Row(
               children: [
                 Expanded(
@@ -123,19 +70,58 @@ class LeadCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Text(
-                  "₹${lead['price']}",
-                  style: TextHelper.size20.copyWith(
-                    color: ColorsForApp.green,
-                    fontFamily: semiBoldFont,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text("₹${lead['price']}", style: TextHelper.size20.copyWith(color: ColorsForApp.green, fontFamily: semiBoldFont)),
+                const SizedBox(width: 8),
+                PopupMenuButton<String>(
+                  color: ColorsForApp.whiteColor,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  onSelected: (value) {
+                    if (value == 'share') onShare();
+                    if (value == 'edit') onEdit();
+                    if (value == 'delete') onDelete();
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: "share",
+                      child: Row(
+                        children: [
+                          Icon(Icons.share, size: 18),
+                          SizedBox(width: 8),
+                          Text(
+                            "Share Lead",
+                            style: TextHelper.size17.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: "edit",
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit, size: 18),
+                          SizedBox(width: 8),
+                          Text("Edit Lead", style: TextHelper.size17.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: "delete",
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete, size: 18, color: Colors.red),
+                          SizedBox(width: 8),
+                          Text("Delete Lead", style: TextHelper.size17.copyWith(color: ColorsForApp.red, fontFamily: semiBoldFont)),
+                        ],
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
-            const SizedBox(height: 4),
 
-            /// ---------------- Car Info ----------------
+            const SizedBox(height: 6),
+
+            // Car details row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -144,7 +130,7 @@ class LeadCard extends StatelessWidget {
                     const Icon(Icons.directions_car_outlined, color: Colors.red),
                     const SizedBox(width: 6),
                     Text(
-                      lead['car'],
+                      lead['carType'],
                       style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                     ),
                   ],
@@ -164,7 +150,8 @@ class LeadCard extends StatelessWidget {
 
             const SizedBox(height: 4),
 
-            /// ---------------- Date & Time ----------------
+            // Date & Time row
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -193,7 +180,8 @@ class LeadCard extends StatelessWidget {
 
             const SizedBox(height: 4),
 
-            /// ---------------- Phone ----------------
+            // Phone + PIN
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -207,12 +195,18 @@ class LeadCard extends StatelessWidget {
                     ),
                   ],
                 ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text("PIN: ${lead['pin']}", style: TextHelper.size18.copyWith(color: ColorsForApp.primaryDarkColor)),
+                )
               ],
             ),
 
             const Divider(height: 16),
-
-            /// ---------------- Note ----------------
             Text(
               "\"${lead['note']}\"",
               style: TextHelper.size18.copyWith(
