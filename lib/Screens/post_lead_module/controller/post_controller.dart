@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../../routes/routes.dart';
+
 class PostController extends GetxController {
   // ── Stepper ──────────────────────────────────────────────────────────────────
   final RxInt step = 1.obs; // 1..3
@@ -121,7 +123,7 @@ class PostController extends GetxController {
 
   void cancel() {
     // you can clear form or navigate back
-    Get.back();
+    Get.offAllNamed(Routes.DASHBOARD_PAGE);
   }
 
   @override
