@@ -117,7 +117,7 @@ class PostScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Obx(() {
           bool isRouteDetails = controller.currentStep.value == 0;
-          final isLastStep = controller.currentStep.value == 2; // 👈 2 is your last page (Price Confirmation)
+          final isLastStep = controller.currentStep.value == 2; //  2 is your last page (Price Confirmation)
 
           return Row(
             children: [

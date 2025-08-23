@@ -137,8 +137,8 @@ class PostController extends GetxController {
 
   @override
   void onClose() {
-    pickupController.dispose();
-    dropController.dispose();
+    // pickupController.dispose();
+    // dropController.dispose();
     super.onClose();
   }
 }
