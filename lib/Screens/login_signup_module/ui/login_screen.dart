@@ -71,7 +71,7 @@ class PhoneNumberContainer extends StatelessWidget {
       width: double.infinity,
       margin: const EdgeInsets.fromLTRB(18, 16, 18, 18),
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
-      decoration: _boxDecoration(),
+      decoration: boxDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -171,21 +171,6 @@ class PhoneNumberContainer extends StatelessWidget {
       ),
     );
   }
-
-  BoxDecoration _boxDecoration() {
-    return BoxDecoration(
-      color: ColorsForApp.whiteColor,
-      borderRadius: BorderRadius.circular(18),
-      border: Border.all(color: ColorsForApp.cardStroke, width: 1),
-      boxShadow: const [
-        BoxShadow(
-          color: Color(0x1A000000),
-          blurRadius: 10,
-          offset: Offset(0, 10),
-        )
-      ],
-    );
-  }
 }
 
 /// Custom phone input with country code + validation border
@@ -257,7 +242,7 @@ class OtpVerifyContainer extends StatelessWidget {
       width: double.infinity,
       margin: const EdgeInsets.fromLTRB(18, 16, 18, 18),
       padding: const EdgeInsets.all(20),
-      decoration: PhoneNumberContainer()._boxDecoration(),
+      decoration: boxDecoration(),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

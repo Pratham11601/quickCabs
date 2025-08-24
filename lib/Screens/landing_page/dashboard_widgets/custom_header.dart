@@ -1,0 +1,111 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:own_idea/Screens/landing_page/controller/dashboard_controller.dart';
+
+import '../../../generated/assets.dart';
+import '../../../utils/text_styles.dart';
+
+class CustomHeader extends StatelessWidget {
+  const CustomHeader({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.find<DashboardController>();
+
+    return Obx(() {
+      if (controller.currentIndex.value == 0) {
+        // Home Header
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Logo + Titles
+                Row(
+                  children: [
+                    // App Logo
+                    CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.black.withValues(alpha: 0.4),
+                      child: Image.asset(Assets.iconsLogo, width: 30, height: 30, fit: BoxFit.fill),
+                    ),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Quick Cabs",
+                          style: TextHelper.h5.copyWith(
+                            color: Colors.white,
+                            fontFamily: semiBoldFont,
+                          ),
+                        ),
+                        Text(
+                          "Driver Dashboard",
+                          style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: semiBoldFont),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const Icon(Icons.notifications_none, color: Colors.white, size: 28),
+              ],
+            ),
+          ),
+        );
+      } else if (controller.currentIndex.value == 1) {
+        // Profile Header
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "My Leads",
+                  style: TextHelper.h5.copyWith(
+                    color: Colors.white,
+                    fontFamily: semiBoldFont,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  "Manage your shared leads",
+                  style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: semiBoldFont),
+                ),
+              ],
+            ),
+          ),
+        );
+      } else if (controller.currentIndex.value == 3) {
+        // Profile Header
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Profile",
+                  style: TextHelper.h5.copyWith(
+                    color: Colors.white,
+                    fontFamily: semiBoldFont,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  "Manage your account settings",
+                  style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: semiBoldFont),
+                ),
+              ],
+            ),
+          ),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
+  }
+}

@@ -4,8 +4,6 @@ class Routes {
   //  Onboarding
   static const SPLASH_SCREEN = '/splash_screen';
 
-  static const DASHBOARD_PAGE = '/dashboard_screen';
-
   // Authentication
   static const LOGIN_SCREEN = "/login_screen";
   static const SIGNUP_SCREEN = "/signup_screen";
@@ -15,4 +13,9 @@ class Routes {
 
   //Home Page
   static const HOME_PAGE = "/home_page";
+  static const DASHBOARD_PAGE = '/dashboard_screen';
+
+  //Profile pages
+  static const HELP_PAGE = "/help_screen";
+  static const MY_DOCUMENTS = "/my_documents_screen";
 }

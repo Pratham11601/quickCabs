@@ -60,6 +60,7 @@ dependencies:
   jwt_decoder: ^2.0.1
   url_launcher:
   awesome_drawer_bar: ^1.2.1
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:

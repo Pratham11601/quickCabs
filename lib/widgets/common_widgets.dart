@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../Screens/document_verification_module/controller/document_verification_controller.dart';
 import '../Screens/landing_page/controller/dashboard_controller.dart';
@@ -554,12 +555,12 @@ class AppDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: ColorsForApp.primaryColor.withOpacity(0.1),
+                color: ColorsForApp.green.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
-                color: ColorsForApp.primaryColor,
+                color: ColorsForApp.green,
                 size: 48,
               ),
             ),
@@ -638,7 +639,7 @@ void showAppDialog({
   );
 }
 
-// Helper Widget for dashboard bottom navigation bar
+/// Helper Widget for dashboard bottom navigation bar
 Widget buildNavItem({
   required IconData icon,
   required String label,
@@ -664,4 +665,105 @@ Widget buildNavItem({
       ],
     ),
   );
+}
+
+/// Common Box Decoration
+BoxDecoration boxDecoration() {
+  return BoxDecoration(
+    color: ColorsForApp.whiteColor,
+    borderRadius: BorderRadius.circular(18),
+    border: Border.all(color: ColorsForApp.cardStroke, width: 1),
+    boxShadow: const [
+      BoxShadow(
+        color: Color(0x1A000000),
+        blurRadius: 10,
+        offset: Offset(0, 10),
+      )
+    ],
+  );
+}
+
+/// Custom App Bar for all screens
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+  final String subtitle;
+  final bool showBack;
+  final List<Widget>? actions;
+
+  const CustomAppBar({
+    super.key,
+    required this.title,
+    this.subtitle = "",
+    this.showBack = true,
+    this.actions,
+  });
+  @override
+  Size get preferredSize => const Size.fromHeight(80); // AppBar height
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              ColorsForApp.gradientTop,
+              ColorsForApp.gradientBottom,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Row(
+          children: [
+            if (showBack)
+              GestureDetector(
+                onTap: () => Get.back(),
+                child: const Icon(Icons.arrow_back_ios, color: Colors.white),
+              ),
+            if (showBack) const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextHelper.h5.copyWith(
+                      color: Colors.white,
+                      fontFamily: semiBoldFont,
+                    ),
+                  ),
+                  if (subtitle.isNotEmpty)
+                    Text(
+                      subtitle,
+                      style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: semiBoldFont),
+                    ),
+                ],
+              ),
+            ),
+            if (actions != null) ...actions!,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Common url launcher
+
+class UrlLauncherHelper {
+  /// Opens a given [url] in-app WebView (fallback: external browser)
+  static Future<void> openUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+
+    if (!await launchUrl(
+      uri,
+      mode: LaunchMode.inAppWebView,
+    )) {
+      throw Exception('Could not launch $url');
+    }
+  }
 }

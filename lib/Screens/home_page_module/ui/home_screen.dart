@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
+import '../../landing_page/controller/dashboard_controller.dart';
 import '../controller/home_controller.dart';
 import '../home_widgets/driver_network_status.dart';
 import '../home_widgets/emergency_service_item.dart';
@@ -13,6 +14,10 @@ class HomeScreen extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    // Find the parent state of BottomNavExample
+// Get the DashboardController
+    final DashboardController dashboardController = Get.find();
+
     return SingleChildScrollView(
       padding: const EdgeInsets.only(left: 15, top: 25, right: 15, bottom: 15),
       child: Column(
@@ -28,6 +33,9 @@ class HomeScreen extends GetView<HomeController> {
             children: [
               Text("Shared Leads", style: TextHelper.h6.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
               GestureDetector(
+                  onTap: () {
+                    dashboardController.currentIndex.value = 1;
+                  },
                   child:
                       Text("View All", style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.primaryDarkColor))),
             ],
