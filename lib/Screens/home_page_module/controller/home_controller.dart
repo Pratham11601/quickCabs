@@ -54,6 +54,8 @@ class HomeController extends GetxController {
       'note': 'Family trip, child seat available'
     }
   ].obs;
+  final liveLeads = <Map<String, dynamic>>[].obs;
+
   RxBool isKycCompleted = false.obs;
   Future<bool> checkProfileCompletion() async {
     try {
@@ -67,6 +69,127 @@ class HomeController extends GetxController {
       }
     } catch (e) {
       return false;
+    }
+  }
+
+
+  ///cards logic and variable
+  final isLoading = false.obs;
+  final errorMsg = ''.obs;
+  int _page = 1;
+  bool hasMore = true;
+  RxInt selectedIndex = 0.obs;
+
+  // Future<void> fetchLeads() async {
+  //   try {
+  //     isLoading.value = true;
+  //     errorMsg.value = '';
+  //
+  //     await Future.delayed(const Duration(milliseconds: 500)); // fake delay
+  //
+  //     leads.assignAll([
+  //       {
+  //         'name': 'Amit Singh',
+  //         'from': 'Connaught Place',
+  //         'to': 'IGI Airport',
+  //         'price': 850,
+  //         'distance': '24.5 km',
+  //         'time': '14:30',
+  //       },
+  //       {
+  //         'name': 'Priya Sharma',
+  //         'from': 'Gurgaon',
+  //         'to': 'Cyber Hub',
+  //         'price': 300,
+  //         'distance': '8.2 km',
+  //         'time': '15:00',
+  //       },
+  //       {
+  //         'name': 'Mohammed Ali',
+  //         'from': 'Noida',
+  //         'to': 'Greater Noida',
+  //         'price': 650,
+  //         'distance': '18.8 km',
+  //         'time': '16:15',
+  //       },
+  //       {
+  //         'name': 'Sopan',
+  //         'from': 'Pune',
+  //         'to': 'Mumbai',
+  //         'price': 690,
+  //         'distance': '11.1 km',
+  //         'time': '12:15',
+  //       },
+  //     ]);
+  //   } catch (e) {
+  //     errorMsg.value = 'Failed to load rides';
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
+  Future<void> fetchLiveLeads() async {
+    try {
+      isLoading.value = true;
+      errorMsg.value = '';
+      await Future.delayed(const Duration(milliseconds: 400)); // demo delay
+
+      liveLeads.assignAll([
+        {
+          'name': 'Amit Singh',
+          'from': 'Connaught Place',
+          'to': 'IGI Airport',
+          'price': 850,
+          'distance': '24.5 km',
+          'time': '14:30',
+        },
+        {
+          'name': 'Priya Sharma',
+          'from': 'Gurgaon',
+          'to': 'Cyber Hub',
+          'price': 300,
+          'distance': '8.2 km',
+          'time': '15:00',
+        },
+        {
+          'name': 'Mohammed Ali',
+          'from': 'Noida',
+          'to': 'Greater Noida',
+          'price': 650,
+          'distance': '18.8 km',
+          'time': '16:15',
+        },
+        {
+          'name': 'Sopan',
+          'from': 'Pune',
+          'to': 'Mumbai',
+          'price': 69,
+          'distance': '11.1 km',
+          'time': '12:15',
+        },
+        {
+          'name': 'Topan',
+          'from': 'Katraj',
+          'to': 'Karve nagar',
+          'price': 69,
+          'distance': '11.1 km',
+          'time': '12:15',
+        },
+      ]);
+    } catch (e) {
+      errorMsg.value = 'Failed to load rides';
+    } finally {
+      isLoading.value = false;
+    }
+  }
+  /// Button actions
+  void declineLiveLead(int index) {
+    if (index >= 0 && index < liveLeads.length) liveLeads.removeAt(index);
+  }
+
+  void acceptLiveLead(int index) {
+    if (index >= 0 && index < liveLeads.length) {
+      final lead = liveLeads[index];
+      // TODO: call accept API / navigate with `lead`
     }
   }
 }
