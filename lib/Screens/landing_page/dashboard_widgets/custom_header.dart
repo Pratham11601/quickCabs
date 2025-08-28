@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:own_idea/Screens/landing_page/controller/dashboard_controller.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../../generated/assets.dart';
 import '../../../utils/text_styles.dart';
@@ -28,7 +29,8 @@ class CustomHeader extends StatelessWidget {
                     CircleAvatar(
                       radius: 30,
                       backgroundColor: Colors.black.withValues(alpha: 0.4),
-                      child: Image.asset(Assets.iconsLogo, width: 30, height: 30, fit: BoxFit.fill),
+                      child: Image.asset(Assets.iconsLogo,
+                          width: 30, height: 30, fit: BoxFit.fill),
                     ),
                     const SizedBox(width: 12),
                     Column(
@@ -42,15 +44,19 @@ class CustomHeader extends StatelessWidget {
                             fontFamily: semiBoldFont,
                           ),
                         ),
-                        Text(
-                          "Driver Dashboard",
-                          style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: semiBoldFont),
+                        Flexible(
+                          child: Text(
+                            "Driver Dashboard",
+                            style: TextHelper.size18.copyWith(
+                                color: Colors.white, fontFamily: semiBoldFont),
+                          ),
                         ),
                       ],
                     ),
                   ],
                 ),
-                const Icon(Icons.notifications_none, color: Colors.white, size: 28),
+                const Icon(Icons.notifications_none,
+                    color: Colors.white, size: 28),
               ],
             ),
           ),
@@ -65,15 +71,18 @@ class CustomHeader extends StatelessWidget {
               children: [
                 Text(
                   "My Leads",
-                  style: TextHelper.h5.copyWith(
+                  style: TextHelper.h6.copyWith(
                     color: Colors.white,
                     fontFamily: semiBoldFont,
                   ),
                 ),
-                SizedBox(height: 4),
-                Text(
-                  "Manage your shared leads",
-                  style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: semiBoldFont),
+                SizedBox(height: 0.1.h),
+                Flexible(
+                  child: Text(
+                    "Manage your shared leads",
+                    style: TextHelper.size17.copyWith(
+                        color: Colors.white, fontFamily: semiBoldFont),
+                  ),
                 ),
               ],
             ),
@@ -94,10 +103,13 @@ class CustomHeader extends StatelessWidget {
                     fontFamily: semiBoldFont,
                   ),
                 ),
-                SizedBox(height: 4),
-                Text(
-                  "Manage your account settings",
-                  style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: semiBoldFont),
+                SizedBox(height: 0.1.h),
+                Flexible(
+                  child: Text(
+                    "Manage your account settings",
+                    style: TextHelper.size16.copyWith(
+                        color: Colors.white, fontFamily: semiBoldFont),
+                  ),
                 ),
               ],
             ),

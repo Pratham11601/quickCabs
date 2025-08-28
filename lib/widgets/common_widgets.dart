@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../Screens/document_verification_module/controller/document_verification_controller.dart';
@@ -765,5 +766,36 @@ class UrlLauncherHelper {
     )) {
       throw Exception('Could not launch $url');
     }
+  }
+}
+
+
+class LoadingOverlay extends StatelessWidget {
+  final bool isLoading;
+  final Widget child;
+
+  const LoadingOverlay({
+    super.key,
+    required this.isLoading,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        child,
+        if (isLoading)
+          Container(
+            color: Colors.black.withAlpha(80),
+            child: Center(
+              child: LoadingAnimationWidget.fourRotatingDots(
+                size: 50,
+                color: ColorsForApp.primaryColor,
+              ),
+            ),
+          ),
+      ],
+    );
   }
 }

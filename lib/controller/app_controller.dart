@@ -24,7 +24,7 @@ class AppController extends GetxController {
     // Fetch token
     userToken = await JwtConfig.fetchLocalUserToken();
 
-    bool isExistingUser = await LocalStorage.fetchValue(StorageKey.token) ?? false;
+    // bool isExistingUser = await LocalStorage.fetchValue(StorageKey.token) ?? false;
 
     // Initialize network service
     await initializeConnectionServices();
@@ -37,16 +37,6 @@ class AppController extends GetxController {
 
     // Initialize api manager
     APIManager.init(this);
-
-    if (userToken != null) {
-      if (isExistingUser) {
-        Get.offAllNamed(Routes.LOGIN_SCREEN);
-      } else {
-        Get.offAllNamed(Routes.LOGIN_SCREEN);
-      }
-    } else {
-      Get.offAllNamed(Routes.LOGIN_SCREEN);
-    }
   }
 
   @override
@@ -67,7 +57,8 @@ class AppController extends GetxController {
           CustomDialog.yesNoDialog(
             Get.context!,
             title: 'Enable Notifications',
-            note: 'Stay updated with important alerts, updates, and offers. Would you like to enable notifications?',
+            note:
+                'Stay updated with important alerts, updates, and offers. Would you like to enable notifications?',
           ),
         ) ??
         false;

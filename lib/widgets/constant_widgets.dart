@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../generated/assets.dart';
+import '../utils/app_colors.dart';
 import '../utils/text_styles.dart';
 
 SizedBox height(double h) => SizedBox(height: h);
@@ -70,7 +74,8 @@ class CustomScaffold extends StatelessWidget {
                         ? leading ??
                             IconButton(
                               onPressed: onBack ?? Get.back,
-                              icon: leading ?? Icon(CupertinoIcons.back, size: 16.sp),
+                              icon: leading ??
+                                  Icon(CupertinoIcons.back, size: 16.sp),
                             )
                         : null,
                     actions: [...?appBarActions, width(3.w)],
@@ -78,7 +83,9 @@ class CustomScaffold extends StatelessWidget {
                     backgroundColor: appBarBackground ?? Colors.transparent,
                     title: Text(
                       title,
-                      style: titleStyle ?? TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
+                      style: titleStyle ??
+                          TextStyle(
+                              fontSize: 18.sp, fontWeight: FontWeight.w600),
                     ),
                   )
                 : null);
@@ -96,7 +103,10 @@ class CustomScaffold extends StatelessWidget {
             Container(
               clipBehavior: Clip.hardEdge,
               margin: EdgeInsets.only(bottom: 1.h),
-              height: statusBarHeight + appBar!.preferredSize.height + extendedHeight + 3.h,
+              height: statusBarHeight +
+                  appBar!.preferredSize.height +
+                  extendedHeight +
+                  3.h,
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
                 boxShadow: const [
@@ -115,7 +125,9 @@ class CustomScaffold extends StatelessWidget {
                 Assets.imagesAppBarBg,
                 fit: BoxFit.fitWidth,
                 alignment: Alignment.topCenter,
-                colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.surfaceBright, BlendMode.screen),
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.surfaceBright,
+                    BlendMode.screen),
               ),
             ),
           Column(
@@ -160,7 +172,9 @@ class CustomSwitch extends StatelessWidget {
         height: 3.2.h,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0),
-          color: value ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.primary,
+          color: value
+              ? Theme.of(context).colorScheme.tertiary
+              : Theme.of(context).colorScheme.primary,
         ),
         child: Stack(
           children: [
@@ -188,7 +202,8 @@ class CustomSwitch extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 1.w),
                   child: Text(
                     value ? 'Offline' : 'Online',
-                    style: TextHelper.size14.copyWith(color: Theme.of(context).colorScheme.tertiaryFixedDim),
+                    style: TextHelper.size14.copyWith(
+                        color: Theme.of(context).colorScheme.tertiaryFixedDim),
                   ),
                 ),
               ),
@@ -223,13 +238,15 @@ class DottedLinePainter extends CustomPainter {
     if (axis == Axis.horizontal) {
       double startX = 0;
       while (startX < size.width) {
-        canvas.drawLine(Offset(startX, 0), Offset(startX + dashWidth, 0), paint);
+        canvas.drawLine(
+            Offset(startX, 0), Offset(startX + dashWidth, 0), paint);
         startX += dashWidth + dashSpace;
       }
     } else if (axis == Axis.vertical) {
       double startY = 0;
       while (startY < size.height) {
-        canvas.drawLine(Offset(0, startY), Offset(0, startY + dashWidth), paint);
+        canvas.drawLine(
+            Offset(0, startY), Offset(0, startY + dashWidth), paint);
         startY += dashWidth + dashSpace;
       }
     }
@@ -238,3 +255,120 @@ class DottedLinePainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
+
+// Exit dailog
+showExitDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        elevation: 4,
+        title: Text(
+          'Exit',
+          style: TextHelper.size20.copyWith(
+            fontFamily: mediumFont,
+          ),
+        ),
+        content: Text(
+          'Are you sure you want to exit?',
+          style: TextHelper.size18.copyWith(
+            color: ColorsForApp.blackColor.withValues(alpha: 0.7),
+          ),
+        ),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              InkWell(
+                onTap: () async {
+                  Get.back();
+                },
+                splashColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
+                highlightColor:
+                    ColorsForApp.primaryColor.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(100),
+                child: Text(
+                  'Cancel',
+                  style: TextHelper.size18.copyWith(
+                    fontFamily: mediumFont,
+                    color: ColorsForApp.blackColor,
+                  ),
+                ),
+              ),
+              width(4.w),
+              InkWell(
+                onTap: () async {
+                  if (Platform.isAndroid) {
+                    SystemNavigator.pop();
+                  } else if (Platform.isIOS) {
+                    exit(0);
+                  }
+                },
+                splashColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
+                highlightColor:
+                    ColorsForApp.primaryColor.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(100),
+                child: Text(
+                  'Confirm',
+                  style: TextHelper.size18.copyWith(
+                    fontFamily: mediumFont,
+                    color: ColorsForApp.blackColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    },
+  );
+}
+
+// Common message dialog
+showCommonMessageDialog(BuildContext context, String title, String message,
+    GestureTapCallback onClick) {
+  showDialog(
+    barrierDismissible: true,
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        elevation: 4,
+        title: Text(
+          title,
+          style: TextHelper.size20.copyWith(
+            fontFamily: mediumFont,
+          ),
+        ),
+        content: Text(
+          message,
+          style: TextHelper.size18.copyWith(
+            color: ColorsForApp.blackColor.withValues(alpha: 0.7),
+          ),
+        ),
+        actions: [
+          InkWell(
+            onTap: onClick,
+            splashColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
+            highlightColor: ColorsForApp.primaryColor.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(100),
+            child: Text(
+              'Proceed',
+              style: TextHelper.size18.copyWith(
+                fontFamily: mediumFont,
+                color: ColorsForApp.blackColor,
+              ),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+} //

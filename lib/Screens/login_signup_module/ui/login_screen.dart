@@ -32,28 +32,28 @@ class DriverLoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final LoginController loginController = Get.put(LoginController(), permanent: true);
+    final LoginController loginController = Get.find();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7FA),
       body: SafeArea(
         bottom: false,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const Header(),
-              Obx(() => loginController.showOtpScreen.value
-                  ? OtpVerifyContainer(
-                      phoneNumber: loginController.phoneController.text,
-                      onChangeNumber: loginController.changeMobileNumber,
-                    )
-                  : const PhoneNumberContainer()),
+        child: Obx(() {
+          return LoadingOverlay(
+            isLoading: loginController.isLoading.value,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const Header(),
+                  const PhoneNumberContainer(),
 
-              // Section: Why Join
-              const WhyJoinSection(),
-            ],
-          ),
-        ),
+                  // Section: Why Join
+                  const WhyJoinSection(),
+                ],
+              ),
+            ),
+          );
+        }),
       ),
     );
   }
@@ -72,102 +72,126 @@ class PhoneNumberContainer extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(18, 16, 18, 18),
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
       decoration: boxDecoration(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text('Enter Mobile Number',
-              textAlign: TextAlign.center, style: TextHelper.h4.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
-          const SizedBox(height: 10),
-          Text("We'll send you an OTP to verify your\nnumber",
-              textAlign: TextAlign.center, style: TextHelper.size18.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
-          const SizedBox(height: 12),
-          const PhoneTextField(),
-          const SizedBox(height: 12),
+      child: Form(
+        key: loginController.loginFormKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text('Enter Mobile Number',
+                textAlign: TextAlign.center,
+                style: TextHelper.h4.copyWith(
+                    color: ColorsForApp.headline, fontFamily: semiBoldFont)),
+            const SizedBox(height: 10),
+            Text("We'll send you an OTP to verify your\nnumber",
+                textAlign: TextAlign.center,
+                style: TextHelper.size18.copyWith(
+                    color: ColorsForApp.headline, fontFamily: semiBoldFont)),
+            const SizedBox(height: 12),
+            const PhoneTextField(),
+            const SizedBox(height: 12),
+            const PasswordTextField(),
+            const SizedBox(height: 12),
 
-          // Send OTP button
-          Obx(() => SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (loginController.isValidNumber.value) {
-                      loginController.sendOtp();
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: loginController.isValidNumber.value ? ColorsForApp.primaryColor : ColorsForApp.cta,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+            // Send OTP button
+            Obx(() => SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (loginController.isValidNumber.value) {
+                        if (loginController.loginFormKey.currentState!
+                            .validate()) {
+                          bool result = await loginController.loginAPI();
+                          if (result) {
+                            Get.offAllNamed(Routes.DASHBOARD_PAGE);
+                          }
+                        }
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: loginController.isValidNumber.value
+                          ? ColorsForApp.primaryColor
+                          : ColorsForApp.cta,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Login',
+                          style: TextHelper.h6.copyWith(
+                            color: ColorsForApp.whiteColor,
+                            fontFamily: semiBoldFont,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.arrow_right_alt_rounded,
+                          size: 35,
+                          color: ColorsForApp.whiteColor,
+                        ),
+                      ],
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Send OTP',
-                        style: TextHelper.h6.copyWith(
-                          color: ColorsForApp.whiteColor,
-                          fontFamily: semiBoldFont,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.arrow_right_alt_rounded,
-                        size: 35,
-                        color: ColorsForApp.whiteColor,
-                      ),
-                    ],
+                )),
+            const SizedBox(height: 15),
+
+            // Divider with "New to Quick Cabs?"
+            Row(
+              children: [
+                Expanded(child: Divider(thickness: 1)),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    "New to Quick Cabs?",
+                    style: TextHelper.size19.copyWith(
+                        color: ColorsForApp.blackColor,
+                        fontFamily: regularFont),
                   ),
                 ),
-              )),
-          const SizedBox(height: 15),
-
-          // Divider with "New to Quick Cabs?"
-          Row(
-            children: [
-              Expanded(child: Divider(thickness: 1)),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  "New to Quick Cabs?",
-                  style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                ),
-              ),
-              Expanded(child: Divider(thickness: 1)),
-            ],
-          ),
-
-          const SizedBox(height: 15),
-
-          // Create New Account Button
-          OutlinedButton(
-            onPressed: () {
-              // Navigate to Sign Up page
-              Get.toNamed(Routes.DASHBOARD_PAGE);
-            },
-            style: ButtonStyle(
-              minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
-              shape: WidgetStateProperty.all(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(0),
-                ),
-              ),
-              backgroundColor: WidgetStateProperty.resolveWith<Color?>(
-                (states) {
-                  if (states.contains(WidgetState.hovered)) {
-                    return ColorsForApp.subTitleColor; // background on hover
-                  }
-                  return Colors.white; // default background
-                },
-              ),
-              side: WidgetStateProperty.all(
-                BorderSide(color: ColorsForApp.blackColor.withValues(alpha: 0.2)),
-              ),
+                Expanded(child: Divider(thickness: 1)),
+              ],
             ),
-            child: Text("Create New Account", style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
-          ),
-        ],
+
+            const SizedBox(height: 15),
+
+            // Create New Account Button
+            OutlinedButton(
+              onPressed: () {
+                // Navigate to Sign Up page
+                Get.toNamed(Routes.SIGNUP_SCREEN);
+              },
+              style: ButtonStyle(
+                minimumSize:
+                    WidgetStateProperty.all(const Size(double.infinity, 50)),
+                shape: WidgetStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(0),
+                  ),
+                ),
+                backgroundColor: WidgetStateProperty.resolveWith<Color?>(
+                  (states) {
+                    if (states.contains(WidgetState.hovered)) {
+                      return ColorsForApp.subTitleColor; // background on hover
+                    }
+                    return Colors.white; // default background
+                  },
+                ),
+                side: WidgetStateProperty.all(
+                  BorderSide(
+                      color: ColorsForApp.blackColor.withValues(alpha: 0.2)),
+                ),
+              ),
+              child: Text("Create New Account",
+                  style: TextHelper.h7.copyWith(
+                      color: ColorsForApp.blackColor,
+                      fontFamily: semiBoldFont)),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -185,7 +209,9 @@ class PhoneTextField extends StatelessWidget {
           child: Row(
             children: [
               const SizedBox(width: 10),
-              const Icon(Icons.call_outlined, color: ColorsForApp.primaryColor, size: 20), // smaller to match
+              const Icon(Icons.call_outlined,
+                  color: ColorsForApp.primaryColor,
+                  size: 20), // smaller to match
               const SizedBox(width: 10),
               Text(
                 '+91',
@@ -213,7 +239,8 @@ class PhoneTextField extends StatelessWidget {
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     hintText: 'Enter 10-digit mobile number',
-                    hintStyle: TextHelper.size19.copyWith(color: ColorsForApp.subtle),
+                    hintStyle:
+                        TextHelper.size19.copyWith(color: ColorsForApp.subtle),
                   ),
                   style: TextHelper.size19.copyWith(
                     color: ColorsForApp.blackColor,
@@ -227,129 +254,49 @@ class PhoneTextField extends StatelessWidget {
   }
 }
 
-/// OTP verification card with input + buttons
-class OtpVerifyContainer extends StatelessWidget {
-  final String phoneNumber;
-  final VoidCallback onChangeNumber;
-
-  const OtpVerifyContainer({super.key, required this.phoneNumber, required this.onChangeNumber});
+class PasswordTextField extends StatelessWidget {
+  const PasswordTextField({super.key});
 
   @override
   Widget build(BuildContext context) {
     final LoginController loginController = Get.find();
-
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.fromLTRB(18, 16, 18, 18),
-      padding: const EdgeInsets.all(20),
-      decoration: boxDecoration(),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.verified_user, color: ColorsForApp.primaryColor, size: 50),
-          const SizedBox(height: 15),
-          Text("Verify OTP", style: TextHelper.h4.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
-          const SizedBox(height: 8),
-          Text("Enter the 6-digit code sent to", style: TextHelper.size18.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
-          const SizedBox(height: 4),
-          Text("+91 $phoneNumber", style: TextHelper.size18.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
-          const SizedBox(height: 20),
-
-          // OTP Input
-          Obx(() => OutlinedField(
-                isFocused: loginController.isOtpFocused.value,
+    return Obx(() => OutlinedField(
+          isFocused: loginController.isPasswordFocused.value,
+          child: Row(
+            children: [
+              const SizedBox(width: 10),
+              const Icon(Icons.password,
+                  color: ColorsForApp.primaryColor,
+                  size: 20), // smaller to match
+              const SizedBox(width: 10),
+              Container(width: 1, height: 24, color: Colors.grey.shade300),
+              const SizedBox(width: 10),
+              Expanded(
                 child: TextField(
-                  controller: loginController.otpController,
-                  focusNode: loginController.otpFocusNode,
-                  keyboardType: TextInputType.number,
-                  maxLength: 6,
-                  textAlign: TextAlign.center,
-                  style: TextHelper.h5.copyWith(color: ColorsForApp.blackColor, letterSpacing: 4, fontFamily: semiBoldFont),
-                  decoration: const InputDecoration(
+                  controller: loginController.passwordController,
+                  focusNode: loginController.passwordFocusNode,
+                  keyboardType: TextInputType.visiblePassword,
+                  decoration: InputDecoration(
                     counterText: '',
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 5, // keeps it comfortable, not too tall/short
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 10, // keeps it comfortable, not too tall/short
                     ),
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
+                    hintText: 'Enter password',
+                    hintStyle:
+                        TextHelper.size19.copyWith(color: ColorsForApp.subtle),
                   ),
-                ),
-              )),
-          const SizedBox(height: 15),
-
-          // Verify Button
-          Obx(
-            () => ElevatedButton(
-              onPressed: loginController.isOtpValid.value ? loginController.verifyOtp : null,
-              style: ButtonStyle(
-                minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
-                backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                  (states) {
-                    if (states.contains(WidgetState.disabled)) {
-                      return ColorsForApp.cta;
-                    }
-                    return ColorsForApp.primaryColor;
-                  },
-                ),
-                shape: WidgetStateProperty.all(
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  style: TextHelper.size19.copyWith(
+                    color: ColorsForApp.blackColor,
+                    fontFamily: semiBoldFont,
+                  ),
                 ),
               ),
-              child: Row(
-                // only reactive part wrapped
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Verify & Continue",
-                    style: TextHelper.h6.copyWith(
-                      color: ColorsForApp.whiteColor,
-                      fontFamily: semiBoldFont,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    Icons.arrow_right_alt_rounded,
-                    size: 35,
-                    color: ColorsForApp.whiteColor,
-                  ),
-                ],
-              ),
-            ),
+            ],
           ),
-          const SizedBox(height: 15),
-
-          // Change Mobile Number
-          GestureDetector(
-            onTap: onChangeNumber,
-            child:
-                Text("Change mobile number", style: TextHelper.size19.copyWith(color: ColorsForApp.primaryColor, fontFamily: semiBoldFont)),
-          ),
-          const SizedBox(height: 15),
-
-          // Resend OTP or Countdown
-          Obx(() => loginController.resendTimer.value > 0
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.access_time, size: 16),
-                    const SizedBox(width: 5),
-                    Text("Resend OTP in ${loginController.resendTimer.value}s", style: const TextStyle(fontSize: 14, color: Colors.grey)),
-                  ],
-                )
-              : GestureDetector(
-                  onTap: loginController.resendOtp,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.refresh, size: 16, color: ColorsForApp.blackColor),
-                      const SizedBox(width: 5),
-                      Text("Resend OTP", style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
-                    ],
-                  ),
-                )),
-        ],
-      ),
-    );
+        ));
   }
 }

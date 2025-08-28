@@ -23,9 +23,9 @@ class ProfileScreen extends StatelessWidget {
           children: [
             /// Profile Info Card
             Obx(() => ProfileInfoCard(
-                  name: controller.userName.value,
-                  phone: controller.phoneNumber.value,
-                  email: controller.email.value,
+                  name: controller.userDeatils.value.fullname ?? "unknown",
+                  phone: controller.userDeatils.value.phone ?? "-",
+                  email: controller.userDeatils.value.email ?? "-",
                 )),
 
             /// Account Section
@@ -52,7 +52,8 @@ class ProfileScreen extends StatelessWidget {
                   title: "Privacy & Security",
                   onTap: () async {
                     // For Privacy Policy
-                    await UrlLauncherHelper.openUrl("https://quickcabpune.com/privacy-policy.html");
+                    await UrlLauncherHelper.openUrl(
+                        "https://quickcabpune.com/privacy-policy.html");
                   },
                 ),
               ],
@@ -84,17 +85,22 @@ class ProfileScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(16),
                         decoration: const BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(20)),
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text("Choose Language",
-                                style: TextHelper.h5.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
+                                style: TextHelper.h5.copyWith(
+                                    fontFamily: semiBoldFont,
+                                    color: ColorsForApp.blackColor)),
                             const SizedBox(height: 16),
                             ListTile(
                               title: Text("English",
-                                  style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
+                                  style: TextHelper.size19.copyWith(
+                                      fontFamily: semiBoldFont,
+                                      color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("English");
                                 Get.back();
@@ -102,7 +108,9 @@ class ProfileScreen extends StatelessWidget {
                             ),
                             ListTile(
                               title: Text("हिंदी",
-                                  style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
+                                  style: TextHelper.size19.copyWith(
+                                      fontFamily: semiBoldFont,
+                                      color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("हिंदी");
                                 Get.back();
@@ -110,7 +118,9 @@ class ProfileScreen extends StatelessWidget {
                             ),
                             ListTile(
                               title: Text("मराठी",
-                                  style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
+                                  style: TextHelper.size19.copyWith(
+                                      fontFamily: semiBoldFont,
+                                      color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("मराठी");
                                 Get.back();
@@ -131,9 +141,12 @@ class ProfileScreen extends StatelessWidget {
             /// Footer
             const SizedBox(height: 20),
             Center(
-              child: Text("Quick Cabs Driver v2.1.0\nMade with ❤️ for professional drivers",
+              child: Text(
+                  "Quick Cabs Driver v2.1.0\nMade with ❤️ for professional drivers",
                   textAlign: TextAlign.center,
-                  style: TextHelper.size18.copyWith(color: ColorsForApp.subTitleColor, fontFamily: semiBoldFont)),
+                  style: TextHelper.size18.copyWith(
+                      color: ColorsForApp.subTitleColor,
+                      fontFamily: semiBoldFont)),
             ),
             const SizedBox(height: 20),
           ],

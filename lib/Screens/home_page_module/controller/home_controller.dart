@@ -1,6 +1,12 @@
 import 'package:get/get.dart';
+import 'package:own_idea/Screens/home_page_module/model/check_profile_completion_model.dart';
+import 'package:own_idea/Screens/home_page_module/repository/home_repository.dart';
+
+import '../../../api/api_manager.dart';
 
 class HomeController extends GetxController {
+  HomeRepository authRepository = HomeRepository(APIManager());
+
   /// Emergency services list (can come from API later)
   final emergencyServices = [
     {'title': 'Puncture', 'icon': '🛠️'},
@@ -48,4 +54,19 @@ class HomeController extends GetxController {
       'note': 'Family trip, child seat available'
     }
   ].obs;
+  RxBool isKycCompleted = false.obs;
+  Future<bool> checkProfileCompletion() async {
+    try {
+      CheckProfileCompletionModel checkProfileCompletionModel =
+          await authRepository.checkProfileCompletionApiCall();
+      if (checkProfileCompletionModel.status == true) {
+        isKycCompleted.value = checkProfileCompletionModel.isComplete ?? false;
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
 }

@@ -10,6 +10,7 @@ import 'package:own_idea/routes/routes.dart';
 
 import '../Screens/landing_page/ui/landing_page.dart';
 import '../Screens/login_signup_module/ui/login_screen.dart';
+import '../Screens/no_internet_connection_screen.dart';
 import '../Screens/splash_screen.dart';
 import '../binding/app_binding.dart';
 import '../binding/auth_binding.dart';
@@ -59,6 +60,10 @@ class AppPages {
       name: Routes.MY_DOCUMENTS,
       page: () => MyDocumentsPage(),
       binding: ProfileBinding(),
+    ),
+    GetPage(
+      name: Routes.NO_INTERNET_CONNECTION_SCREEN,
+      page: () => NoInternetConnectionScreen(),
     ),
   ];
 }

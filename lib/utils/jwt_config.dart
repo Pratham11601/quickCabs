@@ -32,7 +32,7 @@ class JwtConfig {
 
   // Fetch local token
   static Future<String?> fetchLocalUserToken() async {
-    String? token = await LocalStorage.fetchValue(StorageKey.userid);
+    String? token = await LocalStorage.fetchValue(StorageKey.token);
     // if (token != null) {
     //   return _verifyToken(token);
     // }
