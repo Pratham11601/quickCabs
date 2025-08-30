@@ -93,39 +93,39 @@ class RideRequestCard extends StatelessWidget {
           SizedBox(height: 2.h),
 
           // Buttons
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: onDecline,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xff1C1C1E),
-                    backgroundColor: const Color(0xffF8F8F8),
-                    side: BorderSide.none,
-                    padding: EdgeInsets.symmetric(vertical: 1.8.h),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.w)),
-                    textStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.sp),
-                  ),
-                  child: const Text('Decline'),
-                ),
-              ),
-              SizedBox(width: 3.w),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: onAccept,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xffFF6A3D),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: EdgeInsets.symmetric(vertical: 1.8.h),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.w)),
-                    textStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.sp),
-                  ),
-                  child: const Text('Accept Ride'),
-                ),
-              ),
-            ],
-          ),
+          // Row(
+          //   children: [
+          //     Expanded(
+          //       child: OutlinedButton(
+          //         onPressed: onDecline,
+          //         style: OutlinedButton.styleFrom(
+          //           foregroundColor: const Color(0xff1C1C1E),
+          //           backgroundColor: const Color(0xffF8F8F8),
+          //           side: BorderSide.none,
+          //           padding: EdgeInsets.symmetric(vertical: 1.8.h),
+          //           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.w)),
+          //           textStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.sp),
+          //         ),
+          //         child: const Text('Decline'),
+          //       ),
+          //     ),
+          //     SizedBox(width: 3.w),
+          //     Expanded(
+          //       child: ElevatedButton(
+          //         onPressed: onAccept,
+          //         style: ElevatedButton.styleFrom(
+          //           backgroundColor: const Color(0xffFF6A3D),
+          //           foregroundColor: Colors.white,
+          //           elevation: 0,
+          //           padding: EdgeInsets.symmetric(vertical: 1.8.h),
+          //           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.w)),
+          //           textStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.sp),
+          //         ),
+          //         child: const Text('Accept Ride'),
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );

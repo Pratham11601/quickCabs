@@ -1,5 +1,6 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:own_idea/Screens/document_verification_module/ui/document_verification_screen.dart';
+import 'package:own_idea/Screens/home_page_module/home_widgets/emergency_services_screen.dart';
 import 'package:own_idea/Screens/home_page_module/ui/home_screen.dart';
 import 'package:own_idea/Screens/login_signup_module/ui/signup_screen.dart';
 import 'package:own_idea/Screens/profile_module/ui/help_support_screen.dart';
@@ -64,6 +65,12 @@ class AppPages {
     GetPage(
       name: Routes.NO_INTERNET_CONNECTION_SCREEN,
       page: () => NoInternetConnectionScreen(),
+    ),
+
+    GetPage(
+      name: Routes.EMERGENCY_SERVICE_SCREEN,
+      page: () => EmergencyServicesScreen(),
+      binding: DashBoardBinding(),
     ),
   ];
 }

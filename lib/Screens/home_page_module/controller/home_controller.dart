@@ -192,4 +192,6 @@ class HomeController extends GetxController {
       // TODO: call accept API / navigate with `lead`
     }
   }
+
+  RxList<String>emergencyServiceList=<String>[].obs;
 }

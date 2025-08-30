@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }
     }
-    //🔴🔴here is error🔴🔴
+    //🔴🔴here is the reason if error occurs🔴🔴
     //await homeController.fetchLeads();
     await homeController.fetchLiveLeads();
   }
@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Container(
               width: 88.w,
               padding: EdgeInsets.symmetric(
-                  horizontal: 2.w, vertical: 0.8.h), // smaller padding
+                  horizontal: 2.w, vertical: 0.8.h),
               decoration: BoxDecoration(
                 color: Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(12),
@@ -343,7 +343,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                  //cards
+                  ///cards
+
                   // Obx(() {
                   //   return ListView.separated(
                   //     shrinkWrap: true,
