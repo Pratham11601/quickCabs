@@ -3,6 +3,7 @@ import 'package:own_idea/Screens/document_verification_module/ui/document_verifi
 import 'package:own_idea/Screens/home_page_module/home_widgets/emergency_services_screen.dart';
 import 'package:own_idea/Screens/home_page_module/ui/home_screen.dart';
 import 'package:own_idea/Screens/login_signup_module/ui/signup_screen.dart';
+import 'package:own_idea/Screens/login_signup_module/ui/user_registration_screen.dart';
 import 'package:own_idea/Screens/profile_module/ui/help_support_screen.dart';
 import 'package:own_idea/Screens/profile_module/ui/my_documents_screen.dart';
 import 'package:own_idea/binding/dashboard_binding.dart';
@@ -70,6 +71,11 @@ class AppPages {
     GetPage(
       name: Routes.EMERGENCY_SERVICE_SCREEN,
       page: () => EmergencyServicesScreen(),
+      binding: DashBoardBinding(),
+    ),
+    GetPage(
+      name: Routes.USER_REGISTRATION_SCREEN,
+      page: () => UserRegistrationScreen(),
       binding: DashBoardBinding(),
     ),
   ];

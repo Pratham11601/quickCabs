@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:own_idea/Screens/login_signup_module/ui/user_registration_screen.dart';
 import 'package:own_idea/routes/app_pages.dart';
 import 'package:own_idea/utils/app_colors.dart';
 import 'package:own_idea/utils/theme_config.dart';
