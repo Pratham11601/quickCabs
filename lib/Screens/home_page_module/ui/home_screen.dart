@@ -7,6 +7,7 @@ import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
 import '../../landing_page/controller/dashboard_controller.dart';
 import '../controller/home_controller.dart';
+import '../home_widgets/accept_lead_popup.dart';
 import '../home_widgets/driver_network_status.dart';
 import '../home_widgets/emergency_service_item.dart';
 import '../home_widgets/lead_card.dart';
@@ -178,7 +179,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   Obx(() => Column(
                     children: homeController.leads
-                        .map((lead) => LeadCard(lead: lead))
+                        .map((lead) => LeadCard(
+                      lead: lead,
+                      onAccept: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AcceptLeadOtpPopup(
+                              // sharedBy: lead['name'],
+                              // route: "${lead['from']} → ${lead['to']}",
+                              // fare: lead['price'],
+                              sharedBy: 'Amit Singh',
+                              route: "pune to mumbai",
+                              fare:200
+                          ),
+                        );
+                      },
+                    ))
                         .toList(),
                   )),
 
