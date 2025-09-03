@@ -1,3 +1,4 @@
+import 'package:own_idea/Screens/login_signup_module/model/lead_by_model.dart';
 import 'package:own_idea/Screens/login_signup_module/model/sign_in_otp_model.dart';
 import 'package:own_idea/Screens/login_signup_module/model/verify_sign_in_otp_model.dart';
 
@@ -40,6 +41,13 @@ class AuthRepository {
       params: params,
     );
     var response = VerifySignInOtpModel.fromJson(jsonData);
+    return response;
+  }
+
+// Get Lead By List
+  Future<LeadByListModel> getLeadByListApiCall() async {
+    var jsonData = await apiManager.getAPICall(url: '/sub-admin/get-all');
+    var response = LeadByListModel.fromJson(jsonData);
     return response;
   }
 }

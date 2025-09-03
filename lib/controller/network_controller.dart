@@ -35,7 +35,6 @@ class NetworkController extends GetxController {
     streamSubscription?.cancel();
     super.onClose();
   }
-
   void callStreamSubscription() {
     streamSubscription = connectivity.onConnectivityChanged
         .listen((List<ConnectivityResult> results) {

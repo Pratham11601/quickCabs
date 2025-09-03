@@ -49,7 +49,7 @@ class AppController extends GetxController {
   void updateToken(String? token) {
     userToken = token;
     JwtConfig.storeUserToken(token);
-  }
+  } 
 
   /// Notification
   Future<void> showNotificationAlertDialog() async {

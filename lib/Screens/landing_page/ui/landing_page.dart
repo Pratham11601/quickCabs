@@ -54,6 +54,8 @@ class DashboardScreen extends GetView<DashboardController> {
             ),
             child: const CustomHeader(),
           ),
+    
+    
         ),
       
         /// Body → only IndexedStack reacts

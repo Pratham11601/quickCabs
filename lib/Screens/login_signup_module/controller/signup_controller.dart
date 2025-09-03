@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:own_idea/Screens/login_signup_module/model/lead_by_model.dart';
 import 'package:own_idea/Screens/login_signup_module/model/sign_in_otp_model.dart';
 import 'package:own_idea/Screens/login_signup_module/model/verify_sign_in_otp_model.dart';
 import 'package:own_idea/routes/routes.dart';
@@ -58,6 +59,7 @@ class SignupController extends GetxController {
   void onInit() {
     super.onInit();
     // listeners
+    callAsyncApi();
     phoneCtrl.addListener(validatePhone);
     passCtrl.addListener(validatePasswords);
     confirmCtrl.addListener(validatePasswords);
@@ -67,6 +69,10 @@ class SignupController extends GetxController {
     confirmFocus
         .addListener(() => isConfirmFocused.value = confirmFocus.hasFocus);
     _initializeListeners();
+  }
+
+  void callAsyncApi() async {
+    await getLeadByList();
   }
 
   void validatePhone() {
@@ -132,7 +138,7 @@ class SignupController extends GetxController {
     }
   }
 
-    // Verify registrationn otp
+  // Verify registrationn otp
   Future<bool> verifyRegistrationOtp({bool isLoaderShow = true}) async {
     isLoading.value = true;
     try {
@@ -157,7 +163,6 @@ class SignupController extends GetxController {
       return false;
     }
   }
-
 
   void _initializeListeners() {
     // OTP validation (6 digits)
@@ -216,9 +221,22 @@ class SignupController extends GetxController {
     otpController.clear();
   }
 
-  /// Verify OTP and proceed to next screen
-  void verifyOtp() {
-    // TODO: Replace with actual OTP verification API call
-    Get.offAllNamed(Routes.DOCUMENT_VERIFICATION_PAGE);
+  RxString leadBy = ''.obs;
+
+  RxList<LeadByListData> leadByList = <LeadByListData>[].obs;
+  Future<bool> getLeadByList() async {
+    try {
+      LeadByListModel leadByListModel =
+          await authRepository.getLeadByListApiCall();
+      if (leadByListModel.status == 1) {
+        leadByList.addAll(leadByListModel.data!);
+        return true;
+      } else {
+        leadByList.clear();
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
   }
 }
