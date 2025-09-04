@@ -377,7 +377,6 @@ class LeadCard extends StatelessWidget {
               ],
             ),
             SizedBox(height:  8.sp),
-
             // Third Row: Date & Time
             Row(
               children: [
@@ -388,13 +387,15 @@ class LeadCard extends StatelessWidget {
                       ? "${lead.date.year.toString().padLeft(4, '0')}-${lead.date.month.toString().padLeft(2, '0')}-${lead.date.day.toString().padLeft(2, '0')}"
                       : '',
                   style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(width: 41.w,),
+                SizedBox(width: 39.w,),
                 Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
                 SizedBox(width: 6),
                 Text(
                   lead.time ?? '',
                   style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -426,6 +427,7 @@ class LeadCard extends StatelessWidget {
                 ),
               ],
             ),
+            
           ],
         ),
       ),
