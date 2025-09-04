@@ -1,12 +1,21 @@
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:own_idea/Screens/home_page_module/model/check_profile_completion_model.dart';
 import 'package:own_idea/Screens/home_page_module/repository/home_repository.dart';
-
 import '../../../api/api_manager.dart';
+import '../home_widgets/accept_lead_popup.dart';
+import '../model/active_lead_model.dart';
+import '../repository/active_lead_repository.dart';
 
 class HomeController extends GetxController {
   HomeRepository authRepository = HomeRepository(APIManager());
+  ActiveLeadRepository activeLeadRepository = ActiveLeadRepository(APIManager());
 
+  @override
+  void onInit() {
+    super.onInit();
+    fetchActiveLeads();
+  }
   /// Emergency services list (can come from API later)
   final emergencyServices = [
     {'title': 'Puncture', 'icon': '🛠️'},
@@ -194,4 +203,40 @@ class HomeController extends GetxController {
   }
 
   RxList<String>emergencyServiceList=<String>[].obs;
+
+
+  ///active api logic method and veriavble
+  RxList<Post> activeLeads = <Post>[].obs;
+
+  Future<void> fetchActiveLeads() async {
+    try {
+      isLoading.value = true;
+      errorMsg.value = '';
+      final response = await activeLeadRepository.activeLeadApiCall();
+      debugPrint('Fetched leads count: ${response.posts.length}');
+      activeLeads.assignAll(response.posts);
+    } catch (e) {
+      errorMsg.value = 'Failed to load active leads';
+      debugPrint('Error fetching leads: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  ///accept or booked logic
+  Future<void> acceptLead(int index) async {
+    if (index < 0 || index >= activeLeads.length) return;
+    final lead = activeLeads[index];
+
+    await Get.dialog(
+      AcceptLeadOtpPopup(
+        sharedBy: lead.vendorFullname ?? '',
+        route: "${lead.locationFrom ?? ''} → ${lead.toLocation ?? ''}",
+        fare: double.tryParse(lead.fare ?? '0')?.toInt() ?? 0,
+        leadId: lead.id!,
+      ),
+      barrierDismissible: false,
+    );
+  }
+
 }

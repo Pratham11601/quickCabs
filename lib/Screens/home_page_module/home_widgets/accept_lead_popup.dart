@@ -10,19 +10,22 @@ class AcceptLeadOtpPopup extends StatelessWidget {
   final String sharedBy;
   final String route;
   final int fare;
+  final int leadId;
 
   AcceptLeadOtpPopup({
     Key? key,
     required this.sharedBy,
     required this.route,
     required this.fare,
+    required this.leadId,
   }) : super(key: key);
-
-  final AcceptLeadOtpPopupController controller =
-  Get.put(AcceptLeadOtpPopupController());
 
   @override
   Widget build(BuildContext context) {
+
+    final AcceptLeadOtpPopupController controller =
+    Get.put(AcceptLeadOtpPopupController(leadId: leadId));
+
     return Dialog(
       insetPadding: EdgeInsets.all(4.w),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.w)),
@@ -80,14 +83,11 @@ class AcceptLeadOtpPopup extends StatelessWidget {
                   children: [
                     _detailRow("Shared by:", sharedBy),
                     _detailRow("Route:", route),
-                    _detailRow(
-                      "Fare:",
-                      "₹$fare",
-                      valueStyle: TextStyle(
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.sp),
-                    ),
+                    _detailRow("Fare:", "₹${fare.toStringAsFixed(0)}", valueStyle: TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.sp)),
+
                   ],
                 ),
               ),

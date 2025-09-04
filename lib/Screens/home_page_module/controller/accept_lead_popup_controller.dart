@@ -1,8 +1,18 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:own_idea/utils/app_colors.dart';
 import 'dart:async';
 
+import '../../../api/api_manager.dart';
+import '../repository/accept_lead_repository.dart';
+import 'home_controller.dart';
+
 class AcceptLeadOtpPopupController extends GetxController {
+  final AcceptLeadRepository repository = AcceptLeadRepository(APIManager());
+
+  final int leadId;
+  AcceptLeadOtpPopupController({required this.leadId});
+
   final RxString otpText = "".obs;
   final RxInt timerSeconds = 17.obs;
   final RxBool showError = false.obs;
@@ -45,20 +55,56 @@ class AcceptLeadOtpPopupController extends GetxController {
     startTimer();
   }
 
-  void handleAcceptLead(BuildContext context) async {
+  Future<void> handleAcceptLead(BuildContext context) async {
     FocusScope.of(context).unfocus();
-    if (otpText.value == "1234") {
-      showSuccess.value = true;
-      showError.value = false;
-      await Future.delayed(const Duration(seconds: 1));
-      if (context.mounted) {
-        Get.back();
+    debugPrint('Sending OTP: ${otpText.value} for leadId: $leadId');
+    try {
+      final response = await repository.acceptLeadApiCall(
+        leadId: leadId,
+        otp: otpText.value,
+      );
+      debugPrint('Response status: ${response.status}');
+      debugPrint('Response message: ${response.message}');
+      if (response.status == 1) {
+        final homeController = Get.find<HomeController>();
+        final acceptedLeadId = response.lead.id;
+        final acceptedById = response.lead.acceptedById;
+        final index = homeController.activeLeads.indexWhere((post) => post.id == acceptedLeadId);
+
+
+        if (index != -1) {
+          homeController.activeLeads[index].acceptedById = acceptedById;
+          homeController.activeLeads.refresh();
+        }
+
+        showSuccess.value = true;
+        showError.value = false;
+
+        if (context.mounted) {
+          Get.back();
+        }
+        Get.snackbar(
+          'Success',
+          'Lead accepted successfully',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ColorsForApp.primaryColor,
+          colorText: Colors.white,
+
+          margin: EdgeInsets.all(12),
+          duration: Duration(seconds: 2),
+
+        );
+
+      } else {
+        showError.value = true;
+        showSuccess.value = false;
       }
-    } else {
+    } catch (e) {
+      debugPrint('Error during acceptLeadApiCall: $e');
       showError.value = true;
       showSuccess.value = false;
-      await Future.delayed(const Duration(seconds: 1));
-      showError.value = false;
     }
   }
+
+
 }

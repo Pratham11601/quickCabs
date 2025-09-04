@@ -1,58 +1,54 @@
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
+import '../model/mylead_model.dart';
+import '../repository/mylead_repository.dart';
+import '../../../api/api_manager.dart';
 
 class MyLeadsController extends GetxController {
-  // Active & Completed leads
-  var activeLeads = <Map<String, dynamic>>[].obs;
-  var completedLeads = <Map<String, dynamic>>[].obs;
+  var isLoading = false.obs;
+  var activeLeads = <Lead>[].obs;
+  var completedLeads = <Lead>[].obs;
+  var filteredActiveLeads = <Lead>[].obs;
+  var filteredCompletedLeads = <Lead>[].obs;
+
+  final MyLeadRepository repository = MyLeadRepository(APIManager());
 
   @override
   void onInit() {
     super.onInit();
-    loadLeads();
+    fetchLeads();
   }
 
-  // Dummy data loader (replace with API later)
-  void loadLeads() {
-    activeLeads.assignAll([
-      {
-        "from": "Connaught Place",
-        "to": "IGI Airport",
-        "price": "850",
-        "carType": "Sedan",
-        "distance": "24.5 km",
-        "date": "2025-08-08",
-        "time": "14:30",
-        "phone": "+91 9876543210",
-        "pin": "5623",
-        "note": "Premium customer, AC required, luggage space needed"
-      },
-      {
-        "from": "Gurgaon",
-        "to": "Cyber Hub",
-        "price": "300",
-        "carType": "Hatchback",
-        "distance": "8.2 km",
-        "date": "2025-08-08",
-        "time": "15:00",
-        "phone": "+91 9876543211",
-        "pin": "5634",
-        "note": "Return trip possible"
-      },
-    ]);
+  Future<void> fetchLeads() async {
+    try {
+      isLoading(true);
+      final response = await repository.myLeadApicall();
+      activeLeads.assignAll(response.leads.where((lead) => lead.isActive == true).toList());
+      completedLeads.assignAll(response.leads.where((lead) => lead.isActive == false).toList());
 
-    completedLeads.assignAll([
-      {
-        "from": "Noida Sector 62",
-        "to": "Greater Noida",
-        "price": "650",
-        "carType": "SUV",
-        "distance": "18.8 km",
-        "date": "2025-08-08",
-        "time": "16:15",
-        "phone": "+91 9876543212",
-        "pin": "6041",
-        "note": "Family trip, child seat available"
-      },
-    ]);
+      filteredActiveLeads.assignAll(activeLeads);
+      filteredCompletedLeads.assignAll(completedLeads);
+    } catch (e) {
+      print('Error loading leads: $e');
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  void filterLeads(String query) {
+    if (query.isEmpty) {
+      filteredActiveLeads.assignAll(activeLeads);
+      filteredCompletedLeads.assignAll(completedLeads);
+    } else {
+      filteredActiveLeads.assignAll(activeLeads.where((lead) =>
+      (lead.locationFrom ?? '').toLowerCase().contains(query.toLowerCase()) ||
+          (lead.toLocation ?? '').toLowerCase().contains(query.toLowerCase()) ||
+          (lead.fare ?? '').contains(query)).toList());
+
+      filteredCompletedLeads.assignAll(completedLeads.where((lead) =>
+      (lead.locationFrom ?? '').toLowerCase().contains(query.toLowerCase()) ||
+          (lead.toLocation ?? '').toLowerCase().contains(query.toLowerCase()) ||
+          (lead.fare ?? '').contains(query)).toList());
+    }
   }
 }

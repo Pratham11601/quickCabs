@@ -1,6 +1,5 @@
 import 'package:own_idea/Screens/login_signup_module/model/sign_in_otp_model.dart';
 import 'package:own_idea/Screens/login_signup_module/model/verify_sign_in_otp_model.dart';
-
 import '../../../api/api_manager.dart';
 import '../model/login_model.dart';
 

@@ -6,7 +6,6 @@ class HomeRepository {
   final APIManager apiManager;
   HomeRepository(this.apiManager);
 
-  //Call to check profile completion
   Future<CheckProfileCompletionModel> checkProfileCompletionApiCall() async {
     var jsonData = await apiManager.getAPICall(
       url: '/vendorDetails/checkProfileCompletion',
