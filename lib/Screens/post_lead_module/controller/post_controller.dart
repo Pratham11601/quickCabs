@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:own_idea/utils/app_colors.dart';
+import 'package:sizer/sizer.dart';
 
+import '../../../api/api_manager.dart';
 import '../../../routes/routes.dart';
+import '../repository/post_lead_repository.dart';
 
 class PostController extends GetxController {
   // ── Stepper ──────────────────────────────────────────────────────────────────
@@ -141,4 +145,116 @@ class PostController extends GetxController {
     // dropController.dispose();
     super.onClose();
   }
+  //------------------api logic----------------
+  final PostLeadRepository postLeadRepository = PostLeadRepository(APIManager());
+
+  Future<void> submitRideLead() async {
+    final params = {
+      "date": selectedDate.value == null ? "" : DateFormat('yyyy-MM-dd').format(selectedDate.value!),
+      "time": selectedTime.value == null ? "" : selectedTime.value!.format(Get.context!),
+      "location_from": pickupController.text.trim(),
+      "location_from_area": "",
+      "to_location": dropController.text.trim(),
+      "to_location_area": "",
+      "car_model": selectedVehicleIndex.value != null ? vehicles[selectedVehicleIndex.value!]["name"] : "",
+      "add_on": "",
+      "fare": int.tryParse(fareController.text.trim()) ?? 0,
+      "cab_number": "",
+      "vendor_contact": "",
+    };
+
+    try {
+      final response = await postLeadRepository.postLeadApiCall(params: params);
+      if (response.status == true) {
+        showAppDialog(
+          title: 'Lead Shared Successfully',
+          message: 'Your ride lead has been shared with the driver network. Other drivers can now see and contact you for this trip.',
+          icon: Icons.check_circle_rounded,
+          buttonText: 'OK',
+          onConfirm: () {
+            Get.offAllNamed(Routes.DASHBOARD_PAGE);
+          },
+        );
+      } else {
+        Get.snackbar('Error', response.message ?? 'Failed to share lead');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Something went wrong. Please try again.');
+    }
+  }
+
+  void showAppDialog({
+    required String title,
+    required String message,
+    required IconData icon,
+    required String buttonText,
+    required VoidCallback onConfirm,
+  }) {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12), // rounded corners
+        ),
+        backgroundColor: Colors.white, // full white background
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.green.withOpacity(0.12),
+                ),
+                padding: EdgeInsets.all(20),
+                child: Icon(icon, size: 60, color: Colors.green),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                title,
+                style: TextStyle(
+                  color: Colors.green,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                message,
+                style: TextStyle(fontSize: 14, color: Colors.black),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 12,
+                  ),
+                ),
+                onPressed: onConfirm,
+                child: Text(
+                  buttonText,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+  }
+
+
+
+
+
 }

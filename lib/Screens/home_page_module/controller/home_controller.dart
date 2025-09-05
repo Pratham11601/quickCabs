@@ -1,12 +1,21 @@
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:own_idea/Screens/home_page_module/model/check_profile_completion_model.dart';
 import 'package:own_idea/Screens/home_page_module/repository/home_repository.dart';
-
 import '../../../api/api_manager.dart';
+import '../home_widgets/accept_lead_popup.dart';
+import '../model/active_lead_model.dart';
+import '../repository/active_lead_repository.dart';
 
 class HomeController extends GetxController {
   HomeRepository authRepository = HomeRepository(APIManager());
+  ActiveLeadRepository activeLeadRepository = ActiveLeadRepository(APIManager());
 
+  @override
+  void onInit() {
+    super.onInit();
+    fetchActiveLeads();
+  }
   /// Emergency services list (can come from API later)
   final emergencyServices = [
     {'title': 'Puncture', 'icon': '🛠️'},
@@ -54,6 +63,8 @@ class HomeController extends GetxController {
       'note': 'Family trip, child seat available'
     }
   ].obs;
+  final liveLeads = <Map<String, dynamic>>[].obs;
+
   RxBool isKycCompleted = false.obs;
   Future<bool> checkProfileCompletion() async {
     try {
@@ -69,4 +80,163 @@ class HomeController extends GetxController {
       return false;
     }
   }
+
+
+  ///cards logic and variable
+  final isLoading = false.obs;
+  final errorMsg = ''.obs;
+  int _page = 1;
+  bool hasMore = true;
+  RxInt selectedIndex = 0.obs;
+
+  // Future<void> fetchLeads() async {
+  //   try {
+  //     isLoading.value = true;
+  //     errorMsg.value = '';
+  //
+  //     await Future.delayed(const Duration(milliseconds: 500)); // fake delay
+  //
+  //     leads.assignAll([
+  //       {
+  //         'name': 'Amit Singh',
+  //         'from': 'Connaught Place',
+  //         'to': 'IGI Airport',
+  //         'price': 850,
+  //         'distance': '24.5 km',
+  //         'time': '14:30',
+  //       },
+  //       {
+  //         'name': 'Priya Sharma',
+  //         'from': 'Gurgaon',
+  //         'to': 'Cyber Hub',
+  //         'price': 300,
+  //         'distance': '8.2 km',
+  //         'time': '15:00',
+  //       },
+  //       {
+  //         'name': 'Mohammed Ali',
+  //         'from': 'Noida',
+  //         'to': 'Greater Noida',
+  //         'price': 650,
+  //         'distance': '18.8 km',
+  //         'time': '16:15',
+  //       },
+  //       {
+  //         'name': 'Sopan',
+  //         'from': 'Pune',
+  //         'to': 'Mumbai',
+  //         'price': 690,
+  //         'distance': '11.1 km',
+  //         'time': '12:15',
+  //       },
+  //     ]);
+  //   } catch (e) {
+  //     errorMsg.value = 'Failed to load rides';
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
+  Future<void> fetchLiveLeads() async {
+    try {
+      isLoading.value = true;
+      errorMsg.value = '';
+      await Future.delayed(const Duration(milliseconds: 400)); // demo delay
+
+      liveLeads.assignAll([
+        {
+          'name': 'Amit Singh',
+          'from': 'Connaught Place',
+          'to': 'IGI Airport',
+          'price': 850,
+          'distance': '24.5 km',
+          'time': '14:30',
+        },
+        {
+          'name': 'Priya Sharma',
+          'from': 'Gurgaon',
+          'to': 'Cyber Hub',
+          'price': 300,
+          'distance': '8.2 km',
+          'time': '15:00',
+        },
+        {
+          'name': 'Mohammed Ali',
+          'from': 'Noida',
+          'to': 'Greater Noida',
+          'price': 650,
+          'distance': '18.8 km',
+          'time': '16:15',
+        },
+        {
+          'name': 'Sopan',
+          'from': 'Pune',
+          'to': 'Mumbai',
+          'price': 69,
+          'distance': '11.1 km',
+          'time': '12:15',
+        },
+        {
+          'name': 'Topan',
+          'from': 'Katraj',
+          'to': 'Karve nagar',
+          'price': 69,
+          'distance': '11.1 km',
+          'time': '12:15',
+        },
+      ]);
+    } catch (e) {
+      errorMsg.value = 'Failed to load rides';
+    } finally {
+      isLoading.value = false;
+    }
+  }
+  /// Button actions
+  void declineLiveLead(int index) {
+    if (index >= 0 && index < liveLeads.length) liveLeads.removeAt(index);
+  }
+
+  void acceptLiveLead(int index) {
+    if (index >= 0 && index < liveLeads.length) {
+      final lead = liveLeads[index];
+      // TODO: call accept API / navigate with `lead`
+    }
+  }
+
+  RxList<String>emergencyServiceList=<String>[].obs;
+
+
+  ///active api logic method and veriavble
+  RxList<Post> activeLeads = <Post>[].obs;
+
+  Future<void> fetchActiveLeads() async {
+    try {
+      isLoading.value = true;
+      errorMsg.value = '';
+      final response = await activeLeadRepository.activeLeadApiCall();
+      debugPrint('Fetched leads count: ${response.posts.length}');
+      activeLeads.assignAll(response.posts);
+    } catch (e) {
+      errorMsg.value = 'Failed to load active leads';
+      debugPrint('Error fetching leads: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  ///accept or booked logic
+  Future<void> acceptLead(int index) async {
+    if (index < 0 || index >= activeLeads.length) return;
+    final lead = activeLeads[index];
+
+    await Get.dialog(
+      AcceptLeadOtpPopup(
+        sharedBy: lead.vendorFullname ?? '',
+        route: "${lead.locationFrom ?? ''} → ${lead.toLocation ?? ''}",
+        fare: double.tryParse(lead.fare ?? '0')?.toInt() ?? 0,
+        leadId: lead.id!,
+      ),
+      barrierDismissible: false,
+    );
+  }
+
 }
