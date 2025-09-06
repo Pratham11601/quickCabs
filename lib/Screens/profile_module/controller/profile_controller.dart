@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/api_manager.dart';
 import '../../../routes/routes.dart';
+import '../../../utils/storage_config.dart';
 
 class ProfileController extends GetxController {
   ProfileRepository profileRepository = ProfileRepository(APIManager());
@@ -32,6 +33,7 @@ class ProfileController extends GetxController {
 
   /// Logout function
   void logout() async {
+    await LocalStorage.erase(); // Clears token + credentials
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     Get.offAllNamed(Routes.LOGIN_SCREEN);
@@ -39,8 +41,7 @@ class ProfileController extends GetxController {
     Get.snackbar(
       "Logout", "You have been logged out successfully!",
       snackPosition: SnackPosition.TOP,
-      backgroundColor:
-          ColorsForApp.colorVerifyGreen, // you can control transparency
+      backgroundColor: ColorsForApp.colorVerifyGreen, // you can control transparency
       colorText: ColorsForApp.whiteColor,
     );
   }
@@ -60,11 +61,10 @@ class ProfileController extends GetxController {
 
   Future<bool> getProfileDetails() async {
     try {
-      ProfileDetailsModel model =
-          await profileRepository.getProfileDetailsApiCall();
+      ProfileDetailsModel model = await profileRepository.getProfileDetailsApiCall();
       if (model.status == true) {
         userDeatils.value = model.vendor!;
-        return true; 
+        return true;
       } else {
         return false;
       }

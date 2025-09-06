@@ -74,8 +74,7 @@ class CustomScaffold extends StatelessWidget {
                         ? leading ??
                             IconButton(
                               onPressed: onBack ?? Get.back,
-                              icon: leading ??
-                                  Icon(CupertinoIcons.back, size: 16.sp),
+                              icon: leading ?? Icon(CupertinoIcons.back, size: 16.sp),
                             )
                         : null,
                     actions: [...?appBarActions, width(3.w)],
@@ -83,9 +82,7 @@ class CustomScaffold extends StatelessWidget {
                     backgroundColor: appBarBackground ?? Colors.transparent,
                     title: Text(
                       title,
-                      style: titleStyle ??
-                          TextStyle(
-                              fontSize: 18.sp, fontWeight: FontWeight.w600),
+                      style: titleStyle ?? TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
                     ),
                   )
                 : null);
@@ -103,10 +100,7 @@ class CustomScaffold extends StatelessWidget {
             Container(
               clipBehavior: Clip.hardEdge,
               margin: EdgeInsets.only(bottom: 1.h),
-              height: statusBarHeight +
-                  appBar!.preferredSize.height +
-                  extendedHeight +
-                  3.h,
+              height: statusBarHeight + appBar!.preferredSize.height + extendedHeight + 3.h,
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
                 boxShadow: const [
@@ -125,9 +119,7 @@ class CustomScaffold extends StatelessWidget {
                 Assets.imagesAppBarBg,
                 fit: BoxFit.fitWidth,
                 alignment: Alignment.topCenter,
-                colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.surfaceBright,
-                    BlendMode.screen),
+                colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.surfaceBright, BlendMode.screen),
               ),
             ),
           Column(
@@ -172,9 +164,7 @@ class CustomSwitch extends StatelessWidget {
         height: 3.2.h,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0),
-          color: value
-              ? Theme.of(context).colorScheme.tertiary
-              : Theme.of(context).colorScheme.primary,
+          color: value ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.primary,
         ),
         child: Stack(
           children: [
@@ -202,8 +192,7 @@ class CustomSwitch extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 1.w),
                   child: Text(
                     value ? 'Offline' : 'Online',
-                    style: TextHelper.size14.copyWith(
-                        color: Theme.of(context).colorScheme.tertiaryFixedDim),
+                    style: TextHelper.size14.copyWith(color: Theme.of(context).colorScheme.tertiaryFixedDim),
                   ),
                 ),
               ),
@@ -238,15 +227,13 @@ class DottedLinePainter extends CustomPainter {
     if (axis == Axis.horizontal) {
       double startX = 0;
       while (startX < size.width) {
-        canvas.drawLine(
-            Offset(startX, 0), Offset(startX + dashWidth, 0), paint);
+        canvas.drawLine(Offset(startX, 0), Offset(startX + dashWidth, 0), paint);
         startX += dashWidth + dashSpace;
       }
     } else if (axis == Axis.vertical) {
       double startY = 0;
       while (startY < size.height) {
-        canvas.drawLine(
-            Offset(0, startY), Offset(0, startY + dashWidth), paint);
+        canvas.drawLine(Offset(0, startY), Offset(0, startY + dashWidth), paint);
         startY += dashWidth + dashSpace;
       }
     }
@@ -289,8 +276,7 @@ showExitDialog(BuildContext context) {
                   Get.back();
                 },
                 splashColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
-                highlightColor:
-                    ColorsForApp.primaryColor.withValues(alpha: 0.2),
+                highlightColor: ColorsForApp.primaryColor.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(100),
                 child: Text(
                   'Cancel',
@@ -310,8 +296,7 @@ showExitDialog(BuildContext context) {
                   }
                 },
                 splashColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
-                highlightColor:
-                    ColorsForApp.primaryColor.withValues(alpha: 0.2),
+                highlightColor: ColorsForApp.primaryColor.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(100),
                 child: Text(
                   'Confirm',
@@ -330,8 +315,7 @@ showExitDialog(BuildContext context) {
 }
 
 // Common message dialog
-showCommonMessageDialog(BuildContext context, String title, String message,
-    GestureTapCallback onClick) {
+showCommonMessageDialog(BuildContext context, String title, String message, GestureTapCallback onClick) {
   showDialog(
     barrierDismissible: true,
     context: context,
@@ -362,8 +346,8 @@ showCommonMessageDialog(BuildContext context, String title, String message,
             child: Text(
               'Proceed',
               style: TextHelper.size18.copyWith(
-                fontFamily: mediumFont,
-                color: ColorsForApp.blackColor,
+                fontFamily: semiBoldFont,
+                color: ColorsForApp.primaryColor,
               ),
             ),
           ),

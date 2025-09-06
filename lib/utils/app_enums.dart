@@ -7,14 +7,18 @@ enum FileType { asset, network, file, other }
 enum StorageKey {
   user,
   userid,
+  password,
   token,
+  rememberMe,
   userLocation,
   ;
 
   String get name => switch (this) {
         StorageKey.user => 'username',
         StorageKey.userid => 'userid',
+        StorageKey.password => 'password',
         StorageKey.token => 'token',
+        StorageKey.rememberMe => 'rememberMe',
         StorageKey.userLocation => 'userLocation',
       };
 }

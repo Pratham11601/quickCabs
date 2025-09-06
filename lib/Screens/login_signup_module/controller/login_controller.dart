@@ -30,7 +30,8 @@ class LoginController extends GetxController {
   final isPasswordFocused = false.obs; // True when password field is focused
   final isValidNumber = false.obs; // True when phone has 10 digits
   final isLoading = false.obs; // True when API call is in progress
-
+  final rememberMe = false.obs; // Observable variable to track Remember Me checkbox
+  final isPasswordVisible = false.obs;
   // ---------------------- Timer ----------------------
 
   // =====================================================
@@ -43,7 +44,21 @@ class LoginController extends GetxController {
     phoneController.addListener(() {
       isValidNumber.value = phoneController.text.length == 10;
     });
+
+    /// Restore saved credentials if Remember Me was enabled
+    loadSavedCredentials();
     super.onInit();
+  }
+
+  /// Load saved credentials if Remember Me was enabled
+  Future<void> loadSavedCredentials() async {
+    final savedRemember = await LocalStorage.fetchValue(StorageKey.rememberMe);
+
+    if (savedRemember == "true") {
+      rememberMe.value = true;
+      phoneController.text = await LocalStorage.fetchValue(StorageKey.user) ?? "";
+      passwordController.text = await LocalStorage.fetchValue(StorageKey.password) ?? "";
+    }
   }
 
   @override
@@ -70,14 +85,25 @@ class LoginController extends GetxController {
   Future<bool> loginAPI({bool isLoaderShow = true}) async {
     try {
       isLoading.value = true;
-      LoginModel loginModel = await authRepository
-          .loginApiCall(isLoaderShow: isLoaderShow, params: {
+      LoginModel loginModel = await authRepository.loginApiCall(isLoaderShow: isLoaderShow, params: {
         'phone': phoneController.text.trim(),
         'password': passwordController.text.trim(),
       });
       if (loginModel.token != null && loginModel.token!.isNotEmpty) {
         loginModelResponse.value = loginModel;
-        LocalStorage.storeValue(StorageKey.token, loginModel.token.toString());
+        // Save token for session
+        await LocalStorage.storeValue(StorageKey.token, loginModel.token.toString());
+
+        // ✅ Save credentials if Remember Me is checked
+        if (rememberMe.value) {
+          await LocalStorage.storeValue(StorageKey.rememberMe, "true");
+          await LocalStorage.storeValue(StorageKey.user, phoneController.text.trim());
+          await LocalStorage.storeValue(StorageKey.password, passwordController.text.trim());
+        } else {
+          await LocalStorage.storeValue(StorageKey.rememberMe, "false");
+          await LocalStorage.removeValue(StorageKey.user);
+          await LocalStorage.removeValue(StorageKey.password);
+        }
 
         if (loginModel.message != null && loginModel.message!.isNotEmpty) {
           isLoading.value = false;
@@ -86,8 +112,7 @@ class LoginController extends GetxController {
         return true;
       } else {
         isLoading.value = false;
-        ShowSnackBar.info(
-            message: loginModel.message.toString(), title: 'Alert');
+        ShowSnackBar.info(message: loginModel.message.toString(), title: 'Alert');
         return false;
       }
     } catch (e) {
