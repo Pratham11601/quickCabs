@@ -10,6 +10,7 @@ import 'package:sizer/sizer.dart';
 import 'api/api_manager.dart';
 import 'binding/app_binding.dart';
 import 'controller/app_controller.dart';
+import 'languages/languages.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,6 +45,9 @@ class App extends StatelessWidget {
           initialRoute: AppPages.initialRoute,
           initialBinding: AppBinding(),
           getPages: AppPages.route,
+          translations: Languages(),
+          locale: Get.deviceLocale, // default device locale
+          fallbackLocale: const Locale('en', 'US'), // fallback locale
         );
       },
     );
