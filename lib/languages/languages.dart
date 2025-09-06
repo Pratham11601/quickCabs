@@ -1,0 +1,68 @@
+// lib/languages.dart
+import 'package:get/get.dart';
+
+class Languages extends Translations {
+  @override
+  Map<String, Map<String, String>> get keys => {
+    'en_US': {
+      'hello': 'Hello',
+      'welcome': 'Welcome!',
+      'sign_in': 'Sign In',
+      'documents': 'Documents',
+      'notifications': 'Notifications',
+      'privacy_security': 'Privacy & Security',
+      'support': 'Support',
+      'help_support': 'Help & Support',
+      'state_support': 'State wise support',
+      'language': 'Language',
+      'choose_language': 'Choose Language',
+      'app_version_info': 'Quick Cabs Driver v2.1.0\nMade with ❤️ for professional drivers',
+      'enter_password': 'Enter password',
+    },
+    'hi_IN': {
+      'hello': 'नमस्ते',
+      'welcome': 'स्वागत है!',
+      'sign_in': 'साइन इन करें',
+      'documents': 'दस्तावेज़',
+      'notifications': 'सूचनाएं',
+      'privacy_security': 'गोपनीयता और सुरक्षा',
+      'support': 'सहायता',
+      'help_support': 'सहायता और समर्थन',
+      'state_support': 'राज्यवार समर्थन',
+      'language': 'भाषा',
+      'choose_language': 'भाषा चुनें',
+      'app_version_info': 'क्विक कॅब्स चालक v2.1.0\nपेशेवर ड्राइवरों के लिए ❤️ के साथ बनाया गया',
+      'enter_password': 'पासवर्ड दर्ज करें',
+    },
+    'kn_IN': {
+      'hello': 'ಹಲೋ',
+      'welcome': 'ಸ್ವಾಗತ!',
+      'sign_in': 'ಸೈನ್ ಇನ್ ಮಾಡಿ',
+      'documents': 'ದಾಖಲೆಗಳು',
+      'notifications': 'ಅಧಿಸೂಚನೆಗಳು',
+      'privacy_security': 'ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತೆ',
+      'support': 'ಬೆಂಬಲ',
+      'help_support': 'ಸಹಾಯ ಮತ್ತು ಬೆಂಬಲ',
+      'state_support': 'ರಾಜ್ಯ ಪ್ರಕಾರ ಬೆಂಬಲ',
+      'language': 'ಭಾಷೆ',
+      'choose_language': 'ಭಾಷೆ ಆಯ್ಕೆ ಮಾಡಿ',
+      'app_version_info': 'ಕ್ವಿಕ್ ಕ್ಯಾಬ್ಸ್ ಚಾಲಕ v2.1.0\nವೃತ್ತಿಪರ ಚಾಲಕರಿಗಾಗಿ ❤️ ನೆಡಿಸಿದೆ',
+      'enter_password': 'ಪಾಸ್ವರ್ಡ್ ನಮೂದಿಸಿ',
+    },
+    'mr_IN': {
+      'hello': 'नमस्कार',
+      'welcome': 'स्वागत आहे!',
+      'sign_in': 'साइन इन करा',
+      'documents': 'कागदपत्रे',
+      'notifications': 'सूचना',
+      'privacy_security': 'गोपनीयता आणि सुरक्षा',
+      'support': 'समर्थन',
+      'help_support': 'सहाय्य आणि समर्थन',
+      'state_support': 'राज्यनिहाय समर्थन',
+      'language': 'भाषा',
+      'choose_language': 'भाषा निवडा',
+      'app_version_info': 'क्विक कॅब्स चालक v2.1.0\nव्यावसायिक चालकांसाठी ❤️ ने तयार केले',
+      'enter_password': 'पासवर्ड टाका',
+    },
+  };
+}

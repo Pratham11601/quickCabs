@@ -4,6 +4,7 @@ import 'package:own_idea/Screens/home_page_module/ui/home_screen.dart';
 import 'package:own_idea/Screens/login_signup_module/ui/signup_screen.dart';
 import 'package:own_idea/Screens/profile_module/ui/help_support_screen.dart';
 import 'package:own_idea/Screens/profile_module/ui/my_documents_screen.dart';
+import 'package:own_idea/Screens/profile_module/ui/subscription_screen.dart';
 import 'package:own_idea/binding/dashboard_binding.dart';
 import 'package:own_idea/binding/profile_binding.dart';
 import 'package:own_idea/routes/routes.dart';
@@ -59,6 +60,11 @@ class AppPages {
     GetPage(
       name: Routes.MY_DOCUMENTS,
       page: () => MyDocumentsPage(),
+      binding: ProfileBinding(),
+    ),
+    GetPage(
+      name: Routes.SUBSCRIPTION,
+      page: () => SubscriptionScreen(),
       binding: ProfileBinding(),
     ),
     GetPage(
