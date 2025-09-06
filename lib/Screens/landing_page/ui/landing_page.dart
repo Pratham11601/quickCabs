@@ -12,33 +12,48 @@ import '../../../widgets/common_widgets.dart';
 import '../../../widgets/constant_widgets.dart';
 import '../dashboard_widgets/custom_header.dart';
 
-class DashboardScreen extends GetView<DashboardController> {
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
 
-  DashboardScreen({super.key});
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  final DashboardController controller = Get.put(DashboardController());
 
   final List<Widget> pages = [
-     HomeScreen(),
+    HomeScreen(),
     MyLeadsPage(),
     PostScreen(),
     ProfileScreen(),
   ];
 
   @override
+  void initState() {
+    callAsyncAPI();
+    super.initState();
+  }
+
+  Future<void> callAsyncAPI() async {
+    // This will internally set controller.isSubscribed.value
+    // Call API once when screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await controller.checkSubscriptionStatus();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PopScope(
-            canPop: false,
+      canPop: false,
       onPopInvokedWithResult: (bool didPop, Object? result) async {
-        if (didPop) {
-          return;
-        }
-        if (EasyLoading.isShow ) {
-          return;
-        } else {
-          return showExitDialog(context);
-        }
+        if (didPop) return;
+
+        if (EasyLoading.isShow) return;
+        return showExitDialog(context);
       },
       child: Scaffold(
-        /// AppBar with dynamic header
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(80),
           child: Container(
@@ -54,17 +69,13 @@ class DashboardScreen extends GetView<DashboardController> {
             ),
             child: const CustomHeader(),
           ),
-    
-    
         ),
-      
-        /// Body → only IndexedStack reacts
-        body: Obx(() => IndexedStack(
-              index: controller.currentIndex.value,
-              children: pages,
-            )),
-      
-        /// ✅ Bottom Navigation → only reacts to controller
+        body: Obx(
+          () => IndexedStack(
+            index: controller.currentIndex.value,
+            children: pages,
+          ),
+        ),
         bottomNavigationBar: Obx(
           () => Container(
             decoration: BoxDecoration(
@@ -100,12 +111,49 @@ class DashboardScreen extends GetView<DashboardController> {
                       index: 1,
                       controller: controller,
                     ),
-                    buildNavItem(
-                      icon: Icons.add_circle_outline,
-                      label: "Post Lead",
-                      index: 2,
-                      controller: controller,
+
+                    // 🔹 Post Lead restricted
+                    GestureDetector(
+                      onTap: () {
+                        if (!controller.isSubscribed.value) {
+                          controller.currentIndex.value = 2; // Navigate to Post Lead
+                        } else {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text("Subscription Required"),
+                                content: const Text(
+                                  "Your subscription is not active. Please subscribe to post a lead.",
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Get.back(),
+                                    child: const Text("Cancel"),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Get.back();
+                                      Get.toNamed("/subscription"); // Navigate to Subscription screen
+                                    },
+                                    child: const Text("Subscribe"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          });
+                        }
+                      },
+                      child: Obx(
+                        () => buildNavItem(
+                          icon: Icons.add_circle_outline,
+                          label: "Post Lead",
+                          index: 2,
+                          controller: controller,
+                        ),
+                      ),
                     ),
+
                     buildNavItem(
                       icon: Icons.person_2_outlined,
                       label: "Profile",

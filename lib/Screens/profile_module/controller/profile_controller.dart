@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:own_idea/Screens/profile_module/model/profile_details_model.dart';
-import 'package:own_idea/Screens/profile_module/profile_repository.dart';
+import 'package:own_idea/Screens/profile_module/repository/profile_repository.dart';
 import 'package:own_idea/utils/app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

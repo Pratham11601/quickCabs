@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:own_idea/routes/app_pages.dart';
@@ -16,7 +17,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await GetStorage.init();
-    // Register AppController with GetX
+  // Register AppController with GetX
   final appController = Get.put(AppController());
 
   // Init APIManager with AppController
@@ -42,6 +43,7 @@ class App extends StatelessWidget {
           title: "Quick Cab",
           debugShowCheckedModeBanner: false,
           theme: ThemeConfig.lightTheme(),
+          builder: EasyLoading.init(), // ✅ VERY IMPORTANT
           initialRoute: AppPages.initialRoute,
           initialBinding: AppBinding(),
           getPages: AppPages.route,

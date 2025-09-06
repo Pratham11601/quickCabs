@@ -1,81 +1,164 @@
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-import 'package:own_idea/Screens/profile_module/model/create_order_model.dart';
-import 'package:own_idea/Screens/profile_module/model/packages_model.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/Screens/profile_module/model/recharge_razor_model.dart';
-import 'package:own_idea/Screens/profile_module/profile_repository.dart';
+import 'package:own_idea/Screens/profile_module/controller/profile_controller.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../../../api/api_manager.dart';
 import '../../../widgets/snackbar.dart';
+import '../model/create_order_model.dart';
+import '../model/packages_model.dart';
+import '../model/recharge_razor_model.dart';
+import '../model/subscription_status_model.dart';
+import '../repository/profile_repository.dart';
 
+/// Controller to manage subscription workflow:
+/// - Fetch packages
+/// - Create order
+/// - Open Razorpay checkout
+/// - Verify payment with backend
 class SubscriptionController extends GetxController {
+  late Razorpay _razorpay;
+  final profileController = Get.put(ProfileController()); // ✅ access existing instance
+  final ProfileRepository profileRepository = ProfileRepository(APIManager());
+  var isActive = false.obs;
 
-  ProfileRepository profileRepository = ProfileRepository(APIManager());
-
-  // Package  api
+  // Observables
   Rx<PackagesModel> packagesModelResponse = PackagesModel().obs;
-
-  Future<bool> packagesAPI() async {
-    try {
-      PackagesModel packagesModel = await profileRepository
-          .getPackagesDetailsApiCall();
-      if (packagesModel.status != null && packagesModel.status != 0) {
-        packagesModelResponse.value = packagesModel;
-        return true;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      ShowSnackBar.error(message: e.toString());
-      return false;
-    }
-  }
-
-
-  // Create Order  api
   Rx<CreateOrderModel> createOrderModelResponse = CreateOrderModel().obs;
+  Rx<SubscriptionStatusModel> subscriptionStatusResponse = SubscriptionStatusModel().obs;
 
-  Future<bool> createOrderAPI() async {
-    try {
-      CreateOrderModel createOrderModel = await profileRepository.createOrderApiCall(
-          params: {
-            "planId": "",
-         });
-      if (createOrderModel.status != null && createOrderModel.status != 0) {
-        createOrderModelResponse.value = createOrderModel;
-        return true;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      ShowSnackBar.error(message: e.toString());
-      return false;
-    }
-  }
-
-
-
-  // Recharge Razor api
   Rx<RechargeRazorModel> rechargeRazorModelResponse = RechargeRazorModel().obs;
+  RxString selectedPlanId = ''.obs;
+  RxBool isLoading = false.obs;
 
-  Future<bool> rechargeRazorAPI() async {
+  @override
+  void onInit() {
+    super.onInit();
+    _razorpay = Razorpay();
+
+    // Razorpay event listeners
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+
+    // Fetch packages initially
+    packagesAPI();
+  }
+
+  // -------------------- API CALLS --------------------
+
+  /// Fetch packages
+  Future<void> packagesAPI() async {
     try {
-      RechargeRazorModel rechargeRazorModel = await profileRepository.rechargeRazorApiCall(
-          params: {
-            "planId": "",
-            "order_id": "order_RECSpOobJT5KSk",
-            "payment_id": "Front end pe genereate hogha"
-          });
-      if (rechargeRazorModel.status != null && rechargeRazorModel.status != 0) {
-        rechargeRazorModelResponse.value = rechargeRazorModel;
+      isLoading.value = true;
+      final response = await profileRepository.getPackagesDetailsApiCall();
+      if (response.status != null && response.status != 0) {
+        packagesModelResponse.value = response;
+      } else {
+        ShowSnackBar.info(message: "No packages found");
+      }
+    } catch (e) {
+      ShowSnackBar.error(message: e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Create order with backend
+  Future<bool> createOrderAPI(String planId) async {
+    try {
+      isLoading.value = false;
+      final response = await profileRepository.createOrderApiCall(
+        params: {"planId": planId},
+      );
+      if (response.status != null && response.status != 0) {
+        createOrderModelResponse.value = response;
         return true;
       } else {
+        ShowSnackBar.info(message: response.message ?? "Order not created");
         return false;
       }
     } catch (e) {
       ShowSnackBar.error(message: e.toString());
       return false;
+    } finally {
+      isLoading.value = false;
     }
   }
 
+  /// Verify payment with backend
+  Future<void> rechargeRazorAPI({
+    required String planId,
+    required String orderId,
+    required String paymentId,
+  }) async {
+    try {
+      final response = await profileRepository.rechargeRazorApiCall(
+        params: {
+          "planId": planId,
+          "order_id": orderId,
+          "payment_id": paymentId,
+        },
+      );
+      if (response.status != null && response.status != 0) {
+        rechargeRazorModelResponse.value = response;
+        ShowSnackBar.success(message: "Payment Verified!");
+      } else {
+        ShowSnackBar.info(message: response.message ?? "Recharge failed");
+      }
+    } catch (e) {
+      ShowSnackBar.error(message: e.toString());
+    }
+  }
+
+  // -------------------- RAZORPAY --------------------
+
+  void openCheckout({
+    required String orderId,
+    required String planId,
+    required int amount,
+    required String name,
+    required String contact,
+    required String email,
+  }) {
+    var options = {
+      'key': 'rzp_live_RECNVaxXQHFOa1', // Replace with your real test/live key
+      'order_id': createOrderModelResponse.value.order?.id ?? "",
+      'amount': createOrderModelResponse.value.order?.amount ?? 0, // from backend
+      'name': profileController.userDeatils.value.fullname ?? "Unknown", // Or "${user.name}'s Subscription"
+      'prefill': {
+        'contact': profileController.userDeatils.value.phone ?? "-", // from user profile
+        'email': profileController.userDeatils.value.email ?? "-", // from user profile
+      },
+    };
+
+    try {
+      selectedPlanId.value = planId;
+      _razorpay.open(options);
+    } catch (e) {
+      ShowSnackBar.error(message: e.toString());
+    }
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    ShowSnackBar.success(message: "Payment Successful");
+    rechargeRazorAPI(
+      planId: selectedPlanId.value,
+      orderId: response.orderId ?? "",
+      paymentId: response.paymentId ?? "",
+    );
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    ShowSnackBar.error(message: "Payment failed: ${response.code} - ${response.message}");
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    ShowSnackBar.info(message: "External Wallet: ${response.walletName}");
+  }
+
+  @override
+  void onClose() {
+    _razorpay.clear();
+    super.onClose();
+  }
 }
