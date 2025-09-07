@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/widgets/snackbar.dart';
+import 'package:QuickCab/widgets/snackbar.dart';
 
 import '../../../api/api_manager.dart';
 import '../../../utils/app_enums.dart';

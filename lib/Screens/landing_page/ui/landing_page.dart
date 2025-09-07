@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/Screens/home_page_module/ui/home_screen.dart';
-import 'package:own_idea/Screens/landing_page/controller/dashboard_controller.dart';
-import 'package:own_idea/Screens/my_leads_module/ui/my_leads_screen.dart';
-import 'package:own_idea/Screens/post_lead_module/ui/post_screen.dart';
-import 'package:own_idea/Screens/profile_module/ui/profile_screen.dart';
+import 'package:QuickCab/Screens/home_page_module/ui/home_screen.dart';
+import 'package:QuickCab/Screens/landing_page/controller/dashboard_controller.dart';
+import 'package:QuickCab/Screens/my_leads_module/ui/my_leads_screen.dart';
+import 'package:QuickCab/Screens/post_lead_module/ui/post_screen.dart';
+import 'package:QuickCab/Screens/profile_module/ui/profile_screen.dart';
 
 import '../../../utils/app_colors.dart';
 import '../../../widgets/common_widgets.dart';

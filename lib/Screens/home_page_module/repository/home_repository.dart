@@ -1,5 +1,4 @@
-import 'package:own_idea/Screens/home_page_module/model/check_profile_completion_model.dart';
-import 'package:own_idea/Screens/profile_module/model/subscription_status_model.dart';
+import 'package:QuickCab/Screens/home_page_module/model/check_profile_completion_model.dart';
 
 import '../../../api/api_manager.dart';
 

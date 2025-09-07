@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/Screens/landing_page/controller/dashboard_controller.dart';
+import 'package:QuickCab/Screens/landing_page/controller/dashboard_controller.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../generated/assets.dart';

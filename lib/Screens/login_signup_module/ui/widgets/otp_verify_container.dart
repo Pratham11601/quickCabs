@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/Screens/login_signup_module/controller/signup_controller.dart';
-import 'package:own_idea/routes/routes.dart';
+import 'package:QuickCab/Screens/login_signup_module/controller/signup_controller.dart';
+import 'package:QuickCab/routes/routes.dart';
 
 import '../../../../utils/app_colors.dart';
 import '../../../../utils/text_styles.dart';

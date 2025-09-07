@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:own_idea/Screens/home_page_module/model/check_profile_completion_model.dart';
-import 'package:own_idea/Screens/home_page_module/repository/home_repository.dart';
+import 'package:QuickCab/Screens/home_page_module/model/check_profile_completion_model.dart';
+import 'package:QuickCab/Screens/home_page_module/repository/home_repository.dart';
 
 import '../../../api/api_manager.dart';
 

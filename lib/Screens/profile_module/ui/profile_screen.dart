@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/Screens/profile_module/ui/subscription_screen.dart';
-import 'package:own_idea/utils/app_colors.dart';
+import 'package:QuickCab/utils/app_colors.dart';
 
 import '../../../routes/routes.dart';
 import '../../../utils/text_styles.dart';

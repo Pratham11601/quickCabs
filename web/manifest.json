@@ -1,6 +1,6 @@
 {
-    "name": "own_idea",
-    "short_name": "own_idea",
+    "name": "QuickCab",
+    "short_name": "QuickCab",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
