@@ -1,6 +1,7 @@
 import 'package:QuickCab/Screens/home_page_module/model/check_profile_completion_model.dart';
 
 import '../../../api/api_manager.dart';
+import '../../profile_module/model/subscription_status_model.dart';
 
 class HomeRepository {
   final APIManager apiManager;

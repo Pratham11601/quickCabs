@@ -1,5 +1,5 @@
+import 'package:QuickCab/Screens/profile_module/controller/profile_controller.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/Screens/profile_module/controller/profile_controller.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../../../api/api_manager.dart';

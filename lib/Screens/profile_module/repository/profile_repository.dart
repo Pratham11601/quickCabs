@@ -1,9 +1,8 @@
-import 'package:own_idea/Screens/profile_module/model/create_order_model.dart';
-import 'package:own_idea/Screens/profile_module/model/packages_model.dart';
-import 'package:own_idea/Screens/profile_module/model/profile_details_model.dart';
-import 'package:own_idea/Screens/profile_module/model/recharge_razor_model.dart';
-
 import '../../../api/api_manager.dart';
+import '../model/create_order_model.dart';
+import '../model/packages_model.dart';
+import '../model/profile_details_model.dart';
+import '../model/recharge_razor_model.dart';
 
 class ProfileRepository {
   final APIManager apiManager;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/Screens/profile_module/controller/profile_controller.dart';
 
 import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
+import '../controller/profile_controller.dart';
 import '../controller/subscription_controller.dart';
 
 class SubscriptionScreen extends StatelessWidget {

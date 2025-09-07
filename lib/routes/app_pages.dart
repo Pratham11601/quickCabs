@@ -1,4 +1,3 @@
-import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:QuickCab/Screens/document_verification_module/ui/document_verification_screen.dart';
 import 'package:QuickCab/Screens/home_page_module/ui/home_screen.dart';
 import 'package:QuickCab/Screens/login_signup_module/ui/signup_screen.dart';
@@ -7,10 +6,12 @@ import 'package:QuickCab/Screens/profile_module/ui/my_documents_screen.dart';
 import 'package:QuickCab/binding/dashboard_binding.dart';
 import 'package:QuickCab/binding/profile_binding.dart';
 import 'package:QuickCab/routes/routes.dart';
+import 'package:get/get_navigation/src/routes/get_route.dart';
 
 import '../Screens/landing_page/ui/landing_page.dart';
 import '../Screens/login_signup_module/ui/login_screen.dart';
 import '../Screens/no_internet_connection_screen.dart';
+import '../Screens/profile_module/ui/subscription_screen.dart';
 import '../Screens/splash_screen.dart';
 import '../binding/app_binding.dart';
 import '../binding/auth_binding.dart';

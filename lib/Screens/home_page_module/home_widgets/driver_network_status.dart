@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:QuickCab/utils/text_styles.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 /// A reusable widget that shows Driver Network Status.
 /// You can customize [onlineDrivers], [statusText], [isHighDemand],
