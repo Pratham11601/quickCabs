@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Shared Leads",
+              Text("shared_leads".tr,
                   style: TextHelper.h6.copyWith(
                       fontFamily: semiBoldFont,
                       color: ColorsForApp.blackColor)),
@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () {
                     dashboardController.currentIndex.value = 1;
                   },
-                  child: Text("View All",
+                  child: Text("view_all".tr,
                       style: TextHelper.size19.copyWith(
                           fontFamily: semiBoldFont,
                           color: ColorsForApp.primaryDarkColor))),
