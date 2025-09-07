@@ -1,7 +1,7 @@
 // Snack bar for showing success message
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/utils/app_colors.dart';
+import 'package:QuickCab/utils/app_colors.dart';
 import 'package:sizer/sizer.dart';
 
 import 'constant_widgets.dart';

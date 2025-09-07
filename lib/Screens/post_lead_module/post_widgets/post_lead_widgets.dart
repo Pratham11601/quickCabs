@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:own_idea/utils/app_colors.dart';
+import 'package:QuickCab/utils/app_colors.dart';
 
 import '../../../utils/text_styles.dart';
 

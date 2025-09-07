@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/utils/text_styles.dart';
+import 'package:QuickCab/utils/text_styles.dart';
 
 import '../../../utils/app_colors.dart';
 import '../controller/my_lead_controller.dart';

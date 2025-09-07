@@ -1,4 +1,4 @@
-package com.example.own_idea
+package com.quickcabpune.quickcab
 
 import io.flutter.embedding.android.FlutterActivity
 

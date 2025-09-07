@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/routes/routes.dart';
-import 'package:own_idea/widgets/constant_widgets.dart';
+import 'package:QuickCab/routes/routes.dart';
+import 'package:QuickCab/widgets/constant_widgets.dart';
 
 import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';

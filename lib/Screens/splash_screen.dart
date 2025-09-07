@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/controller/app_controller.dart';
+import 'package:QuickCab/controller/app_controller.dart';
 
 import '../controller/network_controller.dart';
 import '../generated/assets.dart';

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/Screens/login_signup_module/ui/widgets/otp_verify_container.dart';
-import 'package:own_idea/routes/routes.dart';
-import 'package:own_idea/utils/app_colors.dart';
-import 'package:own_idea/utils/text_styles.dart';
-import 'package:own_idea/widgets/common_widgets.dart';
+import 'package:QuickCab/Screens/login_signup_module/ui/widgets/otp_verify_container.dart';
+import 'package:QuickCab/routes/routes.dart';
+import 'package:QuickCab/utils/app_colors.dart';
+import 'package:QuickCab/utils/text_styles.dart';
+import 'package:QuickCab/widgets/common_widgets.dart';
 
 import '../../../widgets/common_elevated_button.dart';
 import '../controller/signup_controller.dart';
