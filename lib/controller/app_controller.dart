@@ -4,15 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 import '../api/api_manager.dart';
-import '../routes/routes.dart';
-import '../utils/app_enums.dart';
 import '../utils/connection.dart';
 import '../utils/jwt_config.dart';
-import '../utils/storage_config.dart';
 import '../widgets/dialog.dart';
+import '../utils/notifications.dart';
 
 class AppController extends GetxController {
   final Connection connection = Connection();
+  // final Notification notification = Notification();
   StreamSubscription<bool>? connectionSubscription;
   StreamSubscription<String>? notificationTokenSubscription;
   String? userToken;
