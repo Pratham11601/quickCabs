@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:own_idea/utils/app_colors.dart';
 import 'package:own_idea/utils/text_styles.dart';
 
@@ -16,7 +17,7 @@ class EmergencyServicesSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Emergency Services", style: TextHelper.h6.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
+            Text("emergency_services".tr, style: TextHelper.h6.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
@@ -27,7 +28,7 @@ class EmergencyServicesSection extends StatelessWidget {
                 children: [
                   Icon(Icons.error_outline, color: ColorsForApp.whiteColor, size: 16),
                   SizedBox(width: 4),
-                  Text("24/7 Available", style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.whiteColor)),
+                  Text("247_available".tr, style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.whiteColor)),
                 ],
               ),
             ),
@@ -48,7 +49,7 @@ class EmergencyServicesSection extends StatelessWidget {
                       Assets.iconsPuncture,
                       height: 32,
                     ),
-                    "Puncture",
+                    "puncture".tr,
                     Colors.green.shade50,
                     Colors.green),
                 buildServiceCard(
@@ -56,7 +57,7 @@ class EmergencyServicesSection extends StatelessWidget {
                       Assets.iconsHospital,
                       height: 32,
                     ),
-                    "Hospital",
+                    "hospital".tr,
                     Colors.blue.shade50,
                     Colors.blue),
                 buildServiceCard(
@@ -64,7 +65,7 @@ class EmergencyServicesSection extends StatelessWidget {
                       Assets.iconsHotel,
                       height: 32,
                     ),
-                    "Hotel",
+                    "hotel".tr,
                     Colors.red.shade50,
                     Colors.red),
                 buildServiceCard(
@@ -72,7 +73,7 @@ class EmergencyServicesSection extends StatelessWidget {
                       Assets.iconsCab,
                       height: 32,
                     ),
-                    "Cab",
+                    "cab".tr,
                     Colors.orange.shade50,
                     Colors.orange),
                 buildServiceCard(
@@ -80,7 +81,7 @@ class EmergencyServicesSection extends StatelessWidget {
                       Assets.iconsDriver,
                       height: 32,
                     ),
-                    "Driver",
+                    "driver".tr,
                     Colors.lightGreen.shade50,
                     Colors.green),
                 buildServiceCard(
@@ -88,7 +89,7 @@ class EmergencyServicesSection extends StatelessWidget {
                       Assets.iconsFuel,
                       height: 32,
                     ),
-                    "Fuel",
+                    "fuel".tr,
                     Colors.red.shade50,
                     Colors.red),
                 buildServiceCard(
@@ -96,7 +97,7 @@ class EmergencyServicesSection extends StatelessWidget {
                       Assets.iconsTowing,
                       height: 32,
                     ),
-                    "Towing",
+                    "towing".tr,
                     Colors.blueGrey.shade50,
                     Colors.black),
                 buildServiceCard(
@@ -104,7 +105,7 @@ class EmergencyServicesSection extends StatelessWidget {
                       Assets.iconsCarSell,
                       height: 32,
                     ),
-                    "Car Sell",
+                    "car_sell".tr,
                     Colors.blue.shade50,
                     Colors.blueAccent),
               ],

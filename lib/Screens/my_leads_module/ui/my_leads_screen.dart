@@ -35,7 +35,7 @@ class MyLeadsPage extends StatelessWidget {
                   child: TextField(
                     style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
                     decoration: InputDecoration(
-                      hintText: "Search leads...",
+                      hintText: "search_leads".tr,
                       hintStyle: TextHelper.size18.copyWith(color: ColorsForApp.subTitleColor, fontFamily: regularFont),
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
@@ -65,8 +65,8 @@ class MyLeadsPage extends StatelessWidget {
                         unselectedLabelColor: Colors.black54,
                         indicatorColor: ColorsForApp.primaryDarkColor,
                         tabs: [
-                          Tab(text: "Active (${controller.activeLeads.length})"),
-                          Tab(text: "Completed (${controller.completedLeads.length})"),
+                          Tab(text: "active (${controller.activeLeads.length})".tr),
+                          Tab(text: "completed (${controller.completedLeads.length})".tr),
                         ],
                       ),
                       Expanded(
@@ -77,9 +77,9 @@ class MyLeadsPage extends StatelessWidget {
                                   itemCount: controller.activeLeads.length,
                                   itemBuilder: (_, index) => LeadCard(
                                     lead: controller.activeLeads[index],
-                                    onShare: () => print("Share"),
-                                    onEdit: () => print("Edit"),
-                                    onDelete: () => print("Delete"),
+                                    onShare: () => print("share".tr),
+                                    onEdit: () => print("edit".tr),
+                                    onDelete: () => print("delete".tr),
                                   ),
                                 )),
                             // Completed Leads
@@ -87,9 +87,9 @@ class MyLeadsPage extends StatelessWidget {
                                   itemCount: controller.completedLeads.length,
                                   itemBuilder: (_, index) => LeadCard(
                                     lead: controller.completedLeads[index],
-                                    onShare: () => print("Share"),
-                                    onEdit: () => print("Edit"),
-                                    onDelete: () => print("Delete"),
+                                    onShare: () => print("share".tr),
+                                    onEdit: () => print("edit".tr),
+                                    onDelete: () => print("delete".tr),
                                   ),
                                 )),
                           ],
