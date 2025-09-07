@@ -115,7 +115,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     // 🔹 Post Lead restricted
                     GestureDetector(
                       onTap: () {
-                        if (!controller.isSubscribed.value) {
+                        if (controller.isSubscribed.value == true) {
                           controller.currentIndex.value = 2; // Navigate to Post Lead
                         } else {
                           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -134,7 +134,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   ElevatedButton(
                                     onPressed: () {
                                       Get.back();
-                                      Get.toNamed("/subscription"); // Navigate to Subscription screen
+                                      Get.toNamed("/subscription");
                                     },
                                     child: const Text("Subscribe"),
                                   ),
