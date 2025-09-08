@@ -1,10 +1,8 @@
+import 'package:QuickCab/Screens/home_page_module/home_widgets/service_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/Screens/home_page_module/home_widgets/service_card.dart';
 import 'package:sizer/sizer.dart';
-import '../../../utils/app_enums.dart';
 import '../controller/service_card_controller.dart';
-import 'no_services_available.dart';
 
 class EmergencyServicesScreen extends StatelessWidget {
   // final String title;
@@ -22,6 +20,8 @@ class EmergencyServicesScreen extends StatelessWidget {
   String title = Get.arguments[0];
   String subtitle=Get.arguments[1];
   String serviceType=Get.arguments[2];
+
+  EmergencyServicesScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:own_idea/utils/app_colors.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../api/api_manager.dart';

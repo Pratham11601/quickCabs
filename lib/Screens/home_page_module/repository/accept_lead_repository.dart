@@ -1,5 +1,5 @@
-import 'package:own_idea/Screens/home_page_module/model/accept_lead_model.dart';
 import '../../../api/api_manager.dart';
+import '../model/accept_lead_model.dart';
 
 class AcceptLeadRepository {
   final APIManager apiManager;

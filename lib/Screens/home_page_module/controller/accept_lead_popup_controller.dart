@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:own_idea/utils/app_colors.dart';
 import 'dart:async';
 
 import '../../../api/api_manager.dart';
+import '../../../utils/app_colors.dart';
 import '../repository/accept_lead_repository.dart';
 import 'home_controller.dart';
 

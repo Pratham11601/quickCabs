@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
-import 'package:own_idea/routes/routes.dart';
-import 'package:own_idea/widgets/constant_widgets.dart';
+
+import '../../../routes/routes.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
+import '../../../widgets/constant_widgets.dart';
 import '../../landing_page/controller/dashboard_controller.dart';
 import '../controller/home_controller.dart';
-import '../home_widgets/driver_network_status.dart';
+import '../home_widgets/driver_network_status.dart'; 
 import '../home_widgets/emergency_service_item.dart';
 import '../home_widgets/lead_card.dart';
 import '../home_widgets/ride_request_card.dart';

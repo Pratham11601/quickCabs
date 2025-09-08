@@ -1,9 +1,10 @@
-import 'package:own_idea/Screens/login_signup_module/model/lead_by_model.dart';
-import 'package:own_idea/Screens/login_signup_module/model/sign_in_otp_model.dart';
-import 'package:own_idea/Screens/login_signup_module/model/user_registration_model.dart';
-import 'package:own_idea/Screens/login_signup_module/model/verify_sign_in_otp_model.dart';
+
 import '../../../api/api_manager.dart';
+import '../model/lead_by_model.dart';
 import '../model/login_model.dart';
+import '../model/sign_in_otp_model.dart';
+import '../model/user_registration_model.dart';
+import '../model/verify_sign_in_otp_model.dart';
 
 class AuthRepository {
   final APIManager apiManager;

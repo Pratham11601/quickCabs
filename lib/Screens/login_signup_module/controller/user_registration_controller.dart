@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
-import 'package:own_idea/Screens/home_page_module/model/active_lead_model.dart';
-import 'package:own_idea/Screens/login_signup_module/model/user_registration_model.dart';
+
 
 import '../../../api/api_manager.dart';
 import '../../../widgets/snackbar.dart';
+import '../model/user_registration_model.dart';
 import '../repository/auth_repository.dart';
 
 class UserRegistrationController extends GetxController {

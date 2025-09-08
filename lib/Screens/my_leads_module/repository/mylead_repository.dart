@@ -1,6 +1,6 @@
-import 'package:own_idea/Screens/my_leads_module/model/mylead_model.dart';
 
 import '../../../api/api_manager.dart';
+import '../model/mylead_model.dart';
 
 class MyLeadRepository
 {

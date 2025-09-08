@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/routes/routes.dart';
-import 'package:own_idea/utils/app_colors.dart';
 import 'package:sizer/sizer.dart';
+import '../../../routes/routes.dart';
+import '../../../utils/app_colors.dart';
 import '../../document_verification_module/controller/document_verification_controller.dart';
 import '../controller/user_registration_controller.dart';
 

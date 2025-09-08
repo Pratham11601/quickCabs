@@ -2,9 +2,7 @@ import 'package:QuickCab/utils/app_colors.dart';
 import 'package:QuickCab/utils/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:own_idea/utils/app_colors.dart';
-import 'package:own_idea/utils/text_styles.dart';
+
 import '../../../generated/assets.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/app_enums.dart';

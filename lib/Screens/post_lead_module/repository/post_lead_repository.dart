@@ -1,6 +1,6 @@
-import 'package:own_idea/Screens/post_lead_module/model/post_lead_model.dart';
 
 import '../../../api/api_manager.dart';
+import '../model/post_lead_model.dart';
 
 class PostLeadRepository
 {

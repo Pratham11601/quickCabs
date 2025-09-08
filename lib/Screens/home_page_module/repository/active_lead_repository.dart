@@ -1,6 +1,6 @@
-import 'package:own_idea/Screens/home_page_module/model/accept_lead_model.dart';
-import 'package:own_idea/Screens/home_page_module/model/active_lead_model.dart';
+
 import '../../../api/api_manager.dart';
+import '../model/active_lead_model.dart';
 
 class ActiveLeadRepository {
   final APIManager apiManager;
