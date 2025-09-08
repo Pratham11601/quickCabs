@@ -1,9 +1,13 @@
+import 'dart:async';
+
+import 'package:QuickCab/controller/app_controller.dart';
+import 'package:QuickCab/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:QuickCab/controller/app_controller.dart';
 
 import '../controller/network_controller.dart';
 import '../generated/assets.dart';
+import '../routes/routes.dart';
 import 'login_signup_module/model/login_model.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -13,66 +17,65 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
-  NetworkController networkController =
-      Get.put(NetworkController(), permanent: true);
-  AppController appController = Get.find();
-  // LocationController locationController =
-  //     Get.put(LocationController(), permanent: true);
-  LoginModel loginModel = LoginModel();
+class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+  final NetworkController networkController = Get.put(NetworkController(), permanent: true);
+  final AppController appController = Get.find();
+  final LoginModel loginModel = LoginModel();
+
   late AnimationController animationController;
-  double containerHeight = 150;
-  double containerWidth = 150;
+
   @override
   void initState() {
     super.initState();
 
+    // ✅ Setup animation
     animationController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
-    );
+    )..forward();
+
+    // ✅ Navigate after 3 seconds
+    Timer(const Duration(seconds: 3), () {
+      // Example: go to login screen
+      Get.offAllNamed(Routes.LOGIN_SCREEN);
+    });
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: AssetImage(
-              Assets.iconsLogo,
-            ),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [ColorsForApp.gradientTop, ColorsForApp.gradientBottom],
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Center(
-              child: CircleAvatar(
-                radius: 100,
-                backgroundColor: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Center(
-                    child: AnimatedBuilder(
-                      animation: animationController,
-                      builder: (context, child) {
-                        return Transform.scale(
-                          scale: animationController.value,
-                          child: child,
-                        );
-                      },
-                      child: Image.asset(Assets.iconsLogo),
-                    ),
-                  ),
-                ),
+        child: Center(
+          child: CircleAvatar(
+            radius: 100,
+            backgroundColor: Colors.black.withValues(alpha: 0.4),
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: AnimatedBuilder(
+                animation: animationController,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: 0.5 + animationController.value * 0.5, // smooth zoom
+                    child: child,
+                  );
+                },
+                child: Image.asset(Assets.iconsLogo),
               ),
             ),
-          ],
+          ),
         ),
       ),
     );

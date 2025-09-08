@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
+
+import '../../../utils/app_colors.dart';
+import '../../../utils/text_styles.dart';
 import '../controller/service_card_controller.dart';
 
 class EmergencyServiceCard extends StatelessWidget {
@@ -9,39 +12,41 @@ class EmergencyServiceCard extends StatelessWidget {
   final String serviceType;
   final EmergencyServicesCardController controller = Get.find();
 
-  EmergencyServiceCard({super.key, required this.title, required this.location, required this.serviceType,});
+  EmergencyServiceCard({
+    super.key,
+    required this.title,
+    required this.location,
+    required this.serviceType,
+  });
 
   @override
   Widget build(BuildContext context) {
-    Color levelColor = Colors.red;
-    return
-      Card(
-      elevation: 1.5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(3.w),
-      ),
-      margin: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.all(4),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: EdgeInsets.all(3.w),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
+            /// ---------- Title ----------
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18.sp,
-                    color: Colors.black,
+                  style: TextHelper.h7.copyWith(
+                    fontFamily: semiBoldFont,
+                    color: ColorsForApp.blackColor,
                   ),
                 ),
               ],
             ),
+
             SizedBox(height: 1.h),
-            // Location and time row
+
+            /// ---------- Location ----------
             Row(
               children: [
                 Icon(Icons.location_on, size: 16.5.sp, color: Colors.grey),
@@ -49,66 +54,78 @@ class EmergencyServiceCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     location,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w600
+                    style: TextHelper.size17.copyWith(
+                      fontFamily: semiBoldFont,
+                      color: ColorsForApp.blackColor,
                     ),
                   ),
                 ),
               ],
             ),
+
             SizedBox(height: 1.h),
-            // Response time row
+
+            /// ---------- Response time ----------
             Row(
               children: [
                 Icon(Icons.access_time, size: 16.sp, color: Colors.grey),
                 SizedBox(width: 2.w),
                 Text(
-                  "Response time: ",
-                  style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600),
+                  "Response time:",
+                  style: TextHelper.size17.copyWith(
+                    fontFamily: semiBoldFont,
+                    color: ColorsForApp.subtitle, // e.g., grey tone
+                  ),
                 ),
               ],
             ),
+
             SizedBox(height: 2.2.h),
-            // Buttons row
+
+            /// ---------- Action Buttons ----------
             Row(
               children: [
+                /// Navigate Button
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      // Navigation action here
+                      // TODO: Implement Navigation action
                     },
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 1.7.h),
-                      foregroundColor: Colors.black,
+                      foregroundColor: ColorsForApp.blackColor,
                       side: BorderSide(color: Colors.grey.shade200, width: 2),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(2.w),
                       ),
-                      backgroundColor: Colors.white,
+                      backgroundColor: ColorsForApp.whiteColor,
                     ),
-                    icon: Icon(Icons.navigation),
+                    icon: Icon(
+                      Icons.navigation,
+                      color: ColorsForApp.primaryColor,
+                    ),
                     label: Text(
                       "Navigate",
-                      style: TextStyle(
-                          fontSize: 14.sp, fontWeight: FontWeight.w600),
+                      style: TextHelper.size18.copyWith(
+                        fontFamily: semiBoldFont,
+                        color: ColorsForApp.blackColor,
+                      ),
                     ),
                   ),
                 ),
+
                 SizedBox(width: 2.w),
+
+                /// Call Now Button
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      // Call Now action here
+                      // TODO: Implement Call action
                     },
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 1.7.h),
-                      backgroundColor: const Color(0xFFF44336),
-                      foregroundColor: Colors.white,
+                      backgroundColor: ColorsForApp.green, // Centralized red color
+                      foregroundColor: ColorsForApp.whiteColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(2.w),
                       ),
@@ -116,8 +133,10 @@ class EmergencyServiceCard extends StatelessWidget {
                     icon: Icon(Icons.call),
                     label: Text(
                       "Call Now",
-                      style: TextStyle(
-                          fontSize: 14.sp, fontWeight: FontWeight.w600),
+                      style: TextHelper.size18.copyWith(
+                        fontFamily: semiBoldFont,
+                        color: ColorsForApp.whiteColor,
+                      ),
                     ),
                   ),
                 ),

@@ -1,17 +1,19 @@
+import 'package:QuickCab/routes/app_pages.dart';
+import 'package:QuickCab/utils/app_colors.dart';
+import 'package:QuickCab/utils/theme_config.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:QuickCab/routes/app_pages.dart';
-import 'package:QuickCab/utils/app_colors.dart';
-import 'package:QuickCab/utils/theme_config.dart';
 import 'package:sizer/sizer.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_core/firebase_core.dart';
+
 import 'api/api_manager.dart';
 import 'binding/app_binding.dart';
 import 'controller/app_controller.dart';
+import 'controller/network_controller.dart';
 import 'languages/languages.dart';
 import 'utils/notifications.dart' as notification;
 
@@ -28,13 +30,14 @@ Future<void> handleFirebaseBackgroundNotification(RemoteMessage message) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Get.put(NetworkController()); // inject globally
 
   await Firebase.initializeApp();
 
   FirebaseMessaging.onBackgroundMessage(handleFirebaseBackgroundNotification);
 
   await GetStorage.init();
-    // Register AppController with GetX
+  // Register AppController with GetX
   final appController = Get.put(AppController());
 
   // Init APIManager with AppController

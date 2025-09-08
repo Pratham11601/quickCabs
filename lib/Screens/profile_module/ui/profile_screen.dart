@@ -56,7 +56,7 @@ class ProfileScreen extends StatelessWidget {
                     await UrlLauncherHelper.openUrl("https://quickcabpune.com/privacy-policy.html");
                   },
                 ),
-                SettingItem(icon: FontAwesomeIcons.chessKing, title: "Subscription Pro", onTap: () => Get.toNamed(Routes.SUBSCRIPTION)),
+                SettingItem(icon: FontAwesomeIcons.chessKing, title: "subscription_pro".tr, onTap: () => Get.toNamed(Routes.SUBSCRIPTION)),
               ],
             ),
 

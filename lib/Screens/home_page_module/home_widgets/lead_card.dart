@@ -6,11 +6,14 @@ import '../../../utils/text_styles.dart';
 /// LeadCard Widget
 /// ----------------
 /// A reusable card widget to display ride/lead information.
-/// Cleaned spacing, removed hardcoded widths, and used Expanded/Spacer
-/// for proper alignment.
+/// Improvements:
+/// - Cleaned spacing
+/// - Removed hardcoded widths
+/// - Used Expanded/Flexible for responsiveness
+/// - Added detailed comments for clarity
 class LeadCard extends StatelessWidget {
-  final Map<String, dynamic> lead;
-  final VoidCallback? onAccept; // Callback when "Accept Lead" button is pressed
+  final Map<String, dynamic> lead; // Lead details
+  final VoidCallback? onAccept; // Callback when "Accept" button is pressed
 
   const LeadCard({
     super.key,
@@ -22,7 +25,7 @@ class LeadCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
-      margin: const EdgeInsets.all(4), // elevation from all sides
+      margin: const EdgeInsets.all(4),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -32,15 +35,14 @@ class LeadCard extends StatelessWidget {
             /// ---------------- Header Row ----------------
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                /// Avatar + Name
                 Expanded(
                   child: Row(
                     children: [
                       CircleAvatar(
                         radius: 16,
-                        backgroundColor:
-                        ColorsForApp.primaryColor.withValues(alpha: 0.1),
+                        backgroundColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
                         child: Icon(
                           Icons.handshake,
                           color: ColorsForApp.primaryColor,
@@ -50,7 +52,7 @@ class LeadCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          "Shared by ${lead['name'] ?? ''}",
+                          "${lead['name'] ?? ''}",
                           style: TextHelper.size19.copyWith(
                             color: ColorsForApp.primaryDarkColor,
                             fontWeight: FontWeight.w600,
@@ -63,76 +65,52 @@ class LeadCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                //🔴🔴 ElevatedButton(
-                //   onPressed: onAccept,
-                //   style: ButtonStyle(
-                //     backgroundColor: MaterialStateProperty.all(
-                //         ColorsForApp.primaryColor),
-                //     foregroundColor: MaterialStateProperty.all(
-                //         ColorsForApp.whiteColor),
-                //     padding: MaterialStateProperty.all(
-                //       const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                //     ),
-                //     shape: MaterialStateProperty.all(
-                //       RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                //     ),
-                //   ),
-                //   child: Text(
-                //     "Accept",
-                //     style: TextHelper.size18.copyWith(
-                //         fontFamily: semiBoldFont, color: ColorsForApp.whiteColor),
-                //   ),
-                // ),
-                //🔴🔴🔴🔴
+
+                /// Accept / Booked button
                 (lead['acceptedById'] != null)
                     ? Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    "Booked",
-                    style: TextHelper.size18.copyWith(
-                      fontFamily: semiBoldFont,
-                      color: Colors.white,
-                    ),
-                  ),
-                )
+                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          "Booked",
+                          style: TextHelper.size18.copyWith(
+                            fontFamily: semiBoldFont,
+                            color: Colors.white,
+                          ),
+                        ),
+                      )
                     : ElevatedButton(
-                  onPressed: onAccept,
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(ColorsForApp.primaryColor),
-                    foregroundColor: MaterialStateProperty.all(ColorsForApp.whiteColor),
-                    padding: MaterialStateProperty.all(
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    ),
-                    shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                  ),
-                  child: Text(
-                    "Accept",
-                    style: TextHelper.size18.copyWith(
-                      fontFamily: semiBoldFont,
-                      color: ColorsForApp.whiteColor,
-                    ),
-                  ),
-                ),
-
+                        onPressed: onAccept,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorsForApp.primaryColor,
+                          foregroundColor: ColorsForApp.whiteColor,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        child: Text(
+                          "Accept",
+                          style: TextHelper.size18.copyWith(
+                            fontFamily: semiBoldFont,
+                            color: ColorsForApp.whiteColor,
+                          ),
+                        ),
+                      ),
               ],
             ),
 
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
 
             /// ---------------- Route Info ----------------
             Row(
               children: [
+                /// From
                 Expanded(
                   child: Row(
                     children: [
-                      Icon(Icons.navigation_outlined,
-                          color: ColorsForApp.green),
+                      Icon(Icons.navigation_outlined, color: ColorsForApp.green),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
@@ -148,6 +126,8 @@ class LeadCard extends StatelessWidget {
                     ],
                   ),
                 ),
+
+                /// To
                 Expanded(
                   child: Row(
                     children: [
@@ -167,6 +147,8 @@ class LeadCard extends StatelessWidget {
                     ],
                   ),
                 ),
+
+                /// Price
                 Text(
                   "₹${lead['price']}",
                   style: TextHelper.size20.copyWith(
@@ -177,22 +159,22 @@ class LeadCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 4),
 
-            /// ---------------- Car Info ----------------
+            const SizedBox(height: 6),
+
+            /// ---------------- Car & Distance Info ----------------
             Row(
               children: [
+                /// Car
                 Expanded(
                   child: Row(
                     children: [
-                      const Icon(Icons.directions_car_outlined,
-                          color: Colors.red),
+                      const Icon(Icons.directions_car_outlined, color: Colors.red),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           lead['car'],
-                          style: TextHelper.size18
-                              .copyWith(color: ColorsForApp.blackColor),
+                          style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           softWrap: false,
@@ -201,7 +183,8 @@ class LeadCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(width: 8),
+
+                /// Distance
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -209,66 +192,55 @@ class LeadCard extends StatelessWidget {
                     const SizedBox(width: 6),
                     Text(
                       lead['distance'],
-                      style: TextHelper.size18
-                          .copyWith(color: ColorsForApp.blackColor),
-                      // maxLines: 1,
-                      // overflow: TextOverflow.ellipsis,
-                      // softWrap: false,
+                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                     ),
                   ],
                 ),
               ],
             ),
 
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
 
             /// ---------------- Date & Time ----------------
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                /// Date
                 Row(
                   children: [
-                    Icon(Icons.calendar_today,
-                        size: 16, color: ColorsForApp.blackColor),
+                    Icon(Icons.calendar_today, size: 16, color: ColorsForApp.blackColor),
                     const SizedBox(width: 6),
                     Text(
                       lead['date'],
-                      style: TextHelper.size18
-                          .copyWith(color: ColorsForApp.blackColor),
+                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                     ),
                   ],
                 ),
+
+                /// Time
                 Row(
                   children: [
-                    Icon(Icons.access_time,
-                        size: 16, color: ColorsForApp.blackColor),
+                    Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
                     const SizedBox(width: 6),
                     Text(
                       lead['time'],
-                      style: TextHelper.size18
-                          .copyWith(color: ColorsForApp.blackColor),
+                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                     ),
                   ],
                 ),
               ],
             ),
 
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
 
             /// ---------------- Phone ----------------
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(Icons.phone, size: 16, color: ColorsForApp.blackColor),
-                    const SizedBox(width: 6),
-                    Text(
-                      lead['phone'],
-                      style: TextHelper.size18
-                          .copyWith(color: ColorsForApp.blackColor),
-                    ),
-                  ],
+                Icon(Icons.phone, size: 16, color: ColorsForApp.blackColor),
+                const SizedBox(width: 6),
+                Text(
+                  lead['phone'],
+                  style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                 ),
               ],
             ),

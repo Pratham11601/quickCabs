@@ -5,8 +5,6 @@ import 'package:get/get.dart';
 
 import '../../../generated/assets.dart';
 import '../../../routes/routes.dart';
-import '../../../utils/app_enums.dart';
-import 'emergency_services_screen.dart';
 
 class EmergencyServicesSection extends StatelessWidget {
   const EmergencyServicesSection({super.key});
@@ -47,11 +45,7 @@ class EmergencyServicesSection extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
-                      "Puncture",
-                      "4 services availabel",
-                      "puncture"
-                    ]);
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN, arguments: ["Puncture", "4 services available", "puncture"]);
                   },
                   child: buildServiceCard(
                     Image.asset(
@@ -65,11 +59,7 @@ class EmergencyServicesSection extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
-                      "Hospital",
-                      "4 services availabel",
-                      "hospital"
-                    ]);
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN, arguments: ["Hospital", "4 services available", "hospital"]);
                   },
                   child: buildServiceCard(
                       Image.asset(
@@ -82,11 +72,7 @@ class EmergencyServicesSection extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
-                      "Hotel",
-                      "4 services availabel",
-                      "hotel"
-                    ]);
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN, arguments: ["Hotel", "4 services available", "hotel"]);
                   },
                   child: buildServiceCard(
                       Image.asset(
@@ -99,11 +85,7 @@ class EmergencyServicesSection extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
-                      "Cab",
-                      "4 services availabel",
-                      "cab"
-                    ]);
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN, arguments: ["Cab", "4 services available", "cab"]);
                   },
                   child: buildServiceCard(
                       Image.asset(
@@ -116,11 +98,7 @@ class EmergencyServicesSection extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
-                      "Driver",
-                      "4 services availabel",
-                      "driver"
-                    ]);
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN, arguments: ["Driver", "4 services available", "driver"]);
                   },
                   child: buildServiceCard(
                       Image.asset(
@@ -133,11 +111,7 @@ class EmergencyServicesSection extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
-                      "Fuel",
-                      "4 services availabel",
-                      "fuel"
-                    ]);
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN, arguments: ["Fuel", "4 services available", "fuel"]);
                   },
                   child: buildServiceCard(
                       Image.asset(
@@ -150,11 +124,7 @@ class EmergencyServicesSection extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
-                      "Towing",
-                      "4 services availabel",
-                      "towing"
-                    ]);
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN, arguments: ["Towing", "4 services available", "towing"]);
                   },
                   child: buildServiceCard(
                       Image.asset(
@@ -167,11 +137,7 @@ class EmergencyServicesSection extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
-                      "Car sell",
-                      "4 services availabel",
-                      "car_sell"
-                    ]);
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN, arguments: ["Car sell", "4 services available", "car_sell"]);
                   },
                   child: buildServiceCard(
                       Image.asset(

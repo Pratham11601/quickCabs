@@ -1,7 +1,8 @@
+import 'package:QuickCab/utils/app_colors.dart';
+import 'package:QuickCab/utils/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../api/api_manager.dart';
 import '../../../routes/routes.dart';
@@ -144,6 +145,7 @@ class PostController extends GetxController {
     // dropController.dispose();
     super.onClose();
   }
+
   //------------------api logic----------------
   final PostLeadRepository postLeadRepository = PostLeadRepository(APIManager());
 
@@ -211,17 +213,13 @@ class PostController extends GetxController {
               const SizedBox(height: 20),
               Text(
                 title,
-                style: TextStyle(
-                  color: Colors.green,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
+                style: TextHelper.h7.copyWith(color: ColorsForApp.green, fontFamily: boldFont),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               Text(
                 message,
-                style: TextStyle(fontSize: 14, color: Colors.black),
+                style: TextHelper.size17.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
@@ -240,8 +238,7 @@ class PostController extends GetxController {
                 onPressed: onConfirm,
                 child: Text(
                   buttonText,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextHelper.size18.copyWith(color: ColorsForApp.whiteColor, fontFamily: boldFont),
                 ),
               ),
             ],
@@ -251,9 +248,4 @@ class PostController extends GetxController {
       barrierDismissible: false,
     );
   }
-
-
-
-
-
 }
