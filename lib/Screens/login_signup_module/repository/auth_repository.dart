@@ -1,9 +1,10 @@
-import 'package:QuickCab/Screens/login_signup_module/model/lead_by_model.dart';
-import 'package:QuickCab/Screens/login_signup_module/model/sign_in_otp_model.dart';
-import 'package:QuickCab/Screens/login_signup_module/model/verify_sign_in_otp_model.dart';
 
 import '../../../api/api_manager.dart';
+import '../model/lead_by_model.dart';
 import '../model/login_model.dart';
+import '../model/sign_in_otp_model.dart';
+import '../model/user_registration_model.dart';
+import '../model/verify_sign_in_otp_model.dart';
 
 class AuthRepository {
   final APIManager apiManager;
@@ -48,6 +49,18 @@ class AuthRepository {
   Future<LeadByListModel> getLeadByListApiCall() async {
     var jsonData = await apiManager.getAPICall(url: '/sub-admin/get-all');
     var response = LeadByListModel.fromJson(jsonData);
+    return response;
+  }
+
+    // User  registration 
+  Future<UserRegistrationModel>userRegistrationApiCall({
+    required Map<String, dynamic> params,
+  }) async {
+    var jsonData = await apiManager.postAPICall(
+      url: '/vendorDetails/registervendorDetails/verify-otp',
+      params: params,
+    );
+    var response = UserRegistrationModel.fromJson(jsonData);
     return response;
   }
 }

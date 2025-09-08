@@ -139,25 +139,14 @@ class PostScreen extends StatelessWidget {
               Expanded(
                 child: ElevatedButton(
                   onPressed: controller.isFormValid.value
-                      ? () {
-                          if (controller.currentStep.value == 2) {
-                            // Last step → show success dialog
-                            showAppDialog(
-                              title: 'lead_shared_successfully'.tr,
-                              message:
-                              'lead_success_message'.tr,
-                              icon: Icons.check_circle_rounded,
-                              buttonText: 'ok'.tr,
-                              onConfirm: () {
-                                Get.offAllNamed(Routes.DASHBOARD_PAGE);
-                              },
-                            );
-                          } else {
-                            // Otherwise → go to next step
-                            controller.nextStep();
-                          }
-                        }
-                      : null,
+                      ? () async {
+                    if (controller.currentStep.value == 2) {
+                      await controller.submitRideLead();
+                    } else {
+                      controller.nextStep();
+                    }
+                  }
+                  : null,
                   style: ButtonStyle(
                     minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
                     backgroundColor: WidgetStateProperty.resolveWith<Color>(

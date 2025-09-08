@@ -78,7 +78,7 @@ class OtpVerifyContainer extends StatelessWidget {
                 if (signupController.canSubmit) {
                   bool result = await signupController.verifyRegistrationOtp();
                   if (result) {
-                    Get.toNamed(Routes.DOCUMENT_VERIFICATION_PAGE);
+                    Get.toNamed(Routes.REGISTRATION_DETAILS_SCREEN);
                   }
                 }
               })),

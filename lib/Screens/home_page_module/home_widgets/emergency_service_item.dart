@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../generated/assets.dart';
+import '../../../routes/routes.dart';
+import '../../../utils/app_enums.dart';
+import 'emergency_services_screen.dart';
 
 class EmergencyServicesSection extends StatelessWidget {
   const EmergencyServicesSection({super.key});
@@ -13,7 +16,6 @@ class EmergencyServicesSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Title + Badge Row
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -36,78 +38,150 @@ class EmergencyServicesSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
-        // Horizontal List
         Padding(
           padding: const EdgeInsets.all(5.0),
           child: SizedBox(
-            height: MediaQuery.of(context).size.height * 0.10, // 12% of screen height
+            height: MediaQuery.of(context).size.height * 0.10,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
-                buildServiceCard(
+                GestureDetector(
+                  onTap: () {
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
+                      "Puncture",
+                      "4 services availabel",
+                      "puncture"
+                    ]);
+                  },
+                  child: buildServiceCard(
                     Image.asset(
                       Assets.iconsPuncture,
                       height: 32,
                     ),
                     "puncture".tr,
                     Colors.green.shade50,
-                    Colors.green),
-                buildServiceCard(
-                    Image.asset(
-                      Assets.iconsHospital,
-                      height: 32,
-                    ),
-                    "hospital".tr,
-                    Colors.blue.shade50,
-                    Colors.blue),
-                buildServiceCard(
-                    Image.asset(
-                      Assets.iconsHotel,
-                      height: 32,
-                    ),
-                    "hotel".tr,
-                    Colors.red.shade50,
-                    Colors.red),
-                buildServiceCard(
-                    Image.asset(
-                      Assets.iconsCab,
-                      height: 32,
-                    ),
-                    "cab".tr,
-                    Colors.orange.shade50,
-                    Colors.orange),
-                buildServiceCard(
-                    Image.asset(
-                      Assets.iconsDriver,
-                      height: 32,
-                    ),
-                    "driver".tr,
-                    Colors.lightGreen.shade50,
-                    Colors.green),
-                buildServiceCard(
-                    Image.asset(
-                      Assets.iconsFuel,
-                      height: 32,
-                    ),
-                    "fuel".tr,
-                    Colors.red.shade50,
-                    Colors.red),
-                buildServiceCard(
-                    Image.asset(
-                      Assets.iconsTowing,
-                      height: 32,
-                    ),
-                    "towing".tr,
-                    Colors.blueGrey.shade50,
-                    Colors.black),
-                buildServiceCard(
-                    Image.asset(
-                      Assets.iconsCarSell,
-                      height: 32,
-                    ),
-                    "car_sell".tr,
-                    Colors.blue.shade50,
-                    Colors.blueAccent),
+                    Colors.green,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
+                      "Hospital",
+                      "4 services availabel",
+                      "hospital"
+                    ]);
+                  },
+                  child: buildServiceCard(
+                      Image.asset(
+                        Assets.iconsHospital,
+                        height: 32,
+                      ),
+                      "Hospital",
+                      Colors.blue.shade50,
+                      Colors.blue),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
+                      "Hotel",
+                      "4 services availabel",
+                      "hotel"
+                    ]);
+                  },
+                  child: buildServiceCard(
+                      Image.asset(
+                        Assets.iconsHotel,
+                        height: 32,
+                      ),
+                      "Hotel",
+                      Colors.red.shade50,
+                      Colors.red),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
+                      "Cab",
+                      "4 services availabel",
+                      "cab"
+                    ]);
+                  },
+                  child: buildServiceCard(
+                      Image.asset(
+                        Assets.iconsCab,
+                        height: 32,
+                      ),
+                      "Cab",
+                      Colors.orange.shade50,
+                      Colors.orange),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
+                      "Driver",
+                      "4 services availabel",
+                      "driver"
+                    ]);
+                  },
+                  child: buildServiceCard(
+                      Image.asset(
+                        Assets.iconsDriver,
+                        height: 32,
+                      ),
+                      "Driver",
+                      Colors.lightGreen.shade50,
+                      Colors.green),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
+                      "Fuel",
+                      "4 services availabel",
+                      "fuel"
+                    ]);
+                  },
+                  child: buildServiceCard(
+                      Image.asset(
+                        Assets.iconsFuel,
+                        height: 32,
+                      ),
+                      "Fuel",
+                      Colors.red.shade50,
+                      Colors.red),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
+                      "Towing",
+                      "4 services availabel",
+                      "towing"
+                    ]);
+                  },
+                  child: buildServiceCard(
+                      Image.asset(
+                        Assets.iconsTowing,
+                        height: 32,
+                      ),
+                      "Towing",
+                      Colors.blueGrey.shade50,
+                      Colors.black),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Get.toNamed(Routes.EMERGENCY_SERVICE_SCREEN,arguments:[
+                      "Car sell",
+                      "4 services availabel",
+                      "car_sell"
+                    ]);
+                  },
+                  child: buildServiceCard(
+                      Image.asset(
+                        Assets.iconsCarSell,
+                        height: 32,
+                      ),
+                      "Car Sell",
+                      Colors.blue.shade50,
+                      Colors.blueAccent),
+                ),
               ],
             ),
           ),

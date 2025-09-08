@@ -8,8 +8,10 @@ import 'package:QuickCab/binding/profile_binding.dart';
 import 'package:QuickCab/routes/routes.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 
+import '../Screens/home_page_module/home_widgets/emergency_services_screen.dart';
 import '../Screens/landing_page/ui/landing_page.dart';
 import '../Screens/login_signup_module/ui/login_screen.dart';
+import '../Screens/login_signup_module/ui/user_registration_screen.dart';
 import '../Screens/no_internet_connection_screen.dart';
 import '../Screens/profile_module/ui/subscription_screen.dart';
 import '../Screens/splash_screen.dart';
@@ -70,6 +72,16 @@ class AppPages {
     GetPage(
       name: Routes.NO_INTERNET_CONNECTION_SCREEN,
       page: () => NoInternetConnectionScreen(),
+    ),
+    GetPage(
+      name: Routes.EMERGENCY_SERVICE_SCREEN,
+      page: () => EmergencyServicesScreen(),
+      binding: DashBoardBinding(),
+    ),
+    GetPage(
+      name: Routes.REGISTRATION_DETAILS_SCREEN,
+      page: () => UserRegistrationScreen(),
+      binding: AuthBinding(),
     ),
   ];
 }

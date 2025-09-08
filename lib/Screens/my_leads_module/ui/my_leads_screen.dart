@@ -15,92 +15,117 @@ class MyLeadsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: StatsCard(
-              activeLeads: 2,
-              completed: 1,
-              totalValue: 2950,
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return Column(
+          children: [
+            // StatsCard - dynamic data
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: StatsCard(
+                activeLeads: controller.filteredActiveLeads.length,
+                completed: controller.filteredCompletedLeads.length,
+                  totalValue: controller.filteredActiveLeads.fold<double>(
+                      0.0,
+                          (sum, lead) => sum + (double.tryParse(lead.fare ?? '0') ?? 0.0)
+                  ) +
+                      controller.filteredCompletedLeads.fold<double>(
+                          0.0,
+                              (sum, lead) => sum + (double.tryParse(lead.fare ?? '0') ?? 0.0)
+                      ),
+              ),
             ),
-          ),
 
-          // Search + Filter
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                    decoration: InputDecoration(
-                      hintText: "search_leads".tr,
-                      hintStyle: TextHelper.size18.copyWith(color: ColorsForApp.subTitleColor, fontFamily: regularFont),
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+            // Search + Filter
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      onChanged: (value) => controller.filterLeads(value),
+                      style: TextHelper.size18.copyWith(
+                          color: ColorsForApp.blackColor,
+                          fontFamily: regularFont),
+                      decoration: InputDecoration(
+                        hintText: "Search leads...",
+                        hintStyle: TextHelper.size18.copyWith(
+                            color: ColorsForApp.subTitleColor,
+                            fontFamily: regularFont),
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.filter_alt_outlined),
-                )
-              ],
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: () {
+                      // You can implement filter action here
+                    },
+                    icon: const Icon(Icons.filter_alt_outlined),
+                  )
+                ],
+              ),
             ),
-          ),
 
-          // Tabs
-          Obx(() => DefaultTabController(
-                length: 2,
-                child: Expanded(
-                  child: Column(
-                    children: [
-                      TabBar(
-                        labelStyle: TextHelper.size18.copyWith(fontFamily: semiBoldFont),
-                        labelColor: ColorsForApp.primaryDarkColor,
-                        unselectedLabelColor: Colors.black54,
-                        indicatorColor: ColorsForApp.primaryDarkColor,
-                        tabs: [
-                          Tab(text: "active (${controller.activeLeads.length})".tr),
-                          Tab(text: "completed (${controller.completedLeads.length})".tr),
+            // Tabs
+            DefaultTabController(
+              length: 2,
+              child: Expanded(
+                child: Column(
+                  children: [
+                    TabBar(
+                      labelStyle:
+                      TextHelper.size18.copyWith(fontFamily: semiBoldFont),
+                      labelColor: ColorsForApp.primaryDarkColor,
+                      unselectedLabelColor: Colors.black54,
+                      indicatorColor: ColorsForApp.primaryDarkColor,
+                      tabs: [
+                        Tab(
+                            text:
+                            "Active (${controller.filteredActiveLeads.length})"),
+                        Tab(
+                            text:
+                            "Completed (${controller.filteredCompletedLeads.length})"),
+                      ],
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          // Active Leads Tab
+                          Obx(() => ListView.builder(
+                            itemCount: controller.filteredActiveLeads.length,
+                            itemBuilder: (_, index) => LeadCard(
+                              lead: controller.filteredActiveLeads[index],
+                              onShare: () => print("Share"),
+                              onEdit: () => print("Edit"),
+                              onDelete: () => print("Delete"),
+                            ),
+                          )),
+                          // Completed Leads Tab
+                          Obx(() => ListView.builder(
+                            itemCount: controller.filteredCompletedLeads.length,
+                            itemBuilder: (_, index) => LeadCard(
+                              lead: controller.filteredCompletedLeads[index],
+                              onShare: () => print("Share"),
+                              onEdit: () => print("Edit"),
+                              onDelete: () => print("Delete"),
+                            ),
+                          )),
                         ],
                       ),
-                      Expanded(
-                        child: TabBarView(
-                          children: [
-                            // Active Leads
-                            Obx(() => ListView.builder(
-                                  itemCount: controller.activeLeads.length,
-                                  itemBuilder: (_, index) => LeadCard(
-                                    lead: controller.activeLeads[index],
-                                    onShare: () => print("share".tr),
-                                    onEdit: () => print("edit".tr),
-                                    onDelete: () => print("delete".tr),
-                                  ),
-                                )),
-                            // Completed Leads
-                            Obx(() => ListView.builder(
-                                  itemCount: controller.completedLeads.length,
-                                  itemBuilder: (_, index) => LeadCard(
-                                    lead: controller.completedLeads[index],
-                                    onShare: () => print("share".tr),
-                                    onEdit: () => print("edit".tr),
-                                    onDelete: () => print("delete".tr),
-                                  ),
-                                )),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              )),
-        ],
-      ),
+              ),
+            ),
+          ],
+        );
+      }),
     );
   }
 }

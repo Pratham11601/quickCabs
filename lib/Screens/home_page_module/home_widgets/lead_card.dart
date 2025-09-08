@@ -34,59 +34,95 @@ class LeadCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor:
-                          ColorsForApp.primaryColor.withValues(alpha: 0.1),
-                      child: Icon(
-                        Icons.handshake,
-                        color: ColorsForApp.primaryColor,
-                        size: 22,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      "Shared by ${lead['name']}",
-                      style: TextHelper.size19.copyWith(
-                        color: ColorsForApp.primaryDarkColor,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: semiBoldFont,
-                      ),
-                    ),
-                  ],
-                ),
                 Expanded(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                      onPressed: onAccept,
-                      style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(
-                            ColorsForApp.primaryColor), // forcefully applies
-                        foregroundColor:
-                            WidgetStateProperty.all(ColorsForApp.whiteColor),
-                        padding: WidgetStateProperty.all(
-                          const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 10),
-                        ),
-                        shape: WidgetStateProperty.all(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 16,
+                        backgroundColor:
+                        ColorsForApp.primaryColor.withValues(alpha: 0.1),
+                        child: Icon(
+                          Icons.handshake,
+                          color: ColorsForApp.primaryColor,
+                          size: 22,
                         ),
                       ),
-                      child: Text(
-                        "Accept",
-                        style: TextHelper.size18.copyWith(
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          "Shared by ${lead['name'] ?? ''}",
+                          style: TextHelper.size19.copyWith(
+                            color: ColorsForApp.primaryDarkColor,
+                            fontWeight: FontWeight.w600,
                             fontFamily: semiBoldFont,
-                            color: ColorsForApp.whiteColor),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+                //🔴🔴 ElevatedButton(
+                //   onPressed: onAccept,
+                //   style: ButtonStyle(
+                //     backgroundColor: MaterialStateProperty.all(
+                //         ColorsForApp.primaryColor),
+                //     foregroundColor: MaterialStateProperty.all(
+                //         ColorsForApp.whiteColor),
+                //     padding: MaterialStateProperty.all(
+                //       const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                //     ),
+                //     shape: MaterialStateProperty.all(
+                //       RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                //     ),
+                //   ),
+                //   child: Text(
+                //     "Accept",
+                //     style: TextHelper.size18.copyWith(
+                //         fontFamily: semiBoldFont, color: ColorsForApp.whiteColor),
+                //   ),
+                // ),
+                //🔴🔴🔴🔴
+                (lead['acceptedById'] != null)
+                    ? Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    "Booked",
+                    style: TextHelper.size18.copyWith(
+                      fontFamily: semiBoldFont,
+                      color: Colors.white,
                     ),
                   ),
                 )
+                    : ElevatedButton(
+                  onPressed: onAccept,
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(ColorsForApp.primaryColor),
+                    foregroundColor: MaterialStateProperty.all(ColorsForApp.whiteColor),
+                    padding: MaterialStateProperty.all(
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    ),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                  child: Text(
+                    "Accept",
+                    style: TextHelper.size18.copyWith(
+                      fontFamily: semiBoldFont,
+                      color: ColorsForApp.whiteColor,
+                    ),
+                  ),
+                ),
+
               ],
             ),
+
             const SizedBox(height: 6),
 
             /// ---------------- Route Info ----------------
@@ -145,21 +181,29 @@ class LeadCard extends StatelessWidget {
 
             /// ---------------- Car Info ----------------
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    const Icon(Icons.directions_car_outlined,
-                        color: Colors.red),
-                    const SizedBox(width: 6),
-                    Text(
-                      lead['car'],
-                      style: TextHelper.size18
-                          .copyWith(color: ColorsForApp.blackColor),
-                    ),
-                  ],
+                Expanded(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.directions_car_outlined,
+                          color: Colors.red),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          lead['car'],
+                          style: TextHelper.size18
+                              .copyWith(color: ColorsForApp.blackColor),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                SizedBox(width: 8),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(Icons.location_on_outlined, color: Colors.red),
                     const SizedBox(width: 6),
@@ -167,6 +211,9 @@ class LeadCard extends StatelessWidget {
                       lead['distance'],
                       style: TextHelper.size18
                           .copyWith(color: ColorsForApp.blackColor),
+                      // maxLines: 1,
+                      // overflow: TextOverflow.ellipsis,
+                      // softWrap: false,
                     ),
                   ],
                 ),

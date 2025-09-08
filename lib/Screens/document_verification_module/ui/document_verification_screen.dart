@@ -93,7 +93,7 @@ class LeadByCard extends StatelessWidget {
               children: [
                 Text(
                   'Lead By',
-                  style: TextHelper.size20.copyWith(
+                  style: TextHelper.size18.copyWith(
                     color: ColorsForApp.blackColor,
                     fontFamily: semiBoldFont,
                   ),
