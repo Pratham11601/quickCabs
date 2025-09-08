@@ -1,160 +1,45 @@
-// Snack bar for showing success message
+// Snack bar for showing messages
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/utils/app_colors.dart';
 import 'package:sizer/sizer.dart';
 
+import '../utils/app_colors.dart';
+import '../utils/text_styles.dart';
 import 'constant_widgets.dart';
 
 class ShowSnackBar {
   ShowSnackBar._();
-  static SnackbarController? success(
-      {String title = 'Success', String? message}) {
-    if (Get.isSnackbarOpen) {
-      Get.back();
-    }
+
+  // ✅ Success Snackbar
+  static SnackbarController? success({String title = 'Success', String? message}) {
+    if (Get.isSnackbarOpen) Get.back();
     Get.log('\x1B[92m[$title] => $message\x1B[0m');
-    if (message != null && message.isNotEmpty) {
-      return Get.showSnackbar(
-        GetSnackBar(
-          titleText: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.task_alt_outlined,
-                color: Colors.white,
-              ),
-              width(3.w),
-              Text(
-                title,
-                textAlign: TextAlign.left,
-                style: Theme.of(Get.context!).textTheme.bodyLarge!.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16.sp,
-                      color: Colors.white,
-                    ),
-              ),
-            ],
-          ),
-          messageText: Text(
-            message,
-            textAlign: TextAlign.left,
-            style: Theme.of(Get.context!)
-                .textTheme
-                .labelLarge!
-                .copyWith(color: Colors.white, fontSize: 14.sp),
-          ),
-          isDismissible: true,
-          backgroundColor: Colors.green.shade400,
-          snackPosition: SnackPosition.TOP,
-          margin: EdgeInsets.symmetric(horizontal: 4.w),
-          padding:
-              EdgeInsets.only(left: 4.w, top: 1.h, right: 4.w, bottom: 1.5.h),
-          borderRadius: 10,
-          duration: const Duration(seconds: 4),
-          animationDuration: const Duration(milliseconds: 500),
-        ),
-      );
-    }
-    return null;
-  }
 
-// Snack bar for showing pending message
-  static SnackbarController? pending(
-      {String title = 'Pending', String? message}) {
-    if (Get.isSnackbarOpen) {
-      Get.back();
-    }
-    Get.log('\x1B[93m[$title] => $message\x1B[0m');
     if (message != null && message.isNotEmpty) {
       return Get.showSnackbar(
         GetSnackBar(
           titleText: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.timelapse_outlined,
-                color: Colors.white,
-              ),
+              Icon(Icons.task_alt_outlined, color: ColorsForApp.whiteColor),
               width(3.w),
               Text(
                 title,
-                textAlign: TextAlign.left,
-                style: Theme.of(Get.context!).textTheme.bodyLarge!.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-              ),
-            ],
-          ),
-          messageText: Text(
-            message,
-            textAlign: TextAlign.left,
-            style: Theme.of(Get.context!)
-                .textTheme
-                .labelLarge!
-                .copyWith(color: Colors.white),
-          ),
-          isDismissible: true,
-          backgroundColor: Colors.orange[400]!,
-          snackPosition: SnackPosition.TOP,
-          margin: EdgeInsets.symmetric(horizontal: 4.w),
-          padding:
-              EdgeInsets.only(left: 4.w, top: 1.h, right: 4.w, bottom: 1.5.h),
-          borderRadius: 10,
-          duration: const Duration(seconds: 4),
-          animationDuration: const Duration(milliseconds: 500),
-        ),
-      );
-    }
-    return null;
-  }
-
-// Snack bar for showing info message
-  static SnackbarController? info({String title = 'Info', String? message}) {
-    if (Get.isSnackbarOpen) {
-      Get.back();
-    }
-    Get.log('\x1B[93m[$title] => $message\x1B[0m');
-    if (message != null && message.isNotEmpty) {
-      return Get.showSnackbar(
-        GetSnackBar(
-          titleText: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.info_outline_rounded,
-                color: Colors.white,
-              ),
-              width(3.w),
-              Text(
-                title,
-                textAlign: TextAlign.left,
-                style: Theme.of(Get.context!).textTheme.bodyLarge!.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14.sp,
-                      color: Colors.white,
-                    ),
-              ),
-            ],
-          ),
-          messageText: Text(
-            message,
-            textAlign: TextAlign.left,
-            style: Theme.of(Get.context!).textTheme.labelLarge!.copyWith(
-                  color: Colors.white,
-                  fontSize: 14.sp,
+                style: TextHelper.size20.copyWith(
+                  fontFamily: boldFont,
+                  color: ColorsForApp.whiteColor,
                 ),
+              ),
+            ],
           ),
+          messageText: Text(
+            message,
+            style: TextHelper.size18.copyWith(color: ColorsForApp.whiteColor, fontFamily: regularFont),
+          ),
+          backgroundColor: Colors.green.shade400,
           isDismissible: true,
-          backgroundColor: ColorsForApp.colorBlackShade,
           snackPosition: SnackPosition.TOP,
           margin: EdgeInsets.symmetric(horizontal: 4.w),
-          padding:
-              EdgeInsets.only(left: 4.w, top: 1.h, right: 4.w, bottom: 1.5.h),
+          padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
           borderRadius: 10,
           duration: const Duration(seconds: 4),
           animationDuration: const Duration(milliseconds: 500),
@@ -164,49 +49,114 @@ class ShowSnackBar {
     return null;
   }
 
-// Snack bar for showing error message
-  static SnackbarController? error(
-      {String title = 'Failure', String? message}) {
-    if (Get.isSnackbarOpen) {
-      Get.back();
-    }
-    Get.log('\x1B[91m[$title] => $message\x1B[0m', isError: true);
+  // ✅ Pending Snackbar
+  static SnackbarController? pending({String title = 'Pending', String? message}) {
+    if (Get.isSnackbarOpen) Get.back();
+    Get.log('\x1B[93m[$title] => $message\x1B[0m');
+
     if (message != null && message.isNotEmpty) {
       return Get.showSnackbar(
         GetSnackBar(
           titleText: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.gpp_bad_outlined,
-                color: Colors.white,
-              ),
+              Icon(Icons.timelapse_outlined, color: ColorsForApp.whiteColor),
               width(3.w),
               Text(
                 title,
-                textAlign: TextAlign.left,
-                style: Theme.of(Get.context!).textTheme.bodyLarge!.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
+                style: TextHelper.size20.copyWith(
+                  fontFamily: boldFont,
+                  color: ColorsForApp.whiteColor,
+                ),
               ),
             ],
           ),
           messageText: Text(
             message,
-            textAlign: TextAlign.left,
-            style: Theme.of(Get.context!)
-                .textTheme
-                .labelLarge!
-                .copyWith(color: Colors.white),
+            style: TextHelper.size18.copyWith(color: ColorsForApp.whiteColor, fontFamily: regularFont),
           ),
+          backgroundColor: Colors.orange[400]!,
           isDismissible: true,
-          backgroundColor: Colors.red[400]!,
           snackPosition: SnackPosition.TOP,
           margin: EdgeInsets.symmetric(horizontal: 4.w),
-          padding:
-              EdgeInsets.only(left: 4.w, top: 1.h, right: 4.w, bottom: 1.5.h),
+          padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
+          borderRadius: 10,
+          duration: const Duration(seconds: 4),
+          animationDuration: const Duration(milliseconds: 500),
+        ),
+      );
+    }
+    return null;
+  }
+
+  // ✅ Info Snackbar
+  static SnackbarController? info({String title = 'Info', String? message}) {
+    if (Get.isSnackbarOpen) Get.back();
+    Get.log('\x1B[94m[$title] => $message\x1B[0m');
+
+    if (message != null && message.isNotEmpty) {
+      return Get.showSnackbar(
+        GetSnackBar(
+          titleText: Row(
+            children: [
+              Icon(Icons.info_outline_rounded, color: ColorsForApp.whiteColor),
+              width(3.w),
+              Text(
+                title,
+                style: TextHelper.size20.copyWith(
+                  fontFamily: boldFont,
+                  color: ColorsForApp.whiteColor,
+                ),
+              ),
+            ],
+          ),
+          messageText: Text(
+            message,
+            style: TextHelper.size18.copyWith(color: ColorsForApp.whiteColor, fontFamily: regularFont),
+          ),
+          backgroundColor: ColorsForApp.colorBlackShade,
+          isDismissible: true,
+          snackPosition: SnackPosition.TOP,
+          margin: EdgeInsets.symmetric(horizontal: 4.w),
+          padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
+          borderRadius: 10,
+          duration: const Duration(seconds: 4),
+          animationDuration: const Duration(milliseconds: 500),
+        ),
+      );
+    }
+    return null;
+  }
+
+  // ✅ Error Snackbar
+  static SnackbarController? error({String title = 'Failure', String? message}) {
+    if (Get.isSnackbarOpen) Get.back();
+    Get.log('\x1B[91m[$title] => $message\x1B[0m', isError: true);
+
+    if (message != null && message.isNotEmpty) {
+      return Get.showSnackbar(
+        GetSnackBar(
+          titleText: Row(
+            children: [
+              Icon(Icons.gpp_bad_outlined, color: ColorsForApp.whiteColor),
+              width(3.w),
+              Text(
+                title,
+                style: TextHelper.size20.copyWith(
+                  fontFamily: boldFont,
+                  color: ColorsForApp.whiteColor,
+                ),
+              ),
+            ],
+          ),
+          messageText: Text(
+            message,
+            style: TextHelper.size18.copyWith(color: ColorsForApp.whiteColor, fontFamily: regularFont),
+          ),
+          backgroundColor: Colors.red[400]!,
+          isDismissible: true,
+          snackPosition: SnackPosition.TOP,
+          margin: EdgeInsets.symmetric(horizontal: 4.w),
+          padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
           borderRadius: 10,
           duration: const Duration(seconds: 4),
           animationDuration: const Duration(milliseconds: 500),

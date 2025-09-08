@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/Screens/login_signup_module/model/lead_by_model.dart';
-import 'package:own_idea/Screens/login_signup_module/model/sign_in_otp_model.dart';
-import 'package:own_idea/Screens/login_signup_module/model/verify_sign_in_otp_model.dart';
-import 'package:own_idea/routes/routes.dart';
-import 'package:own_idea/widgets/snackbar.dart';
+import 'package:QuickCab/Screens/login_signup_module/model/lead_by_model.dart';
+import 'package:QuickCab/Screens/login_signup_module/model/sign_in_otp_model.dart';
+import 'package:QuickCab/Screens/login_signup_module/model/verify_sign_in_otp_model.dart';
+import 'package:QuickCab/routes/routes.dart';
+import 'package:QuickCab/widgets/snackbar.dart';
 
 import '../../../api/api_manager.dart';
 import '../repository/auth_repository.dart';

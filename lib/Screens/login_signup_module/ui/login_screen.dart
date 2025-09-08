@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/utils/app_colors.dart';
-import 'package:own_idea/utils/text_styles.dart';
+import 'package:QuickCab/utils/app_colors.dart';
+import 'package:QuickCab/utils/text_styles.dart';
 
 import '../../../routes/routes.dart';
 import '../../../widgets/common_widgets.dart';
@@ -78,20 +78,31 @@ class PhoneNumberContainer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text('Enter Mobile Number',
-                textAlign: TextAlign.center,
-                style: TextHelper.h4.copyWith(
-                    color: ColorsForApp.headline, fontFamily: semiBoldFont)),
+                textAlign: TextAlign.center, style: TextHelper.h4.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
             const SizedBox(height: 10),
             Text("We'll send you an OTP to verify your\nnumber",
-                textAlign: TextAlign.center,
-                style: TextHelper.size18.copyWith(
-                    color: ColorsForApp.headline, fontFamily: semiBoldFont)),
+                textAlign: TextAlign.center, style: TextHelper.size18.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
             const SizedBox(height: 12),
             const PhoneTextField(),
             const SizedBox(height: 12),
             const PasswordTextField(),
-            const SizedBox(height: 12),
 
+            /// Remember Me Checkbox (uses Obx to react to changes)
+            Obx(() => Row(
+                  children: [
+                    Checkbox(
+                      value: loginController.rememberMe.value,
+                      onChanged: (val) {
+                        loginController.rememberMe.value = val ?? false;
+                      },
+                    ),
+                    Text(
+                      "Remember Me",
+                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                    ),
+                  ],
+                )),
+            const SizedBox(height: 12),
             // Send OTP button
             Obx(() => SizedBox(
                   width: double.infinity,
@@ -99,8 +110,7 @@ class PhoneNumberContainer extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () async {
                       if (loginController.isValidNumber.value) {
-                        if (loginController.loginFormKey.currentState!
-                            .validate()) {
+                        if (loginController.loginFormKey.currentState!.validate()) {
                           bool result = await loginController.loginAPI();
                           if (result) {
                             Get.offAllNamed(Routes.DASHBOARD_PAGE);
@@ -109,9 +119,7 @@ class PhoneNumberContainer extends StatelessWidget {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: loginController.isValidNumber.value
-                          ? ColorsForApp.primaryColor
-                          : ColorsForApp.cta,
+                      backgroundColor: loginController.isValidNumber.value ? ColorsForApp.primaryColor : ColorsForApp.cta,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -147,9 +155,7 @@ class PhoneNumberContainer extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
                     "New to Quick Cabs?",
-                    style: TextHelper.size19.copyWith(
-                        color: ColorsForApp.blackColor,
-                        fontFamily: regularFont),
+                    style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
                   ),
                 ),
                 Expanded(child: Divider(thickness: 1)),
@@ -165,8 +171,7 @@ class PhoneNumberContainer extends StatelessWidget {
                 Get.toNamed(Routes.SIGNUP_SCREEN);
               },
               style: ButtonStyle(
-                minimumSize:
-                    WidgetStateProperty.all(const Size(double.infinity, 50)),
+                minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
                 shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(0),
@@ -181,14 +186,10 @@ class PhoneNumberContainer extends StatelessWidget {
                   },
                 ),
                 side: WidgetStateProperty.all(
-                  BorderSide(
-                      color: ColorsForApp.blackColor.withValues(alpha: 0.2)),
+                  BorderSide(color: ColorsForApp.blackColor.withValues(alpha: 0.2)),
                 ),
               ),
-              child: Text("Create New Account",
-                  style: TextHelper.h7.copyWith(
-                      color: ColorsForApp.blackColor,
-                      fontFamily: semiBoldFont)),
+              child: Text("Create New Account", style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
             ),
           ],
         ),
@@ -209,9 +210,7 @@ class PhoneTextField extends StatelessWidget {
           child: Row(
             children: [
               const SizedBox(width: 10),
-              const Icon(Icons.call_outlined,
-                  color: ColorsForApp.primaryColor,
-                  size: 20), // smaller to match
+              const Icon(Icons.call_outlined, color: ColorsForApp.primaryColor, size: 20), // smaller to match
               const SizedBox(width: 10),
               Text(
                 '+91',
@@ -239,8 +238,7 @@ class PhoneTextField extends StatelessWidget {
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     hintText: 'Enter 10-digit mobile number',
-                    hintStyle:
-                        TextHelper.size19.copyWith(color: ColorsForApp.subtle),
+                    hintStyle: TextHelper.size19.copyWith(color: ColorsForApp.subtle),
                   ),
                   style: TextHelper.size19.copyWith(
                     color: ColorsForApp.blackColor,
@@ -265,33 +263,42 @@ class PasswordTextField extends StatelessWidget {
           child: Row(
             children: [
               const SizedBox(width: 10),
-              const Icon(Icons.password,
-                  color: ColorsForApp.primaryColor,
-                  size: 20), // smaller to match
+              const Icon(Icons.password, color: ColorsForApp.primaryColor, size: 20), // smaller to match
               const SizedBox(width: 10),
               Container(width: 1, height: 24, color: Colors.grey.shade300),
               const SizedBox(width: 10),
               Expanded(
-                child: TextField(
-                  controller: loginController.passwordController,
-                  focusNode: loginController.passwordFocusNode,
-                  keyboardType: TextInputType.visiblePassword,
-                  decoration: InputDecoration(
-                    counterText: '',
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 10, // keeps it comfortable, not too tall/short
+                child: Obx(
+                  () => TextField(
+                    controller: loginController.passwordController,
+                    focusNode: loginController.passwordFocusNode,
+                    obscureText: !loginController.isPasswordVisible.value, // hide if false
+                    keyboardType: TextInputType.visiblePassword,
+                    decoration: InputDecoration(
+                      counterText: '',
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10, // keeps it comfortable, not too tall/short
+                      ),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      hintText: 'Enter password',
+                      hintStyle: TextHelper.size19.copyWith(color: ColorsForApp.subtle),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          loginController.isPasswordVisible.value ? Icons.visibility : Icons.visibility_off,
+                          color: ColorsForApp.subtle,
+                        ),
+                        onPressed: () {
+                          loginController.isPasswordVisible.toggle();
+                        },
+                      ),
                     ),
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    hintText: 'Enter password',
-                    hintStyle:
-                        TextHelper.size19.copyWith(color: ColorsForApp.subtle),
-                  ),
-                  style: TextHelper.size19.copyWith(
-                    color: ColorsForApp.blackColor,
-                    fontFamily: semiBoldFont,
+                    style: TextHelper.size19.copyWith(
+                      color: ColorsForApp.blackColor,
+                      fontFamily: semiBoldFont,
+                    ),
                   ),
                 ),
               ),

@@ -20,7 +20,8 @@ class Routes {
   //Profile pages
   static const HELP_PAGE = "/help_screen";
   static const MY_DOCUMENTS = "/my_documents_screen";
+  static const SUBSCRIPTION = "/subscription_screen";
 
-    static const NO_INTERNET_CONNECTION_SCREEN = '/no_internet_connection_screen';
+  static const NO_INTERNET_CONNECTION_SCREEN = '/no_internet_connection_screen';
   static const NO_LOCATION_PERMISSION_SCREEN = '/no_location_permission_screen';
 }

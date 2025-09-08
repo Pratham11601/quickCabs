@@ -1,6 +1,7 @@
+import 'package:QuickCab/utils/app_colors.dart';
+import 'package:QuickCab/utils/text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:own_idea/utils/app_colors.dart';
-import 'package:own_idea/utils/text_styles.dart';
+import 'package:get/get.dart';
 
 class StatsCard extends StatelessWidget {
   final int activeLeads;
@@ -35,17 +36,17 @@ class StatsCard extends StatelessWidget {
         children: [
           _buildStat(
             value: activeLeads.toString(),
-            label: "Active Leads",
+            label: "active_leads".tr,
             color: ColorsForApp.red,
           ),
           _buildStat(
             value: completed.toString(),
-            label: "Completed",
+            label: "completed".tr,
             color: ColorsForApp.green,
           ),
           _buildStat(
             value: "₹ ${totalValue.toInt()}",
-            label: "Total Value",
+            label: "total_value".tr,
             color: ColorsForApp.primaryDarkColor,
           ),
         ],

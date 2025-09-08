@@ -1,6 +1,7 @@
+import 'package:QuickCab/utils/app_colors.dart';
+import 'package:QuickCab/utils/text_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:own_idea/utils/app_colors.dart';
-import 'package:own_idea/utils/text_styles.dart';
+import 'package:get/get.dart';
 
 /// A reusable widget that shows Driver Network Status.
 /// You can customize [onlineDrivers], [statusText], [isHighDemand],
@@ -56,7 +57,7 @@ class DriverNetworkStatusCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Driver Network Status",
+                    Text("driver_network_status".tr,
                         style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
 
                     /// Active / Inactive badge
@@ -66,7 +67,7 @@ class DriverNetworkStatusCard extends StatelessWidget {
                         color: isActive ? Colors.red : Colors.grey,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Text(isActive ? "Active" : "Inactive",
+                      child: Text(isActive ? "active".tr : "inactive".tr,
                           style: TextHelper.size18.copyWith(color: ColorsForApp.whiteColor, fontFamily: semiBoldFont)),
                     ),
                   ],
@@ -79,7 +80,7 @@ class DriverNetworkStatusCard extends StatelessWidget {
                   children: [
                     const Icon(Icons.circle, size: 8, color: Colors.green),
                     const SizedBox(width: 4),
-                    Text("$onlineDrivers drivers online",
+                    Text("$onlineDrivers drivers_online".tr,
                         style: TextHelper.size18.copyWith(color: ColorsForApp.green, fontFamily: regularFont)),
                     const SizedBox(width: 4),
                     Text("in your area", style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont)),
@@ -94,7 +95,7 @@ class DriverNetworkStatusCard extends StatelessWidget {
                     children: [
                       Icon(Icons.circle, size: 8, color: Colors.grey),
                       SizedBox(width: 6),
-                      Text("High demand zone", style: TextHelper.size18.copyWith(color: ColorsForApp.orange, fontFamily: semiBoldFont)),
+                      Text("high_demand_zone".tr, style: TextHelper.size18.copyWith(color: ColorsForApp.orange, fontFamily: semiBoldFont)),
                     ],
                   ),
               ],

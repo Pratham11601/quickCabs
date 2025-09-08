@@ -1,4 +1,4 @@
-import 'package:own_idea/Screens/profile_module/model/profile_details_model.dart';
+import 'package:QuickCab/Screens/profile_module/model/profile_details_model.dart';
 
 import '../../api/api_manager.dart';
 

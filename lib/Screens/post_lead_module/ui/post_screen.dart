@@ -39,9 +39,9 @@ class PostScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Share New Lead", style: TextHelper.h5.copyWith(color: Colors.white, fontFamily: semiBoldFont)),
+                      Text("share_new_lead".tr, style: TextHelper.h5.copyWith(color: Colors.white, fontFamily: semiBoldFont)),
                       Obx(() => Text(
-                            "Step ${controller.step.value} of 3",
+                            "step ${controller.step.value} of 3".tr,
                             style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: semiBoldFont),
                           )),
                     ],
@@ -57,7 +57,7 @@ class PostScreen extends StatelessWidget {
                   Row(children: [
                     const Icon(Icons.navigation_outlined, color: Colors.white, size: 30),
                     const SizedBox(width: 8),
-                    Text("Route Details", style: TextHelper.size20.copyWith(color: Colors.white, fontFamily: semiBoldFont)),
+                    Text("route_details".tr, style: TextHelper.size20.copyWith(color: Colors.white, fontFamily: semiBoldFont)),
                   ]),
                   Obx(() => Container(
                         decoration: BoxDecoration(
@@ -88,9 +88,9 @@ class PostScreen extends StatelessWidget {
               Obx(() => Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      stepCircle("Route", controller.currentStep.value == 0),
-                      stepCircle("Trip", controller.currentStep.value == 1),
-                      stepCircle("Pricing", controller.currentStep.value == 2),
+                      stepCircle("route".tr, controller.currentStep.value == 0),
+                      stepCircle("trip".tr, controller.currentStep.value == 1),
+                      stepCircle("pricing".tr, controller.currentStep.value == 2),
                     ],
                   )),
             ],
@@ -130,7 +130,7 @@ class PostScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   child: Text(
-                    isRouteDetails ? "Cancel" : "Previous",
+                    isRouteDetails ? "cancel".tr : "previous".tr,
                     style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor),
                   ),
                 ),
@@ -162,7 +162,7 @@ class PostScreen extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    isLastStep ? "Share Lead" : "Next Step",
+                    isLastStep ? "share_lead".tr : "next_step".tr,
                     style: TextHelper.size20.copyWith(color: Colors.white),
                   ),
                 ),
@@ -179,26 +179,26 @@ class PostScreen extends StatelessWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text("Route Details", style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont)),
+        Text("route_details".tr, style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont)),
         const SizedBox(height: 6),
         Text(
-          "Enter the pickup and drop-off locations for this ride",
+          "enter_the_pickup_message".tr,
           style: TextHelper.size18.copyWith(color: ColorsForApp.subTitleColor, fontFamily: regularFont),
         ),
         const SizedBox(height: 16),
 
         // Your reusable text-fields
         buildInputField(
-          "Pick-up Location",
-          "Enter pick-up location",
+          "pick_up_location".tr,
+          "enter_pick_up_location".tr,
           Icons.location_on_outlined,
           Colors.green,
           controller.pickupController,
         ),
         const SizedBox(height: 12),
         buildInputField(
-          "Drop-off Location",
-          "Enter drop-off location",
+          "drop_off_location".tr,
+          "enter_drop_off_location".tr,
           Icons.location_on,
           Colors.red,
           controller.dropController,
@@ -209,9 +209,9 @@ class PostScreen extends StatelessWidget {
         const SizedBox(height: 12),
 
         // Each card is reactive on its own
-        _tripTypeCard("Return Trip", "Round trip journey", Icons.autorenew, Colors.blue),
-        _tripTypeCard("One Way", "Single journey", Icons.arrow_forward, Colors.orange),
-        _tripTypeCard("Rented", "Hourly/Daily rental", Icons.calendar_today, Colors.blueAccent),
+        _tripTypeCard("return_trip".tr, "round_trip_journey".tr, Icons.autorenew, Colors.blue),
+        _tripTypeCard("one_way".tr, "single_journey".tr, Icons.arrow_forward, Colors.orange),
+        _tripTypeCard("rented".tr, "daily_rental".tr, Icons.calendar_today, Colors.blueAccent),
       ]),
     );
   }
@@ -221,9 +221,9 @@ class PostScreen extends StatelessWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text("Trip Information", style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont)),
+        Text("trip_information".tr, style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont)),
         const SizedBox(height: 16),
-        Text("Vehicle Type", style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+        Text("vehicle_type".tr, style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
         const SizedBox(height: 8),
 
         // Vehicle Grid (static grid; each item is reactive)
@@ -281,7 +281,7 @@ class PostScreen extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Seat Configuration", style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+              Text("seat_configuration".tr, style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
               const SizedBox(height: 8),
               Row(children: [
                 _seatOption("7-seater", 7),
@@ -399,17 +399,17 @@ class PostScreen extends StatelessWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text("Pricing & Distance", style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont)),
+        Text("pricing_distance".tr, style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont)),
         const SizedBox(height: 6),
         Text(
-          "Set the estimated fare and distance for this trip",
+          "pricing_message".tr,
           style: TextHelper.size18.copyWith(color: ColorsForApp.subTitleColor, fontFamily: regularFont),
         ),
         const SizedBox(height: 16),
 
         // Your reusable text-fields
         buildInputField(
-          "Estimated Fare (₹)",
+          "estimated_fare".tr,
           "0",
           Icons.currency_rupee,
           Colors.green,
@@ -418,7 +418,7 @@ class PostScreen extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         buildInputField(
-          "Distance (km)",
+          "distance".tr,
           "0.0",
           Icons.navigation_outlined,
           Colors.blue,

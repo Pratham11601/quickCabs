@@ -1,7 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/Screens/home_page_module/model/check_profile_completion_model.dart';
-import 'package:own_idea/Screens/home_page_module/repository/home_repository.dart';
+import 'package:QuickCab/Screens/home_page_module/model/check_profile_completion_model.dart';
+import 'package:QuickCab/Screens/home_page_module/repository/home_repository.dart';
+
 import '../../../api/api_manager.dart';
 import '../home_widgets/accept_lead_popup.dart';
 import '../model/active_lead_model.dart';
@@ -68,8 +69,7 @@ class HomeController extends GetxController {
   RxBool isKycCompleted = false.obs;
   Future<bool> checkProfileCompletion() async {
     try {
-      CheckProfileCompletionModel checkProfileCompletionModel =
-          await authRepository.checkProfileCompletionApiCall();
+      CheckProfileCompletionModel checkProfileCompletionModel = await authRepository.checkProfileCompletionApiCall();
       if (checkProfileCompletionModel.status == true) {
         isKycCompleted.value = checkProfileCompletionModel.isComplete ?? false;
         return true;

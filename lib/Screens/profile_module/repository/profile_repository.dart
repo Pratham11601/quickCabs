@@ -1,0 +1,49 @@
+import '../../../api/api_manager.dart';
+import '../model/create_order_model.dart';
+import '../model/packages_model.dart';
+import '../model/profile_details_model.dart';
+import '../model/recharge_razor_model.dart';
+
+class ProfileRepository {
+  final APIManager apiManager;
+  ProfileRepository(this.apiManager);
+
+  //Call to get profile details
+  Future<ProfileDetailsModel> getProfileDetailsApiCall() async {
+    var jsonData = await apiManager.getAPICall(
+      url: '/vendorDetails/user-details',
+    );
+    var response = ProfileDetailsModel.fromJson(jsonData);
+    return response;
+  }
+
+  Future<PackagesModel> getPackagesDetailsApiCall() async {
+    var jsonData = await apiManager.getAPICall(
+      url: '/sub_packages',
+    );
+    var response = PackagesModel.fromJson(jsonData);
+    return response;
+  }
+
+  Future<CreateOrderModel> createOrderApiCall({
+    required Map<String, dynamic> params,
+  }) async {
+    var jsonData = await apiManager.postAPICall(
+      url: '/vendorDetails/create-order',
+      params: params,
+    );
+    var response = CreateOrderModel.fromJson(jsonData);
+    return response;
+  }
+
+  Future<RechargeRazorModel> rechargeRazorApiCall({
+    required Map<String, dynamic> params,
+  }) async {
+    var jsonData = await apiManager.postAPICall(
+      url: 'vendorDetails/recharge-on-razorpay',
+      params: params,
+    );
+    var response = RechargeRazorModel.fromJson(jsonData);
+    return response;
+  }
+}

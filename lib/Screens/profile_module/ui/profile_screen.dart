@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:own_idea/utils/app_colors.dart';
+import 'package:QuickCab/utils/app_colors.dart';
 
 import '../../../routes/routes.dart';
 import '../../../utils/text_styles.dart';
@@ -34,7 +34,7 @@ class ProfileScreen extends StatelessWidget {
               items: [
                 SettingItem(
                   icon: Icons.description_outlined,
-                  title: "Documents",
+                  title: "documents".tr,
                   label: "Incomplete",
                   onTap: () {
                     Get.toNamed(Routes.MY_DOCUMENTS);
@@ -42,42 +42,47 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 SettingItem(
                   icon: Icons.notifications_outlined,
-                  title: "Notifications",
+                  title: "notifications".tr,
                   toggleValue: controller.isNotificationEnabled,
                   hasSwitch: true,
                   switchValue: true,
                 ),
                 SettingItem(
                   icon: Icons.security_outlined,
-                  title: "Privacy & Security",
+                  title: "privacy_security".tr,
                   onTap: () async {
                     // For Privacy Policy
                     await UrlLauncherHelper.openUrl(
                         "https://quickcabpune.com/privacy-policy.html");
                   },
                 ),
+                SettingItem(
+                  icon: Icons.monetization_on_outlined,
+                  title: "Subscription",
+                  onTap: () => Get.toNamed(Routes.SUBSCRIPTION)
+                ),
               ],
             ),
 
             /// Support Section (REUSABLE)
             SettingsCard(
-              sectionTitle: "Support",
+              sectionTitle: "support".tr,
               items: <SettingItem>[
                 SettingItem(
                   icon: Icons.help_outline,
-                  title: "Help & Support",
+                  title: "help_support".tr,
                   onTap: () {
                     Get.toNamed(Routes.HELP_PAGE);
                   },
                 ),
                 SettingItem(
                   icon: Icons.location_on_outlined,
-                  title: "State wise support",
+                  title: "state_support".tr,
                   onTap: () {},
                 ),
                 SettingItem(
                   icon: Icons.language,
-                  title: "Language",
+                  title: "language".tr,
                   isLanguage: true,
                   onTap: () {
                     Get.bottomSheet(
@@ -91,7 +96,7 @@ class ProfileScreen extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text("Choose Language",
+                            Text("choose_language".tr,
                                 style: TextHelper.h5.copyWith(
                                     fontFamily: semiBoldFont,
                                     color: ColorsForApp.blackColor)),
@@ -103,6 +108,7 @@ class ProfileScreen extends StatelessWidget {
                                       color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("English");
+                                Get.updateLocale(Locale('en', 'US')); // Switch to Hindi
                                 Get.back();
                               },
                             ),
@@ -113,6 +119,7 @@ class ProfileScreen extends StatelessWidget {
                                       color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("हिंदी");
+                                Get.updateLocale(Locale('hi', 'IN')); // Switch to Hindi
                                 Get.back();
                               },
                             ),
@@ -123,6 +130,21 @@ class ProfileScreen extends StatelessWidget {
                                       color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("मराठी");
+                                Get.updateLocale(Locale('mr', 'IN'));
+                                Get.back();
+                              },
+                            ),
+                            ListTile(
+                              title: Text(
+                                "ಕನ್ನಡ",
+                                style: TextHelper.size19.copyWith(
+                                  fontFamily: semiBoldFont,
+                                  color: ColorsForApp.blackColor,
+                                ),
+                              ),
+                              onTap: () {
+                                controller.changeLanguage("ಕನ್ನಡ");
+                                Get.updateLocale(Locale('kn', 'IN'));  // Kannada locale code
                                 Get.back();
                               },
                             ),
@@ -142,7 +164,7 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Center(
               child: Text(
-                  "Quick Cabs Driver v2.1.0\nMade with ❤️ for professional drivers",
+                  "app_version_info".tr,
                   textAlign: TextAlign.center,
                   style: TextHelper.size18.copyWith(
                       color: ColorsForApp.subTitleColor,
