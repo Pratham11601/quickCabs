@@ -1,7 +1,16 @@
 import 'package:get/get.dart';
+import 'package:own_idea/Screens/home_page_module/model/active_lead_model.dart';
+import 'package:own_idea/Screens/login_signup_module/model/user_registration_model.dart';
+
+import '../../../api/api_manager.dart';
+import '../../../widgets/snackbar.dart';
+import '../repository/auth_repository.dart';
 
 class UserRegistrationController extends GetxController {
-  final RxList<String> genders = <String>['Male', 'Female', 'Other','Prefer Not to say'].obs;
+  AuthRepository authRepository = AuthRepository(APIManager());
+
+  final RxList<String> genders =
+      <String>['Male', 'Female', 'Other', 'Prefer Not to say'].obs;
   final RxString selectedGender = ''.obs;
   final RxString fullName = ''.obs;
   final RxString phoneNumber = ''.obs;
@@ -15,6 +24,8 @@ class UserRegistrationController extends GetxController {
   final RxBool isLanguageDropdownVisible = false.obs;
   final RxBool fullNameError = false.obs;
   final RxBool genderError = false.obs;
+  final RxBool isLoading = false.obs;
+  
 
   void setLanguage(String lang) {
     selectedLanguage.value = lang;
@@ -23,32 +34,6 @@ class UserRegistrationController extends GetxController {
 
   void toggleLanguageDropdown() {
     isLanguageDropdownVisible.value = !isLanguageDropdownVisible.value;
-  }
-
-  final RxList<String> serviceTypes = <String>[
-  'None', 'Cab', 'Towing', 'Repairing', 'Puncture', 'Drivers', 'Fuel', 'Restaurant', 'Hospital'
-  ].obs;
-
-  // Selected services - observable RxList
-  final RxList<String> selectedServices = <String>[].obs;
-
-  // Toggle service selection
-  void toggleServiceType(String type) {
-    print("Toggling service type: $type");
-    if (type == 'None') {
-      selectedServices.clear();
-      selectedServices.add('None');
-    } else {
-      if (selectedServices.contains('None')) {
-        selectedServices.remove('None');
-      }
-      if (selectedServices.contains(type)) {
-        selectedServices.remove(type);
-      } else {
-        selectedServices.add(type);
-      }
-    }
-    print("Selected services now: $selectedServices");
   }
 
   bool validateInputs() {
@@ -71,4 +56,32 @@ class UserRegistrationController extends GetxController {
     return isValid;
   }
 
+  Future<bool> userRegisration({required String password,vendorCat}) async {
+    isLoading.value = true;
+    try {
+      UserRegistrationModel model =
+          await authRepository.userRegistrationApiCall(params: {
+        "fullname":fullName.value.trim(),
+        "phone": phoneNumber.value.trim(),
+        "aadhaar_number": "1234-5678-9012",
+        "password": password,
+        "vendor_cat": vendorCat,
+        "vendor_gender": selectedGender.value,
+      });
+      if (model.status == true) {
+        ShowSnackBar.success(message: model.message!);
+        isLoading.value = false;
+
+        return true;
+      } else {
+        ShowSnackBar.info(message: model.message!);
+        isLoading.value = false;
+        return false;
+      }
+    } catch (e) {
+      isLoading.value = false;
+      ShowSnackBar.info(message: e.toString());
+      return false;
+    }
+  }
 }

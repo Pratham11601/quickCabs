@@ -67,16 +67,15 @@ class AppPages {
       name: Routes.NO_INTERNET_CONNECTION_SCREEN,
       page: () => NoInternetConnectionScreen(),
     ),
-
     GetPage(
       name: Routes.EMERGENCY_SERVICE_SCREEN,
       page: () => EmergencyServicesScreen(),
       binding: DashBoardBinding(),
     ),
     GetPage(
-      name: Routes.USER_REGISTRATION_SCREEN,
+      name: Routes.REGISTRATION_DETAILS_SCREEN,
       page: () => UserRegistrationScreen(),
-      binding: DashBoardBinding(),
+      binding: AuthBinding(),
     ),
   ];
 }

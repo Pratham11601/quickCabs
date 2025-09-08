@@ -5,5 +5,6 @@ class DocVerificationBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<DocVerifyController>(() => DocVerifyController());
+    Get.lazyPut<DocVerifyController>(() => DocVerifyController());
   }
 }
