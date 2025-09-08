@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:QuickCab/utils/app_colors.dart';
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 
 import '../../../routes/routes.dart';
 import '../../../utils/text_styles.dart';
@@ -52,15 +53,10 @@ class ProfileScreen extends StatelessWidget {
                   title: "privacy_security".tr,
                   onTap: () async {
                     // For Privacy Policy
-                    await UrlLauncherHelper.openUrl(
-                        "https://quickcabpune.com/privacy-policy.html");
+                    await UrlLauncherHelper.openUrl("https://quickcabpune.com/privacy-policy.html");
                   },
                 ),
-                SettingItem(
-                  icon: Icons.monetization_on_outlined,
-                  title: "Subscription",
-                  onTap: () => Get.toNamed(Routes.SUBSCRIPTION)
-                ),
+                SettingItem(icon: FontAwesomeIcons.chessKing, title: "Subscription Pro", onTap: () => Get.toNamed(Routes.SUBSCRIPTION)),
               ],
             ),
 
@@ -90,22 +86,17 @@ class ProfileScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(16),
                         decoration: const BoxDecoration(
                           color: Colors.white,
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(20)),
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text("choose_language".tr,
-                                style: TextHelper.h5.copyWith(
-                                    fontFamily: semiBoldFont,
-                                    color: ColorsForApp.blackColor)),
+                                style: TextHelper.h5.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                             const SizedBox(height: 16),
                             ListTile(
                               title: Text("English",
-                                  style: TextHelper.size19.copyWith(
-                                      fontFamily: semiBoldFont,
-                                      color: ColorsForApp.blackColor)),
+                                  style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("English");
                                 Get.updateLocale(Locale('en', 'US')); // Switch to Hindi
@@ -114,9 +105,7 @@ class ProfileScreen extends StatelessWidget {
                             ),
                             ListTile(
                               title: Text("हिंदी",
-                                  style: TextHelper.size19.copyWith(
-                                      fontFamily: semiBoldFont,
-                                      color: ColorsForApp.blackColor)),
+                                  style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("हिंदी");
                                 Get.updateLocale(Locale('hi', 'IN')); // Switch to Hindi
@@ -125,9 +114,7 @@ class ProfileScreen extends StatelessWidget {
                             ),
                             ListTile(
                               title: Text("मराठी",
-                                  style: TextHelper.size19.copyWith(
-                                      fontFamily: semiBoldFont,
-                                      color: ColorsForApp.blackColor)),
+                                  style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("मराठी");
                                 Get.updateLocale(Locale('mr', 'IN'));
@@ -144,7 +131,7 @@ class ProfileScreen extends StatelessWidget {
                               ),
                               onTap: () {
                                 controller.changeLanguage("ಕನ್ನಡ");
-                                Get.updateLocale(Locale('kn', 'IN'));  // Kannada locale code
+                                Get.updateLocale(Locale('kn', 'IN')); // Kannada locale code
                                 Get.back();
                               },
                             ),
@@ -163,12 +150,9 @@ class ProfileScreen extends StatelessWidget {
             /// Footer
             const SizedBox(height: 20),
             Center(
-              child: Text(
-                  "app_version_info".tr,
+              child: Text("app_version_info".tr,
                   textAlign: TextAlign.center,
-                  style: TextHelper.size18.copyWith(
-                      color: ColorsForApp.subTitleColor,
-                      fontFamily: semiBoldFont)),
+                  style: TextHelper.size18.copyWith(color: ColorsForApp.subTitleColor, fontFamily: semiBoldFont)),
             ),
             const SizedBox(height: 20),
           ],
