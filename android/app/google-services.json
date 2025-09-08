@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1050702291065",
+    "project_id": "quick-cabs-d3951",
+    "storage_bucket": "quick-cabs-d3951.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050702291065:android:80fe939a887ff0e03334a8",
+        "android_client_info": {
+          "package_name": "com.quickcabpune.quickcab"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiJyVdL_yn9cFuKqAybcZK-tzxrEx14dc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
