@@ -45,7 +45,7 @@ class NoInternetConnectionScreen extends StatelessWidget {
                     Text(
                       'No internet connection found.\nTry switching to a different connection or reset your internet.',
                       textAlign: TextAlign.center,
-                      style: TextHelper.size17.copyWith(
+                      style: TextHelper.size18.copyWith(
                         fontFamily: regularFont,
                         color: ColorsForApp.blackColor,
                       ),
@@ -81,7 +81,7 @@ class NoInternetConnectionScreen extends StatelessWidget {
                         ),
                         child: Text(
                           'RETRY',
-                          style: TextHelper.size16.copyWith(
+                          style: TextHelper.size18.copyWith(
                             fontFamily: boldFont,
                             color: ColorsForApp.whiteColor,
                           ),

@@ -36,7 +36,6 @@ class ProfileScreen extends StatelessWidget {
                 SettingItem(
                   icon: Icons.description_outlined,
                   title: "documents".tr,
-                  label: "Incomplete",
                   onTap: () {
                     Get.toNamed(Routes.MY_DOCUMENTS);
                   },

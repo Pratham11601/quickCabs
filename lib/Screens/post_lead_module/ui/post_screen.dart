@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../routes/routes.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
-import '../../../widgets/common_widgets.dart';
 import '../controller/post_controller.dart';
 import '../post_widgets/post_lead_widgets.dart'; // <- your stepCircle & buildInputField live here
 
@@ -140,13 +138,13 @@ class PostScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: controller.isFormValid.value
                       ? () async {
-                    if (controller.currentStep.value == 2) {
-                      await controller.submitRideLead();
-                    } else {
-                      controller.nextStep();
-                    }
-                  }
-                  : null,
+                          if (controller.currentStep.value == 2) {
+                            await controller.submitRideLead();
+                          } else {
+                            controller.nextStep();
+                          }
+                        }
+                      : null,
                   style: ButtonStyle(
                     minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
                     backgroundColor: WidgetStateProperty.resolveWith<Color>(
@@ -176,43 +174,155 @@ class PostScreen extends StatelessWidget {
 
   // ─────────────────────────────────── Step 1: Route Details ───────────────────────────────────
   Widget _buildRouteDetails(BuildContext context) {
+    final PostController locCtrl = Get.find<PostController>(); // your controller
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text("route_details".tr, style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont)),
-        const SizedBox(height: 6),
-        Text(
-          "enter_the_pickup_message".tr,
-          style: TextHelper.size18.copyWith(color: ColorsForApp.subTitleColor, fontFamily: regularFont),
-        ),
-        const SizedBox(height: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ... other widgets above
 
-        // Your reusable text-fields
-        buildInputField(
-          "pick_up_location".tr,
-          "enter_pick_up_location".tr,
-          Icons.location_on_outlined,
-          Colors.green,
-          controller.pickupController,
-        ),
-        const SizedBox(height: 12),
-        buildInputField(
-          "drop_off_location".tr,
-          "enter_drop_off_location".tr,
-          Icons.location_on,
-          Colors.red,
-          controller.dropController,
-        ),
+          // PICKUP FIELD + SUGGESTIONS
+          buildInputField(
+            "pick_up_location".tr,
+            "enter_pick_up_location".tr,
+            Icons.location_on_outlined,
+            Colors.green,
+            locCtrl.pickupController,
+            focusNode: locCtrl.pickupFocus,
+            onChanged: (val) => locCtrl.debouncePickup.value = val,
+          ),
 
-        const SizedBox(height: 20),
-        Text("Trip Type", style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont)),
-        const SizedBox(height: 12),
+          // small gap
+          const SizedBox(height: 6),
 
-        // Each card is reactive on its own
-        _tripTypeCard("return_trip".tr, "round_trip_journey".tr, Icons.autorenew, Colors.blue),
-        _tripTypeCard("one_way".tr, "single_journey".tr, Icons.arrow_forward, Colors.orange),
-        _tripTypeCard("rented".tr, "daily_rental".tr, Icons.calendar_today, Colors.blueAccent),
-      ]),
+          // suggestions container
+          Obx(() {
+            if (locCtrl.isLoadingPickup.value) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: LinearProgressIndicator(minHeight: 2),
+              );
+            }
+
+            if (!locCtrl.showPickupSuggestions.value || locCtrl.pickupSuggestions.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            return Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 220),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  itemCount: locCtrl.pickupSuggestions.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final item = locCtrl.pickupSuggestions[index];
+                    return ListTile(
+                      leading: const Icon(Icons.location_on_outlined),
+                      title: Text(item['name'] ?? '',
+                          style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                      subtitle: Text(item['address'] ?? '',
+                          style: TextHelper.size16.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont)),
+                      onTap: () => locCtrl.selectSuggestion(isPickup: true, name: item['name'] ?? ''),
+                    );
+                  },
+                ),
+              ),
+            );
+          }),
+
+          const SizedBox(height: 12),
+
+          // DROP FIELD + SUGGESTIONS
+          buildInputField(
+            "drop_off_location".tr,
+            "enter_drop_off_location".tr,
+            Icons.location_on,
+            Colors.red,
+            locCtrl.dropController,
+            focusNode: locCtrl.dropFocus,
+            onChanged: (val) => locCtrl.debounceDrop.value = val,
+          ),
+
+          const SizedBox(height: 6),
+
+          Obx(() {
+            if (locCtrl.isLoadingDrop.value) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: LinearProgressIndicator(minHeight: 2),
+              );
+            }
+
+            if (!locCtrl.showDropSuggestions.value || locCtrl.dropSuggestions.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            return Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 220),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  itemCount: locCtrl.dropSuggestions.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final item = locCtrl.dropSuggestions[index];
+                    return ListTile(
+                      leading: const Icon(Icons.location_on, color: Colors.red),
+                      title: Text(
+                        item['name'] ?? '',
+                        style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+                      ),
+                      subtitle: Text(item['address'] ?? '',
+                          style: TextHelper.size16.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont)),
+                      onTap: () => locCtrl.selectSuggestion(isPickup: false, name: item['name'] ?? ''),
+                    );
+                  },
+                ),
+              ),
+            );
+          }),
+
+          const SizedBox(height: 20),
+
+          Text(
+            "Trip Type",
+            style: TextHelper.size20.copyWith(
+              color: ColorsForApp.blackColor,
+              fontFamily: boldFont,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          _tripTypeCard(
+            "return_trip".tr,
+            "round_trip_journey".tr,
+            Icons.autorenew,
+            Colors.blue,
+          ),
+          _tripTypeCard(
+            "one_way".tr,
+            "single_journey".tr,
+            Icons.arrow_forward,
+            Colors.orange,
+          ),
+          _tripTypeCard(
+            "rented".tr,
+            "daily_rental".tr,
+            Icons.calendar_today,
+            Colors.blueAccent,
+          ),
+        ],
+      ),
     );
   }
 

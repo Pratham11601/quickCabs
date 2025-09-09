@@ -137,6 +137,30 @@ class PostController extends GetxController {
     // Listen to text changes
     pickupController.addListener(validateForm);
     dropController.addListener(validateForm);
+
+    // Listen to text changes with debounce
+    setupDebouncers();
+
+    // Focus listeners: hide suggestions when field loses focus
+    pickupFocus.addListener(() {
+      if (!pickupFocus.hasFocus) {
+        // optionally clear suggestions on blur
+        // pickupSuggestions.clear();
+        showPickupSuggestions.value = false;
+      } else {
+        // show if we already have suggestions
+        showPickupSuggestions.value = pickupSuggestions.isNotEmpty;
+      }
+    });
+
+    dropFocus.addListener(() {
+      if (!dropFocus.hasFocus) {
+        // dropSuggestions.clear();
+        showDropSuggestions.value = false;
+      } else {
+        showDropSuggestions.value = dropSuggestions.isNotEmpty;
+      }
+    });
   }
 
   @override
@@ -147,6 +171,133 @@ class PostController extends GetxController {
   }
 
   //------------------api logic----------------
+
+  // Focus nodes to detect focus and hide suggestions when out of focus
+  final pickupFocus = FocusNode();
+  final dropFocus = FocusNode();
+
+  // Debounce observables (updated by onChanged)
+  final debouncePickup = ''.obs;
+  final debounceDrop = ''.obs;
+
+  // Loading flags (optional)
+  final isLoadingPickup = false.obs;
+  final isLoadingDrop = false.obs;
+
+  // Suggestions: list of maps with name/address (adapt to your model if you prefer)
+  final pickupSuggestions = <Map<String, String>>[].obs;
+  final dropSuggestions = <Map<String, String>>[].obs;
+
+  // Show flags to control suggestion visibility (only when field has focus + results exist)
+  final showPickupSuggestions = false.obs;
+  final showDropSuggestions = false.obs;
+
+  // Track last lengths
+  int _lastPickupLength = 0;
+  int _lastDropLength = 0;
+
+  // Track last typing times
+  DateTime _lastPickupInputTime = DateTime.now();
+  DateTime _lastDropInputTime = DateTime.now();
+
+  void setupDebouncers() {
+    // Pickup debounce
+    debounce(debouncePickup, (String? val) {
+      final q = val?.trim() ?? '';
+      final now = DateTime.now();
+
+      if (q.length >= 3) {
+        if (q.length > _lastPickupLength) {
+          // ✅ Forward typing → call API
+          fetchLocations(q, isPickup: true);
+        } else if (q.length < _lastPickupLength) {
+          // ⏳ Backspace → only call if 3s passed since last input
+          if (now.difference(_lastPickupInputTime).inSeconds >= 3) {
+            fetchLocations(q, isPickup: true);
+          } else {
+            // Too quick backspace → just clear suggestions
+            pickupSuggestions.clear();
+            showPickupSuggestions.value = false;
+          }
+        }
+      } else {
+        pickupSuggestions.clear();
+        showPickupSuggestions.value = false;
+      }
+
+      _lastPickupLength = q.length;
+      _lastPickupInputTime = now;
+    }, time: const Duration(milliseconds: 500));
+
+    // Drop debounce
+    debounce(debounceDrop, (String? val) {
+      final q = val?.trim() ?? '';
+      final now = DateTime.now();
+
+      if (q.length >= 3) {
+        if (q.length > _lastDropLength) {
+          // ✅ Forward typing → call API
+          fetchLocations(q, isPickup: false);
+        } else if (q.length < _lastDropLength) {
+          // ⏳ Backspace → only call if 3s passed
+          if (now.difference(_lastDropInputTime).inSeconds >= 3) {
+            fetchLocations(q, isPickup: false);
+          } else {
+            dropSuggestions.clear();
+            showDropSuggestions.value = false;
+          }
+        }
+      } else {
+        dropSuggestions.clear();
+        showDropSuggestions.value = false;
+      }
+
+      _lastDropLength = q.length;
+      _lastDropInputTime = now;
+    }, time: const Duration(milliseconds: 500));
+  }
+
+  /// API call
+// Fetch locations via repository
+  Future<void> fetchLocations(String query, {required bool isPickup}) async {
+    try {
+      final response = await postLeadRepository.fetchLocationForPost(location: query);
+      final results = response.results ?? [];
+
+      final suggestions = results.map<Map<String, String>>((item) {
+        return {
+          "name": item.name ?? "",
+          "address": item.address ?? "",
+        };
+      }).toList();
+
+      if (isPickup) {
+        pickupSuggestions.assignAll(suggestions);
+        showPickupSuggestions.value = true;
+      } else {
+        dropSuggestions.assignAll(suggestions);
+        showDropSuggestions.value = true;
+      }
+    } catch (e) {
+      debugPrint("Error fetching suggestions: $e");
+    }
+  }
+
+  /// call this to set text and clear suggestions when user picks an item
+  void selectSuggestion({required bool isPickup, required String name}) {
+    if (isPickup) {
+      pickupController.text = name;
+      pickupSuggestions.clear();
+      showPickupSuggestions.value = false;
+      pickupFocus.unfocus();
+    } else {
+      dropController.text = name;
+      dropSuggestions.clear();
+      showDropSuggestions.value = false;
+      dropFocus.unfocus();
+    }
+  }
+
   final PostLeadRepository postLeadRepository = PostLeadRepository(APIManager());
 
   Future<void> submitRideLead() async {

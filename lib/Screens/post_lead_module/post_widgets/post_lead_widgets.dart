@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:QuickCab/utils/app_colors.dart';
+import 'package:flutter/material.dart';
 
 import '../../../utils/text_styles.dart';
 
@@ -24,7 +24,9 @@ Widget buildInputField(
   IconData icon,
   Color iconColor,
   TextEditingController controller, {
-  bool isNumeric = false, // 👈 optional named parameter
+  bool isNumeric = false,
+  ValueChanged<String>? onChanged,
+  FocusNode? focusNode,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,17 +34,17 @@ Widget buildInputField(
       Text(title, style: TextHelper.size18.copyWith(fontFamily: semiBoldFont)),
       const SizedBox(height: 6),
       TextField(
+        focusNode: focusNode,
         keyboardType: isNumeric ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
         controller: controller,
+        onChanged: onChanged,
         style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor),
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.subTitleColor),
           prefixIcon: Icon(icon, color: iconColor),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 12, // keeps it comfortable, not too tall/short
-          ),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12),
         ),
       )
     ],

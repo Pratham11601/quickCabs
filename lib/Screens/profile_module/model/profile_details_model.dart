@@ -6,15 +6,14 @@ class ProfileDetailsModel {
 
   ProfileDetailsModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
-    vendor =
-        json['vendor'] != null ? new Vendor.fromJson(json['vendor']) : null;
+    vendor = json['vendor'] != null ? new Vendor.fromJson(json['vendor']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['status'] = status;
-    if (vendor != null) {
-      data['vendor'] = vendor!.toJson();
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    if (this.vendor != null) {
+      data['vendor'] = this.vendor!.toJson();
     }
     return data;
   }
@@ -33,15 +32,19 @@ class Vendor {
   String? city;
   String? vendorCat;
   String? profileImgUrl;
+  Null? vehicleImgUrl;
+  Null? shopImgUrl;
   String? documentImgUrl;
   String? licenseImgUrl;
   String? currentAddress;
   String? pinCode;
-  String? carnumber;
-  String? subscriptionPlan;
-  String? subscriptionDate;
-  String? subEndDate;
+  Null? carnumber;
+  Null? subscriptionPlan;
+  Null? subscriptionDate;
+  Null? subEndDate;
   String? vendorGender;
+  String? fcmToken;
+  Null? referredBy;
   String? createdAt;
   String? updatedAt;
 
@@ -58,6 +61,8 @@ class Vendor {
       this.city,
       this.vendorCat,
       this.profileImgUrl,
+      this.vehicleImgUrl,
+      this.shopImgUrl,
       this.documentImgUrl,
       this.licenseImgUrl,
       this.currentAddress,
@@ -67,6 +72,8 @@ class Vendor {
       this.subscriptionDate,
       this.subEndDate,
       this.vendorGender,
+      this.fcmToken,
+      this.referredBy,
       this.createdAt,
       this.updatedAt});
 
@@ -83,6 +90,8 @@ class Vendor {
     city = json['city'];
     vendorCat = json['vendor_cat'];
     profileImgUrl = json['profileImgUrl'];
+    vehicleImgUrl = json['vehicleImgUrl'];
+    shopImgUrl = json['shopImgUrl'];
     documentImgUrl = json['documentImgUrl'];
     licenseImgUrl = json['licenseImgUrl'];
     currentAddress = json['currentAddress'];
@@ -92,35 +101,41 @@ class Vendor {
     subscriptionDate = json['subscription_date'];
     subEndDate = json['sub_end_date'];
     vendorGender = json['vendor_gender'];
+    fcmToken = json['fcmToken'];
+    referredBy = json['referred_by'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['fullname'] = fullname;
-    data['phone'] = phone;
-    data['aadhaar_number'] = aadhaarNumber;
-    data['email'] = email;
-    data['password'] = password;
-    data['status'] = status;
-    data['isVerified'] = isVerified;
-    data['businessName'] = businessName;
-    data['city'] = city;
-    data['vendor_cat'] = vendorCat;
-    data['profileImgUrl'] = profileImgUrl;
-    data['documentImgUrl'] = documentImgUrl;
-    data['licenseImgUrl'] = licenseImgUrl;
-    data['currentAddress'] = currentAddress;
-    data['pin_code'] = pinCode;
-    data['carnumber'] = carnumber;
-    data['subscriptionPlan'] = subscriptionPlan;
-    data['subscription_date'] = subscriptionDate;
-    data['sub_end_date'] = subEndDate;
-    data['vendor_gender'] = vendorGender;
-    data['createdAt'] = createdAt;
-    data['updatedAt'] = updatedAt;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['fullname'] = this.fullname;
+    data['phone'] = this.phone;
+    data['aadhaar_number'] = this.aadhaarNumber;
+    data['email'] = this.email;
+    data['password'] = this.password;
+    data['status'] = this.status;
+    data['isVerified'] = this.isVerified;
+    data['businessName'] = this.businessName;
+    data['city'] = this.city;
+    data['vendor_cat'] = this.vendorCat;
+    data['profileImgUrl'] = this.profileImgUrl;
+    data['vehicleImgUrl'] = this.vehicleImgUrl;
+    data['shopImgUrl'] = this.shopImgUrl;
+    data['documentImgUrl'] = this.documentImgUrl;
+    data['licenseImgUrl'] = this.licenseImgUrl;
+    data['currentAddress'] = this.currentAddress;
+    data['pin_code'] = this.pinCode;
+    data['carnumber'] = this.carnumber;
+    data['subscriptionPlan'] = this.subscriptionPlan;
+    data['subscription_date'] = this.subscriptionDate;
+    data['sub_end_date'] = this.subEndDate;
+    data['vendor_gender'] = this.vendorGender;
+    data['fcmToken'] = this.fcmToken;
+    data['referred_by'] = this.referredBy;
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
     return data;
   }
 }
