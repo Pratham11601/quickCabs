@@ -1,7 +1,8 @@
-import 'package:flutter/widgets.dart';
-import 'package:get/get.dart';
 import 'package:QuickCab/Screens/home_page_module/model/check_profile_completion_model.dart';
 import 'package:QuickCab/Screens/home_page_module/repository/home_repository.dart';
+import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../api/api_manager.dart';
 import '../home_widgets/accept_lead_popup.dart';
@@ -17,6 +18,7 @@ class HomeController extends GetxController {
     super.onInit();
     fetchActiveLeads();
   }
+
   /// Emergency services list (can come from API later)
   final emergencyServices = [
     {'title': 'Puncture', 'icon': '🛠️'},
@@ -81,13 +83,22 @@ class HomeController extends GetxController {
     }
   }
 
-
   ///cards logic and variable
   final isLoading = false.obs;
+  // Loading states
+  var isLoadingActiveLeads = false.obs;
+  var isLoadingLiveLeads = false.obs;
+
   final errorMsg = ''.obs;
   int _page = 1;
   bool hasMore = true;
   RxInt selectedIndex = 0.obs;
+
+  // New
+  RxList<Post> filteredActiveLeads = <Post>[].obs;
+  var fromLocation = "".obs;
+  var toLocation = "".obs;
+  var isFilterApplied = false.obs; // 👈 new flag
 
   // Future<void> fetchLeads() async {
   //   try {
@@ -138,7 +149,7 @@ class HomeController extends GetxController {
   // }
   Future<void> fetchLiveLeads() async {
     try {
-      isLoading.value = true;
+      isLoadingLiveLeads.value = true;
       errorMsg.value = '';
       await Future.delayed(const Duration(milliseconds: 400)); // demo delay
 
@@ -187,9 +198,10 @@ class HomeController extends GetxController {
     } catch (e) {
       errorMsg.value = 'Failed to load rides';
     } finally {
-      isLoading.value = false;
+      isLoadingLiveLeads.value = false;
     }
   }
+
   /// Button actions
   void declineLiveLead(int index) {
     if (index >= 0 && index < liveLeads.length) liveLeads.removeAt(index);
@@ -202,25 +214,43 @@ class HomeController extends GetxController {
     }
   }
 
-  RxList<String>emergencyServiceList=<String>[].obs;
-
+  RxList<String> emergencyServiceList = <String>[].obs;
 
   ///active api logic method and veriavble
   RxList<Post> activeLeads = <Post>[].obs;
 
   Future<void> fetchActiveLeads() async {
     try {
-      isLoading.value = true;
+      isLoadingActiveLeads.value = true;
       errorMsg.value = '';
       final response = await activeLeadRepository.activeLeadApiCall();
       debugPrint('Fetched leads count: ${response.posts.length}');
       activeLeads.assignAll(response.posts);
+      filteredActiveLeads.clear(); // 👈 reset filter results
+      isFilterApplied.value = false;
     } catch (e) {
       errorMsg.value = 'Failed to load active leads';
       debugPrint('Error fetching leads: $e');
     } finally {
-      isLoading.value = false;
+      isLoadingActiveLeads.value = false;
     }
+  }
+
+  void applyFilter() {
+    filteredActiveLeads.assignAll(activeLeads.where((lead) {
+      final matchesFrom = fromLocation.value.isEmpty || (lead.locationFrom ?? "").toLowerCase().contains(fromLocation.value.toLowerCase());
+      final matchesTo = toLocation.value.isEmpty || (lead.toLocation ?? "").toLowerCase().contains(toLocation.value.toLowerCase());
+      return matchesFrom && matchesTo;
+    }).toList());
+
+    isFilterApplied.value = true; // 👈 show filtered list
+  }
+
+  void clearFilter() {
+    fromLocation.value = "";
+    toLocation.value = "";
+    filteredActiveLeads.clear();
+    isFilterApplied.value = false; // 👈 back to full list
   }
 
   ///accept or booked logic
@@ -239,4 +269,25 @@ class HomeController extends GetxController {
     );
   }
 
+  // Open WhatsApp chat
+  Future<void> openWhatsApp(String number) async {
+    // Remove + if present
+    String formattedNumber = number.replaceAll("+", "");
+    final whatsappUrl = Uri.parse("https://wa.me/$formattedNumber");
+    if (await canLaunchUrl(whatsappUrl)) {
+      await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
+    } else {
+      Get.snackbar("Error", "Could not open WhatsApp");
+    }
+  }
+
+  // Call a number
+  Future<void> makeCall(String number) async {
+    final callUrl = Uri.parse("tel:$number");
+    if (await canLaunchUrl(callUrl)) {
+      await launchUrl(callUrl);
+    } else {
+      Get.snackbar("Error", "Could not make a call");
+    }
+  }
 }

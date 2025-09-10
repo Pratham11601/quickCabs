@@ -1,8 +1,9 @@
+import 'package:QuickCab/utils/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:QuickCab/utils/text_styles.dart';
 
 import '../../../utils/app_colors.dart';
+import '../../../widgets/shimmer_widget.dart';
 import '../controller/my_lead_controller.dart';
 import '../lead_widgets/my_lead_card.dart';
 import '../lead_widgets/stats_card.dart';
@@ -17,7 +18,7 @@ class MyLeadsPage extends StatelessWidget {
     return Scaffold(
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return shimmerLoader(); // 🔹 show shimmer instead of CircularProgressIndicator
         }
         return Column(
           children: [
@@ -27,14 +28,9 @@ class MyLeadsPage extends StatelessWidget {
               child: StatsCard(
                 activeLeads: controller.filteredActiveLeads.length,
                 completed: controller.filteredCompletedLeads.length,
-                  totalValue: controller.filteredActiveLeads.fold<double>(
-                      0.0,
-                          (sum, lead) => sum + (double.tryParse(lead.fare ?? '0') ?? 0.0)
-                  ) +
-                      controller.filteredCompletedLeads.fold<double>(
-                          0.0,
-                              (sum, lead) => sum + (double.tryParse(lead.fare ?? '0') ?? 0.0)
-                      ),
+                totalValue: controller.filteredActiveLeads
+                        .fold<double>(0.0, (sum, lead) => sum + (double.tryParse(lead.fare ?? '0') ?? 0.0)) +
+                    controller.filteredCompletedLeads.fold<double>(0.0, (sum, lead) => sum + (double.tryParse(lead.fare ?? '0') ?? 0.0)),
               ),
             ),
 
@@ -46,14 +42,10 @@ class MyLeadsPage extends StatelessWidget {
                   Expanded(
                     child: TextField(
                       onChanged: (value) => controller.filterLeads(value),
-                      style: TextHelper.size18.copyWith(
-                          color: ColorsForApp.blackColor,
-                          fontFamily: regularFont),
+                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
                       decoration: InputDecoration(
                         hintText: "Search leads...",
-                        hintStyle: TextHelper.size18.copyWith(
-                            color: ColorsForApp.subTitleColor,
-                            fontFamily: regularFont),
+                        hintStyle: TextHelper.size18.copyWith(color: ColorsForApp.subTitleColor, fontFamily: regularFont),
                         prefixIcon: const Icon(Icons.search),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -79,43 +71,48 @@ class MyLeadsPage extends StatelessWidget {
                 child: Column(
                   children: [
                     TabBar(
-                      labelStyle:
-                      TextHelper.size18.copyWith(fontFamily: semiBoldFont),
+                      labelStyle: TextHelper.size18.copyWith(fontFamily: semiBoldFont),
                       labelColor: ColorsForApp.primaryDarkColor,
                       unselectedLabelColor: Colors.black54,
                       indicatorColor: ColorsForApp.primaryDarkColor,
                       tabs: [
-                        Tab(
-                            text:
-                            "Active (${controller.filteredActiveLeads.length})"),
-                        Tab(
-                            text:
-                            "Completed (${controller.filteredCompletedLeads.length})"),
+                        Tab(text: "Active (${controller.filteredActiveLeads.length})"),
+                        Tab(text: "Completed (${controller.filteredCompletedLeads.length})"),
                       ],
                     ),
                     Expanded(
                       child: TabBarView(
                         children: [
                           // Active Leads Tab
-                          Obx(() => ListView.builder(
-                            itemCount: controller.filteredActiveLeads.length,
-                            itemBuilder: (_, index) => LeadCard(
-                              lead: controller.filteredActiveLeads[index],
-                              onShare: () => print("Share"),
-                              onEdit: () => print("Edit"),
-                              onDelete: () => print("Delete"),
-                            ),
-                          )),
+                          Obx(() => RefreshIndicator(
+                                onRefresh: () async {
+                                  await controller.fetchLeads();
+                                },
+                                child: ListView.builder(
+                                  itemCount: controller.filteredActiveLeads.length,
+                                  itemBuilder: (_, index) => LeadCard(
+                                    lead: controller.filteredActiveLeads[index],
+                                    onShare: () => print("Share"),
+                                    onEdit: () => print("Edit"),
+                                    onDelete: () => print("Delete"),
+                                  ),
+                                ),
+                              )),
                           // Completed Leads Tab
-                          Obx(() => ListView.builder(
-                            itemCount: controller.filteredCompletedLeads.length,
-                            itemBuilder: (_, index) => LeadCard(
-                              lead: controller.filteredCompletedLeads[index],
-                              onShare: () => print("Share"),
-                              onEdit: () => print("Edit"),
-                              onDelete: () => print("Delete"),
-                            ),
-                          )),
+                          Obx(() => RefreshIndicator(
+                                onRefresh: () async {
+                                  await controller.fetchLeads();
+                                },
+                                child: ListView.builder(
+                                  itemCount: controller.filteredCompletedLeads.length,
+                                  itemBuilder: (_, index) => LeadCard(
+                                    lead: controller.filteredCompletedLeads[index],
+                                    onShare: () => print("Share"),
+                                    onEdit: () => print("Edit"),
+                                    onDelete: () => print("Delete"),
+                                  ),
+                                ),
+                              )),
                         ],
                       ),
                     ),

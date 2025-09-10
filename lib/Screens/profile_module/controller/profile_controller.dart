@@ -70,6 +70,8 @@ class ProfileController extends GetxController {
 
       if (model.status == true) {
         userDetails.value = model.vendor;
+      } else {
+        debugPrint("Error: ${model.vendor!.fullname!}");
       }
     } catch (e) {
       debugPrint("Error: $e");

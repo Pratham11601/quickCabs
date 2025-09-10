@@ -11,6 +11,7 @@ import '../repository/post_lead_repository.dart';
 class PostController extends GetxController {
   // ── Stepper ──────────────────────────────────────────────────────────────────
   final RxInt step = 1.obs; // 1..3
+  final isLoading = false.obs; // True when API call is in progress
 
   // ── Route Details ────────────────────────────────────────────────────────────
   final TextEditingController pickupController = TextEditingController();
@@ -27,10 +28,14 @@ class PostController extends GetxController {
 
   // If a vehicle needs seat configuration, mark it with "seatConfig": true
   final List<Map<String, dynamic>> vehicles = <Map<String, dynamic>>[
-    {"name": "Hatchback", "seats": "4+1", "color": Colors.orange},
-    {"name": "Sedan", "seats": "4+1", "color": Colors.blue},
-    {"name": "SUV", "seats": "6+1", "color": Colors.green},
-    {"name": "Innova Crysta", "seats": "6+1", "color": Colors.amber, "seatConfig": true},
+    {"name": "Hatchback", "seats": "", "color": Colors.orange},
+    {"name": "Sedan", "seats": "", "color": Colors.blue},
+    {"name": "SUV", "seats": "", "color": Colors.green},
+    {
+      "name": "Innova Crysta",
+      "seats": "",
+      "color": Colors.amber,
+    },
     {"name": "Tempo Traveler", "seats": "", "color": Colors.blue},
     {"name": "Force Urbania", "seats": "", "color": Colors.red},
     {"name": "Mini Bus", "seats": "", "color": Colors.blue},
@@ -261,6 +266,12 @@ class PostController extends GetxController {
 // Fetch locations via repository
   Future<void> fetchLocations(String query, {required bool isPickup}) async {
     try {
+      // Start loader
+      if (isPickup) {
+        isLoadingPickup.value = true;
+      } else {
+        isLoadingDrop.value = true;
+      }
       final response = await postLeadRepository.fetchLocationForPost(location: query);
       final results = response.results ?? [];
 
@@ -280,6 +291,12 @@ class PostController extends GetxController {
       }
     } catch (e) {
       debugPrint("Error fetching suggestions: $e");
+    } finally {
+      if (isPickup) {
+        isLoadingPickup.value = false;
+      } else {
+        isLoadingDrop.value = false;
+      }
     }
   }
 
@@ -300,7 +317,7 @@ class PostController extends GetxController {
 
   final PostLeadRepository postLeadRepository = PostLeadRepository(APIManager());
 
-  Future<void> submitRideLead() async {
+  Future<void> submitRideLead({bool isLoaderShow = true}) async {
     final params = {
       "date": selectedDate.value == null ? "" : DateFormat('yyyy-MM-dd').format(selectedDate.value!),
       "time": selectedTime.value == null ? "" : selectedTime.value!.format(Get.context!),
@@ -308,7 +325,8 @@ class PostController extends GetxController {
       "location_from_area": "",
       "to_location": dropController.text.trim(),
       "to_location_area": "",
-      "car_model": selectedVehicleIndex.value != null ? vehicles[selectedVehicleIndex.value!]["name"] : "",
+      "car_model":
+          selectedVehicleIndex.value != null ? "${vehicles[selectedVehicleIndex.value!]["name"]} ${selectedSeatConfig.value} Seater" : "",
       "add_on": "",
       "fare": int.tryParse(fareController.text.trim()) ?? 0,
       "cab_number": "",
@@ -316,7 +334,8 @@ class PostController extends GetxController {
     };
 
     try {
-      final response = await postLeadRepository.postLeadApiCall(params: params);
+      isLoading.value = true;
+      final response = await postLeadRepository.postLeadApiCall(isLoaderShow: isLoaderShow, params: params);
       if (response.status == true) {
         showAppDialog(
           title: 'Lead Shared Successfully',
@@ -328,9 +347,11 @@ class PostController extends GetxController {
           },
         );
       } else {
+        isLoading.value = false;
         Get.snackbar('Error', response.message ?? 'Failed to share lead');
       }
     } catch (e) {
+      isLoading.value = false;
       Get.snackbar('Error', 'Something went wrong. Please try again.');
     }
   }

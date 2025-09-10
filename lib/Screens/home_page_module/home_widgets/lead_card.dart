@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
@@ -14,11 +15,15 @@ import '../../../utils/text_styles.dart';
 class LeadCard extends StatelessWidget {
   final Map<String, dynamic> lead; // Lead details
   final VoidCallback? onAccept; // Callback when "Accept" button is pressed
+  final void Function(String phone)? onWhatsApp; // WhatsApp button callback
+  final void Function(String phone)? onCall; // Call button callback
 
   const LeadCard({
     super.key,
     required this.lead,
     this.onAccept,
+    this.onWhatsApp,
+    this.onCall,
   });
 
   @override
@@ -231,19 +236,66 @@ class LeadCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
 
             /// ---------------- Phone ----------------
+            // Row(
+            //   children: [
+            //     Icon(Icons.phone, size: 16, color: ColorsForApp.blackColor),
+            //     const SizedBox(width: 6),
+            //     Text(
+            //       lead['phone'],
+            //       style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+            //     ),
+            //   ],
+            // ),
             Row(
               children: [
-                Icon(Icons.phone, size: 16, color: ColorsForApp.blackColor),
-                const SizedBox(width: 6),
-                Text(
-                  lead['phone'],
-                  style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                // WhatsApp
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorsForApp.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  icon: Icon(
+                    FontAwesomeIcons.whatsapp,
+                    color: ColorsForApp.whiteColor,
+                  ),
+                  label: Text(
+                    "WhatsApp",
+                    style: TextHelper.size18.copyWith(
+                      color: ColorsForApp.whiteColor,
+                      fontFamily: semiBoldFont,
+                    ),
+                  ),
+                  onPressed: () => onWhatsApp?.call(lead['phone']),
+                ),
+                const SizedBox(width: 8),
+                // Call
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorsForApp.subTitleColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  icon: Icon(
+                    Icons.call_outlined,
+                    color: ColorsForApp.whiteColor,
+                  ),
+                  label: Text(
+                    "Call",
+                    style: TextHelper.size18.copyWith(
+                      color: ColorsForApp.whiteColor,
+                      fontFamily: semiBoldFont,
+                    ),
+                  ),
+                  onPressed: () => onCall?.call(lead['phone']),
                 ),
               ],
-            ),
+            )
           ],
         ),
       ),

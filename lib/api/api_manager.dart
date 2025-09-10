@@ -4,10 +4,15 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:get/get.dart' hide FormData, Response, MultipartFile;
 
 import '../controller/app_controller.dart';
+import '../routes/routes.dart';
+import '../utils/app_enums.dart';
 import '../utils/config.dart';
+import '../utils/storage_config.dart';
 import '../widgets/common_loader_widget.dart';
+import '../widgets/snackbar.dart';
 import 'api_exception.dart';
 
 class APIManager {
@@ -63,9 +68,11 @@ class APIManager {
   }) async {
     // Check internet is on or not
     if (_appController.connection.hasInternet) {
-      if (showLoading) Loader.instance.showLoader();
+      // if (showLoading) Loader.instance.showLoader();
       try {
         // print('------------------ $url');
+        final token = await LocalStorage.fetchValue(StorageKey.token);
+
         final response = await _dio
             .get(
           url,
@@ -89,7 +96,7 @@ class APIManager {
         return null;
       } finally {
         print('finally');
-        Loader.instance.removeLoader();
+        // Loader.instance.removeLoader();
       }
     } else {
       handleNoInternet();
@@ -107,7 +114,7 @@ class APIManager {
   }) async {
     // Check internet is on or not
     if (_appController.connection.hasInternet) {
-      if (showLoading) Loader.instance.showLoader();
+      // if (showLoading) Loader.instance.showLoader();
       // print('------------------ $url');
       try {
         final response = await _dio
@@ -136,7 +143,7 @@ class APIManager {
         handleDioError(error);
         return null;
       } finally {
-        if (showLoading) Loader.instance.removeLoader();
+        // if (showLoading) Loader.instance.removeLoader();
       }
     } else {
       handleNoInternet();
@@ -183,7 +190,7 @@ class APIManager {
         return null;
       } finally {
         print('finally');
-        Loader.instance.removeLoader();
+        // Loader.instance.removeLoader();
       }
     } else {
       handleNoInternet();
@@ -230,7 +237,7 @@ class APIManager {
         return null;
       } finally {
         print('finally');
-        Loader.instance.removeLoader();
+        // Loader.instance.removeLoader();
       }
     } else {
       handleNoInternet();
@@ -281,7 +288,7 @@ class APIManager {
       } on DioException catch (error) {
         handleDioError(error);
       } finally {
-        Loader.instance.removeLoader();
+        // Loader.instance.removeLoader();
       }
     }
 
@@ -300,7 +307,7 @@ class APIManager {
   }) async {
     // Check internet is on or not
     if (_appController.connection.hasInternet) {
-      Loader.instance.showLoader();
+      // Loader.instance.showLoader();
       // showLoaderIfNeeded(showLoading);
       try {
         final formData = FormData.fromMap({
@@ -331,7 +338,7 @@ class APIManager {
       } on DioException catch (error) {
         handleDioError(error);
       } finally {
-        Loader.instance.removeLoader();
+        // Loader.instance.removeLoader();
       }
     }
     return null;
@@ -514,5 +521,15 @@ class APIManager {
     if (response.statusCode != null && (response.statusCode! - 200) < 10) {
       log('\x1B[94m[Response (${response.statusCode})] => \x1B[96m$response\x1B[0m');
     }
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      _handleUnauthenticated();
+      throw Exception("Unauthenticated user");
+    }
   }
+}
+
+void _handleUnauthenticated() {
+  LocalStorage.erase(); // clear token & user data
+  ShowSnackBar.error(message: "Your session has expired. Please log in again.");
+  Get.offAllNamed(Routes.LOGIN_SCREEN);
 }

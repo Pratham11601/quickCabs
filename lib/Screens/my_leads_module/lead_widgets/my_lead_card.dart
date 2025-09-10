@@ -224,7 +224,6 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
@@ -294,7 +293,6 @@ class LeadCard extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 SizedBox(width: 8),
                 Text(
                   "₹${lead.fare?.toString() ?? ''}",
@@ -304,9 +302,7 @@ class LeadCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-
                 SizedBox(width: 2),
-
                 Theme(
                   data: Theme.of(context).copyWith(
                     visualDensity: VisualDensity.compact,
@@ -326,30 +322,30 @@ class LeadCard extends StatelessWidget {
                     color: ColorsForApp.whiteColor,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: 'share',
-                        child: Row(children: [
-                          Icon(Icons.share, size: 18), SizedBox(width: 8),
-                          Text("Share Lead", style: TextHelper.size17.copyWith(
-                              color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
-                        ]),
-                      ),
+                      // PopupMenuItem(
+                      //   value: 'share',
+                      //   child: Row(children: [
+                      //     Icon(Icons.share, size: 18), SizedBox(width: 8),
+                      //     Text("Share Lead", style: TextHelper.size17.copyWith(
+                      //         color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                      //   ]),
+                      // ),
                       PopupMenuItem(
                         value: 'edit',
                         child: Row(children: [
-                          Icon(Icons.edit, size: 18), SizedBox(width: 8),
-                          Text("Edit Lead", style: TextHelper.size17.copyWith(
-                              color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                          Icon(Icons.edit, size: 18),
+                          SizedBox(width: 8),
+                          Text("Edit Lead", style: TextHelper.size17.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
                         ]),
                       ),
-                      PopupMenuItem(
-                        value: 'delete',
-                        child: Row(children: [
-                          Icon(Icons.delete, size: 18, color: Colors.red), SizedBox(width: 8),
-                          Text("Delete Lead", style: TextHelper.size17.copyWith(
-                              color: ColorsForApp.red, fontFamily: semiBoldFont)),
-                        ]),
-                      ),
+                      // PopupMenuItem(
+                      //   value: 'delete',
+                      //   child: Row(children: [
+                      //     Icon(Icons.delete, size: 18, color: Colors.red),
+                      //     SizedBox(width: 8),
+                      //     Text("Delete Lead", style: TextHelper.size17.copyWith(color: ColorsForApp.red, fontFamily: semiBoldFont)),
+                      //   ]),
+                      // ),
                     ],
                     onSelected: (v) {
                       if (v == 'share') onShare();
@@ -376,7 +372,7 @@ class LeadCard extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height:  8.sp),
+            SizedBox(height: 8.sp),
             // Third Row: Date & Time
             Row(
               children: [
@@ -389,7 +385,9 @@ class LeadCard extends StatelessWidget {
                   style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(width: 39.w,),
+                SizedBox(
+                  width: 39.w,
+                ),
                 Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
                 SizedBox(width: 6),
                 Text(
@@ -413,7 +411,9 @@ class LeadCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                SizedBox(width: 40.w,),
+                SizedBox(
+                  width: 40.w,
+                ),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
@@ -427,7 +427,6 @@ class LeadCard extends StatelessWidget {
                 ),
               ],
             ),
-            
           ],
         ),
       ),

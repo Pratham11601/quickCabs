@@ -1,3 +1,4 @@
+import 'package:QuickCab/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -18,7 +19,7 @@ class PostScreen extends StatelessWidget {
 
       // ───────────────────────────── AppBar (kept your design) ─────────────────────────────
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(230),
+        preferredSize: const Size.fromHeight(215),
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -97,78 +98,145 @@ class PostScreen extends StatelessWidget {
       ),
 
       // ───────────────────────────────────────── Body ──────────────────────────────────────
-      body: Obx(() {
-        switch (controller.currentStep.value) {
-          case 0:
-            return _buildRouteDetails(context);
-          case 1:
-            return _buildTripInformation(context);
-          case 2:
-            return buildPriceConfirmation();
-          default:
-            return _buildRouteDetails(context);
-        }
-      }),
-
-      // ───────────────────────────────────── Bottom Buttons ─────────────────────────────────
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Obx(() {
-          bool isRouteDetails = controller.currentStep.value == 0;
-          final isLastStep = controller.currentStep.value == 2; //  2 is your last page (Price Confirmation)
-
-          return Row(
+      body: SingleChildScrollView(
+        child: LoadingOverlay(
+          isLoading: controller.isLoading.value,
+          child: Column(
             children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: isRouteDetails ? controller.cancel : controller.previousStep,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: Colors.grey.shade200,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  child: Text(
-                    isRouteDetails ? "cancel".tr : "previous".tr,
-                    style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: controller.isFormValid.value
-                      ? () async {
-                          if (controller.currentStep.value == 2) {
-                            await controller.submitRideLead();
-                          } else {
-                            controller.nextStep();
-                          }
-                        }
-                      : null,
-                  style: ButtonStyle(
-                    minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
-                    backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                      (states) {
-                        if (states.contains(WidgetState.disabled)) {
-                          return ColorsForApp.cta;
-                        }
-                        return ColorsForApp.primaryColor;
-                      },
-                    ),
-                    shape: WidgetStateProperty.all(
-                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                  ),
-                  child: Text(
-                    isLastStep ? "share_lead".tr : "next_step".tr,
-                    style: TextHelper.size20.copyWith(color: Colors.white),
-                  ),
-                ),
+              Obx(() {
+                switch (controller.currentStep.value) {
+                  case 0:
+                    return _buildRouteDetails(context);
+                  case 1:
+                    return _buildTripInformation(context);
+                  case 2:
+                    return buildPriceConfirmation();
+                  default:
+                    return _buildRouteDetails(context);
+                }
+              }),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Obx(() {
+                  bool isRouteDetails = controller.currentStep.value == 0;
+                  final isLastStep = controller.currentStep.value == 2; //  2 is your last page (Price Confirmation)
+
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: isRouteDetails ? controller.cancel : controller.previousStep,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            backgroundColor: Colors.grey.shade200,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                          child: Text(
+                            isRouteDetails ? "cancel".tr : "previous".tr,
+                            style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: controller.isFormValid.value
+                              ? () async {
+                                  if (controller.currentStep.value == 2) {
+                                    await controller.submitRideLead();
+                                  } else {
+                                    controller.nextStep();
+                                  }
+                                }
+                              : null,
+                          style: ButtonStyle(
+                            minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
+                            backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                              (states) {
+                                if (states.contains(WidgetState.disabled)) {
+                                  return ColorsForApp.cta;
+                                }
+                                return ColorsForApp.primaryColor;
+                              },
+                            ),
+                            shape: WidgetStateProperty.all(
+                              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                          ),
+                          child: Text(
+                            isLastStep ? "share_lead".tr : "next_step".tr,
+                            style: TextHelper.size20.copyWith(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }),
               ),
             ],
-          );
-        }),
+          ),
+        ),
       ),
+
+      // ───────────────────────────────────── Bottom Buttons ─────────────────────────────────
+      // bottomNavigationBar: Padding(
+      //   padding: const EdgeInsets.all(16),
+      //   child: Obx(() {
+      //     bool isRouteDetails = controller.currentStep.value == 0;
+      //     final isLastStep = controller.currentStep.value == 2; //  2 is your last page (Price Confirmation)
+      //
+      //     return Row(
+      //       children: [
+      //         Expanded(
+      //           child: ElevatedButton(
+      //             onPressed: isRouteDetails ? controller.cancel : controller.previousStep,
+      //             style: ElevatedButton.styleFrom(
+      //               padding: const EdgeInsets.symmetric(vertical: 14),
+      //               backgroundColor: Colors.grey.shade200,
+      //               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      //             ),
+      //             child: Text(
+      //               isRouteDetails ? "cancel".tr : "previous".tr,
+      //               style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor),
+      //             ),
+      //           ),
+      //         ),
+      //         const SizedBox(width: 12),
+      //         Expanded(
+      //           child: ElevatedButton(
+      //             onPressed: controller.isFormValid.value
+      //                 ? () async {
+      //                     if (controller.currentStep.value == 2) {
+      //                       await controller.submitRideLead();
+      //                     } else {
+      //                       controller.nextStep();
+      //                     }
+      //                   }
+      //                 : null,
+      //             style: ButtonStyle(
+      //               minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
+      //               backgroundColor: WidgetStateProperty.resolveWith<Color>(
+      //                 (states) {
+      //                   if (states.contains(WidgetState.disabled)) {
+      //                     return ColorsForApp.cta;
+      //                   }
+      //                   return ColorsForApp.primaryColor;
+      //                 },
+      //               ),
+      //               shape: WidgetStateProperty.all(
+      //                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      //               ),
+      //             ),
+      //             child: Text(
+      //               isLastStep ? "share_lead".tr : "next_step".tr,
+      //               style: TextHelper.size20.copyWith(color: Colors.white),
+      //             ),
+      //           ),
+      //         ),
+      //       ],
+      //     );
+      //   }),
+      // ),
     );
   }
 
@@ -393,11 +461,24 @@ class PostScreen extends StatelessWidget {
             children: [
               Text("seat_configuration".tr, style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
               const SizedBox(height: 8),
-              Row(children: [
-                _seatOption("7-seater", 7),
-                const SizedBox(width: 8),
-                _seatOption("8-seater", 8),
-              ]),
+              GridView.count(
+                crossAxisCount: 3, // 3 items per row
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                childAspectRatio: 1.5, // width / height ratio
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  _seatOption("9-seater", 9),
+                  _seatOption("13-seater", 13),
+                  _seatOption("17-seater", 17),
+                  _seatOption("20-seater", 20),
+                  _seatOption("27-seater", 27),
+                  _seatOption("32-seater", 32),
+                  _seatOption("45-seater", 45),
+                  _seatOption("50-seater", 50),
+                ],
+              )
             ],
           );
         }),
@@ -526,15 +607,15 @@ class PostScreen extends StatelessWidget {
           controller.fareController,
           isNumeric: true,
         ),
-        const SizedBox(height: 12),
-        buildInputField(
-          "distance".tr,
-          "0.0",
-          Icons.navigation_outlined,
-          Colors.blue,
-          controller.distanceController,
-          isNumeric: true,
-        ),
+        // const SizedBox(height: 12),
+        // buildInputField(
+        //   "distance".tr,
+        //   "0.0",
+        //   Icons.navigation_outlined,
+        //   Colors.blue,
+        //   controller.distanceController,
+        //   isNumeric: true,
+        // ),
       ]),
     );
   }

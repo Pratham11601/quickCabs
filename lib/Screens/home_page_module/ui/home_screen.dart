@@ -6,6 +6,7 @@ import '../../../routes/routes.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
 import '../../../widgets/constant_widgets.dart';
+import '../../../widgets/shimmer_widget.dart';
 import '../../landing_page/controller/dashboard_controller.dart';
 import '../controller/home_controller.dart';
 import '../home_widgets/driver_network_status.dart';
@@ -31,33 +32,38 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> callAsyncAPI() async {
-    bool result = await homeController.checkProfileCompletion();
-    if (result) {
-      if (!homeController.isKycCompleted.value) {
+    try {
+      // Profile check
+      bool result = await homeController.checkProfileCompletion();
+      if (result && !homeController.isKycCompleted.value) {
         showCommonMessageDialog(
           Get.context!,
           'Profile Incomplete',
-          'Your profile is not completed please complete you profile',
+          'Your profile is not completed please complete your profile',
           () {
-            Get.toNamed(Routes.MY_DOCUMENTS);
+            Get.toNamed(Routes.HELP_PAGE);
           },
         );
       }
+
+      // Refresh both lists
+      await Future.wait([
+        homeController.fetchLiveLeads(),
+        homeController.fetchActiveLeads(),
+      ]);
+    } catch (e) {
+      debugPrint("Error in callAsyncAPI: $e");
     }
-    //🔴🔴here is the reason if error occurs🔴🔴
-    //await homeController.fetchLeads();
-    await homeController.fetchLiveLeads();
-    await homeController.fetchActiveLeads();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(left: 15, top: 25, right: 15, bottom: 15),
-      child: RefreshIndicator(
-        onRefresh: () async {
-          callAsyncAPI();
-        },
+    return RefreshIndicator(
+      onRefresh: () async {
+        await callAsyncAPI(); // 🔹 This will refresh both APIs
+      },
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(left: 15, top: 25, right: 15, bottom: 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -115,43 +121,147 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            dashboardController.currentIndex.value = 1;
+                            Get.bottomSheet(
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text("Filter Leads", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
+                                    const SizedBox(height: 16),
+                                    TextField(
+                                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                                      decoration: InputDecoration(
+                                        labelText: "From Location",
+                                        labelStyle: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onChanged: (value) => homeController.fromLocation.value = value,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    TextField(
+                                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                                      decoration: InputDecoration(
+                                        labelText: "To Location",
+                                        labelStyle: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onChanged: (value) => homeController.toLocation.value = value,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              homeController.applyFilter();
+                                              Get.back(); // close bottomsheet
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: ColorsForApp.primaryColor, // 👈 set background color
+                                              padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(12), // 👈 rounded corners
+                                              ),
+                                            ),
+                                            child: Text(
+                                              "Apply",
+                                              style: TextHelper.size20.copyWith(color: ColorsForApp.whiteColor, fontFamily: semiBoldFont),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: OutlinedButton(
+                                            onPressed: () {
+                                              homeController.clearFilter();
+                                              Get.back();
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: ColorsForApp.whiteColor, // 👈 set background color
+                                              padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(12), // 👈 rounded corners
+                                              ),
+                                            ),
+                                            child: Text("Clear",
+                                                style:
+                                                    TextHelper.size20.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
                           },
-                          child: Text(
-                            "View All",
-                            style: TextHelper.size19.copyWith(
-                              fontFamily: semiBoldFont,
-                              color: ColorsForApp.primaryDarkColor,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.redAccent,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.filter_alt_outlined, color: ColorsForApp.whiteColor, size: 16),
+                                SizedBox(width: 4),
+                                Text("Filter", style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.whiteColor)),
+                              ],
                             ),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Obx(() => ListView.builder(
-                          shrinkWrap: true, // If you're inside a scrollable parent
-                          physics: NeverScrollableScrollPhysics(), // Prevent double scrolling
-                          itemCount: homeController.activeLeads.length,
-                          itemBuilder: (_, index) {
-                            final lead = homeController.activeLeads[index];
-                            return LeadCard(
-                              lead: {
-                                'name': lead.vendorFullname,
-                                'from': lead.locationFrom,
-                                'to': lead.toLocation,
-                                'price': lead.fare,
-                                'car': lead.carModel,
-                                'distance': lead.toLocationArea,
-                                'date': lead.date,
-                                'time': lead.time,
-                                'phone': lead.vendorContact,
-                                'note': lead.addOn,
-                                'acceptedById': lead.acceptedById,
-                              },
-                              onAccept: () => homeController.acceptLead(index),
-                            );
-                          },
-                        )),
+                    Obx(() {
+                      if (homeController.isLoadingActiveLeads.value) {
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: 3,
+                          itemBuilder: (_, __) => leadCardShimmer(),
+                        );
+                      }
+
+                      final leadsToShow = homeController.isFilterApplied.value
+                          ? homeController.filteredActiveLeads
+                          : homeController.activeLeads; // 👈 switch list
+
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: leadsToShow.length,
+                        itemBuilder: (_, index) {
+                          final lead = leadsToShow[index];
+                          return LeadCard(
+                            lead: {
+                              'name': lead.vendorFullname,
+                              'from': lead.locationFrom,
+                              'to': lead.toLocation,
+                              'price': lead.fare,
+                              'car': lead.carModel,
+                              'distance': lead.toLocationArea,
+                              'date': lead.date,
+                              'time': lead.time,
+                              'phone': lead.vendorContact,
+                              'note': lead.addOn,
+                              'acceptedById': lead.acceptedById,
+                            },
+                            onAccept: () => homeController.acceptLead(index),
+                            onWhatsApp: (phone) => homeController.openWhatsApp(phone),
+                            onCall: (phone) => homeController.makeCall(phone),
+                          );
+                        },
+                      );
+                    }),
 
                     const SizedBox(height: 12),
 
@@ -307,18 +417,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     // Ride Request Cards
                     Obx(() {
+                      if (homeController.isLoadingLiveLeads.value) {
+                        return ListView.separated(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: 3,
+                          separatorBuilder: (_, __) => SizedBox(height: 12),
+                          itemBuilder: (_, __) => rideRequestCardShimmer(),
+                        );
+                      }
                       return ListView.separated(
                         shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
+                        physics: NeverScrollableScrollPhysics(),
                         itemCount: homeController.liveLeads.length,
-                        separatorBuilder: (_, __) => SizedBox(height: 1.2.h),
+                        separatorBuilder: (_, __) => SizedBox(height: 12),
                         itemBuilder: (_, i) => RideRequestCard(
                           lead: homeController.liveLeads[i],
                           onDecline: () => homeController.declineLiveLead(i),
                           onAccept: () => homeController.acceptLiveLead(i),
                         ),
                       );
-                    }),
+                    })
                   ],
                 );
               }

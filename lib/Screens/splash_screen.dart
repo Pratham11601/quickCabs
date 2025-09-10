@@ -8,6 +8,8 @@ import 'package:get/get.dart';
 import '../controller/network_controller.dart';
 import '../generated/assets.dart';
 import '../routes/routes.dart';
+import '../utils/app_enums.dart';
+import '../utils/storage_config.dart';
 import 'login_signup_module/model/login_model.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -34,10 +36,17 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       vsync: this,
     )..forward();
 
-    // ✅ Navigate after 3 seconds
-    Timer(const Duration(seconds: 3), () {
-      // Example: go to login screen
-      Get.offAllNamed(Routes.LOGIN_SCREEN);
+    // ✅ Check login state after delay
+    Timer(const Duration(seconds: 3), () async {
+      final token = await LocalStorage.fetchValue(StorageKey.token);
+
+      if (token != null && token.isNotEmpty) {
+        // User already logged in → go to home screen
+        Get.offAllNamed(Routes.DASHBOARD_PAGE);
+      } else {
+        // No token → go to login
+        Get.offAllNamed(Routes.LOGIN_SCREEN);
+      }
     });
   }
 

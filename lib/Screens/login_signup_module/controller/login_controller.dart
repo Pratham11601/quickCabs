@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:QuickCab/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:QuickCab/widgets/snackbar.dart';
 
 import '../../../api/api_manager.dart';
 import '../../../utils/app_enums.dart';
@@ -59,6 +59,11 @@ class LoginController extends GetxController {
       phoneController.text = await LocalStorage.fetchValue(StorageKey.user) ?? "";
       passwordController.text = await LocalStorage.fetchValue(StorageKey.password) ?? "";
     }
+  }
+
+  Future<bool> isUserLoggedIn() async {
+    final token = await LocalStorage.fetchValue(StorageKey.token);
+    return token != null && token.isNotEmpty;
   }
 
   @override
