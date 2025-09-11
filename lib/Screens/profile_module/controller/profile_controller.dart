@@ -37,15 +37,29 @@ class ProfileController extends GetxController {
 
   /// Logout function
   void logout() async {
-    await LocalStorage.erase(); // Clears token + credentials
+    // 1. Clear persistent storage
+    await LocalStorage.erase();
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+
+    // 2. Clear APIManager token header
+    APIManager().clearAuthorizationHeader(); // <-- Use your APIManager
+
+    // 3. Cancel any ongoing API requests (optional but safe)
+    APIManager().cancelRequests();
+
+    // 4. Delete all controllers (clear old state)
+    Get.deleteAll(force: true);
+
+    // 5. Navigate to login
     Get.offAllNamed(Routes.LOGIN_SCREEN);
-    // Add your API / Auth logout logic here
+
+    // 6. Show snackbar
     Get.snackbar(
-      "Logout", "You have been logged out successfully!",
+      "Logout",
+      "You have been logged out successfully!",
       snackPosition: SnackPosition.TOP,
-      backgroundColor: ColorsForApp.colorVerifyGreen, // you can control transparency
+      backgroundColor: ColorsForApp.colorVerifyGreen,
       colorText: ColorsForApp.whiteColor,
     );
   }

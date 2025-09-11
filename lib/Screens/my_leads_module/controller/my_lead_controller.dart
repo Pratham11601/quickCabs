@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../api/api_manager.dart';
+import '../../post_lead_module/repository/post_lead_repository.dart';
 import '../model/mylead_model.dart';
 import '../repository/mylead_repository.dart';
 
@@ -21,17 +22,125 @@ class MyLeadsController extends GetxController {
   Rx<TimeOfDay> selectedTime = TimeOfDay.now().obs;
   RxString fromLocation = ''.obs;
   RxString toLocation = ''.obs;
+  RxString vendorMobile = ''.obs;
   RxInt selectedId = 0.obs;
 
   TextEditingController carModelController = TextEditingController();
   TextEditingController fareController = TextEditingController();
 
   final MyLeadRepository repository = MyLeadRepository(APIManager());
+  // final PostController locCtrl = Get.find<PostController>();
+  final PostLeadRepository postLeadRepository = PostLeadRepository(APIManager());
+
+  //For debounce
+  // Debounce observables (updated by onChanged)
+  final debouncePickup = ''.obs;
+  final debounceDrop = ''.obs;
+
+  // Loading flags (optional)
+  final isLoadingPickup = false.obs;
+  final isLoadingDrop = false.obs;
+
+  // Suggestions: list of maps with name/address (adapt to your model if you prefer)
+  final pickupSuggestions = <Map<String, String>>[].obs;
+  final dropSuggestions = <Map<String, String>>[].obs;
+
+  // Show flags to control suggestion visibility (only when field has focus + results exist)
+  final showPickupSuggestions = false.obs;
+  final showDropSuggestions = false.obs;
+
+  // Track last lengths
+  int _lastPickupLength = 0;
+  int _lastDropLength = 0;
+
+  // Track last typing times
+  DateTime _lastPickupInputTime = DateTime.now();
+  DateTime _lastDropInputTime = DateTime.now();
+
+  // TextEditingControllers must be persistent
+  TextEditingController fromLocationController = TextEditingController();
+  TextEditingController toLocationController = TextEditingController();
+  var isEditing = false.obs; // to prevent debounce firing on prefill
+
+  // Focus nodes to detect focus and hide suggestions when out of focus
+  final pickupFocus = FocusNode();
+  final dropFocus = FocusNode();
+
+  void setupDebouncers() {
+    debounce(fromLocation, (String? val) {
+      if (!isEditing.value) return; // 🚫 Ignore prefill changes
+      _handlePickupDebounce(val ?? '');
+    }, time: const Duration(milliseconds: 500));
+
+    debounce(toLocation, (String? val) {
+      if (!isEditing.value) return; // 🚫 Ignore prefill changes
+      _handleDropDebounce(val ?? '');
+    }, time: const Duration(milliseconds: 500));
+  }
+
+  void _handlePickupDebounce(String q) {
+    final now = DateTime.now();
+    if (q.length >= 3) {
+      if (q.length > _lastPickupLength) {
+        fetchLocations(q, isPickup: true);
+      } else if (q.length < _lastPickupLength && now.difference(_lastPickupInputTime).inSeconds >= 3) {
+        fetchLocations(q, isPickup: true);
+      } else {
+        pickupSuggestions.clear();
+        showPickupSuggestions.value = false;
+      }
+    } else {
+      pickupSuggestions.clear();
+      showPickupSuggestions.value = false;
+    }
+    _lastPickupLength = q.length;
+    _lastPickupInputTime = now;
+  }
+
+  void _handleDropDebounce(String q) {
+    final now = DateTime.now();
+    if (q.length >= 3) {
+      if (q.length > _lastDropLength) {
+        fetchLocations(q, isPickup: false);
+      } else if (q.length < _lastDropLength && now.difference(_lastDropInputTime).inSeconds >= 3) {
+        fetchLocations(q, isPickup: false);
+      } else {
+        dropSuggestions.clear();
+        showDropSuggestions.value = false;
+      }
+    } else {
+      dropSuggestions.clear();
+      showDropSuggestions.value = false;
+    }
+    _lastDropLength = q.length;
+    _lastDropInputTime = now;
+  }
 
   @override
   void onInit() {
     super.onInit();
     fetchLeads(forceRefresh: true);
+    setupDebouncers();
+    // Focus listeners: hide suggestions when field loses focus
+    pickupFocus.addListener(() {
+      if (!pickupFocus.hasFocus) {
+        // optionally clear suggestions on blur
+        // pickupSuggestions.clear();
+        showPickupSuggestions.value = false;
+      } else {
+        // show if we already have suggestions
+        showPickupSuggestions.value = pickupSuggestions.isNotEmpty;
+      }
+    });
+
+    dropFocus.addListener(() {
+      if (!dropFocus.hasFocus) {
+        // dropSuggestions.clear();
+        showDropSuggestions.value = false;
+      } else {
+        showDropSuggestions.value = dropSuggestions.isNotEmpty;
+      }
+    });
   }
 
   TimeOfDay parseTimeOfDay(String? timeString) {
@@ -46,24 +155,75 @@ class MyLeadsController extends GetxController {
 
   // Method to set lead data before editing
   void setLeadData(Lead lead) {
-    isTripActive.value = int.tryParse('${lead.isActive}') == 1;
+    isEditing.value = false; // 🚫 disable debounce during prefill
 
-    selectedDate.value = lead.date ?? DateTime.now();
-
-    // ✅ convert string/object to TimeOfDay
-    if (lead.time is String) {
-      selectedTime.value = parseTimeOfDay(lead.time as String);
-    } else if (lead.time is TimeOfDay) {
-      selectedTime.value = lead.time as TimeOfDay;
-    } else {
-      selectedTime.value = TimeOfDay.now();
-    }
-
+    // fill values
     fromLocation.value = lead.locationFrom ?? '';
     toLocation.value = lead.toLocation ?? '';
 
+    fromLocationController.text = fromLocation.value;
+    toLocationController.text = toLocation.value;
+
     carModelController.text = lead.carModel ?? '';
     fareController.text = lead.fare ?? '';
+    vendorMobile.value = lead.vendorContact ?? '';
+
+    // enable debounce after short delay (so UI settles)
+    Future.delayed(const Duration(milliseconds: 300), () {
+      isEditing.value = true; // ✅ now user typing will trigger debounce
+    });
+  }
+
+  /// call this to set text and clear suggestions when user picks an item
+  void selectSuggestion({required bool isPickup, required String name}) {
+    if (isPickup) {
+      fromLocationController.text = name;
+      pickupSuggestions.clear();
+      showPickupSuggestions.value = false;
+      pickupFocus.unfocus();
+    } else {
+      toLocationController.text = name;
+      dropSuggestions.clear();
+      showDropSuggestions.value = false;
+      dropFocus.unfocus();
+    }
+  }
+
+  // Fetch locations via repository
+  Future<void> fetchLocations(String query, {required bool isPickup}) async {
+    try {
+      // Start loader
+      if (isPickup) {
+        isLoadingPickup.value = true;
+      } else {
+        isLoadingDrop.value = true;
+      }
+      final response = await postLeadRepository.fetchLocationForPost(location: query);
+      final results = response.results ?? [];
+
+      final suggestions = results.map<Map<String, String>>((item) {
+        return {
+          "name": item.name ?? "",
+          "address": item.address ?? "",
+        };
+      }).toList();
+
+      if (isPickup) {
+        pickupSuggestions.assignAll(suggestions);
+        showPickupSuggestions.value = true;
+      } else {
+        dropSuggestions.assignAll(suggestions);
+        showDropSuggestions.value = true;
+      }
+    } catch (e) {
+      debugPrint("Error fetching suggestions: $e");
+    } finally {
+      if (isPickup) {
+        isLoadingPickup.value = false;
+      } else {
+        isLoadingDrop.value = false;
+      }
+    }
   }
 
   Future<void> fetchLeads({bool forceRefresh = false}) async {
@@ -119,15 +279,15 @@ class MyLeadsController extends GetxController {
     final params = {
       "date": DateFormat('yyyy-MM-dd').format(selectedDate.value),
       "time": selectedTime.value.format(Get.context!),
-      "location_from": fromLocation.value,
+      "locationFrom": fromLocationController.text, // ✅ use debounce if user typed new value
       "location_from_area": "",
-      "to_location": toLocation.value,
+      "toLocation": toLocationController.text, // ✅ same for drop
       "to_location_area": "",
       "car_model": carModelController.text.trim(),
       "add_on": "",
       "fare": fareController.text.trim(),
       "cab_number": "",
-      "vendor_contact": "",
+      "vendor_contact": vendorMobile.value,
     };
     try {
       isLoading.value = true;

@@ -2,6 +2,7 @@ import 'package:QuickCab/Screens/home_page_module/model/check_profile_completion
 
 import '../../../api/api_manager.dart';
 import '../../profile_module/model/subscription_status_model.dart';
+import '../model/vendor_emergency_model.dart';
 
 class HomeRepository {
   final APIManager apiManager;
@@ -22,5 +23,27 @@ class HomeRepository {
     );
     var response = SubscriptionStatusModel.fromJson(jsonData);
     return response;
+  }
+
+  // Call Vendors api for emergency services
+  Future<VendorResponse> getVendors({
+    required String category,
+    required int page,
+    required int limit,
+  }) async {
+    // Build query parameters map
+    final Map<String, dynamic> queryParams = {
+      "category": category,
+      "page": page.toString(),
+      "limit": limit.toString(),
+    };
+
+    // Call API
+    var jsonData = await apiManager.getAPICall(
+      url: '/vendorDetails/get-all',
+      queryParameters: queryParams, // pass map, not undefined 'params'
+    );
+
+    return VendorResponse.fromJson(jsonData);
   }
 }

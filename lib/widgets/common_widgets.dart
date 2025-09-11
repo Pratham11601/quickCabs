@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../Screens/landing_page/controller/dashboard_controller.dart';
 import '../generated/assets.dart';
 import '../utils/app_colors.dart';
 import '../utils/text_styles.dart';
+
 /// Utility: Calculates responsive horizontal padding
 /// - >=1000px: centers content with ~720px column
 /// - >=600px: 32px padding
 /// - else: 16px padding
-/// 
+///
 double horizontalPadding(BuildContext context) {
   final w = MediaQuery.of(context).size.width;
   if (w >= 1000) return (w - 720) / 2; // center a 720px-ish column on web/tablet
@@ -704,7 +706,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return SafeArea(
       bottom: false,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         width: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -724,9 +726,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 child: const Icon(Icons.arrow_back_ios, color: Colors.white),
               ),
             if (showBack) const SizedBox(width: 12),
-            Expanded(
+            Flexible(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min, // important to avoid taking full height
                 children: [
                   Text(
                     title,
@@ -766,7 +769,6 @@ class UrlLauncherHelper {
     }
   }
 }
-
 
 class LoadingOverlay extends StatelessWidget {
   final bool isLoading;

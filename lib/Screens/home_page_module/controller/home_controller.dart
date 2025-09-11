@@ -98,7 +98,7 @@ class HomeController extends GetxController {
   RxList<Post> filteredActiveLeads = <Post>[].obs;
   var fromLocation = "".obs;
   var toLocation = "".obs;
-  var isFilterApplied = false.obs; // 👈 new flag
+  var isFilterApplied = false.obs;
 
   // Future<void> fetchLeads() async {
   //   try {
@@ -147,6 +147,7 @@ class HomeController extends GetxController {
   //     isLoading.value = false;
   //   }
   // }
+
   Future<void> fetchLiveLeads() async {
     try {
       isLoadingLiveLeads.value = true;

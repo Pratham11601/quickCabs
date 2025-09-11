@@ -1,6 +1,8 @@
+import 'package:QuickCab/utils/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
+
 import '../../../routes/routes.dart';
 import '../../../utils/app_colors.dart';
 import '../../../widgets/snackbar.dart';
@@ -8,16 +10,14 @@ import '../controller/user_registration_controller.dart';
 
 class UserRegistrationScreen extends StatelessWidget {
   UserRegistrationScreen({super.key});
-  final UserRegistrationController controller =
-      Get.put(UserRegistrationController());
+  final UserRegistrationController controller = Get.put(UserRegistrationController());
   final GlobalKey<FormState> userDetailsFormKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("User Registration",
-            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
+        title: Text("User Registration", style: TextHelper.size20.copyWith(fontFamily: boldFont, color: ColorsForApp.whiteColor)),
         centerTitle: true,
         backgroundColor: ColorsForApp.gradientTop,
         flexibleSpace: Container(
@@ -32,54 +32,54 @@ class UserRegistrationScreen extends StatelessWidget {
         elevation: 0,
         leading: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
         actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 3.w),
-            child: Obx(() => Stack(
-                  children: [
-                    TextButton.icon(
-                      onPressed: () => controller.toggleLanguageDropdown(),
-                      icon: Icon(Icons.language, color: Colors.white),
-                      label: Text(controller.selectedLanguage.value,
-                          style: TextStyle(
-                              fontSize: 14.sp,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600)),
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.red[400]!,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5)),
-                      ),
-                    ),
-                    if (controller.isLanguageDropdownVisible.value)
-                      Positioned(
-                        right: 0,
-                        top: 40,
-                        child: Material(
-                          color: Colors.white,
-                          elevation: 6,
-                          borderRadius: BorderRadius.circular(5),
-                          child: Container(
-                            width: 32.w,
-                            child: ListView(
-                              shrinkWrap: true,
-                              children: controller.languages
-                                  .map((lang) => ListTile(
-                                        title: Text(lang),
-                                        selected:
-                                            controller.selectedLanguage.value ==
-                                                lang,
-                                        selectedTileColor: Colors.red.shade50,
-                                        onTap: () =>
-                                            controller.setLanguage(lang),
-                                      ))
-                                  .toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                )),
-          ),
+          // Padding(
+          //   padding: EdgeInsets.only(right: 3.w),
+          //   child: Obx(() => Stack(
+          //         children: [
+          //           TextButton.icon(
+          //             onPressed: () => controller.toggleLanguageDropdown(),
+          //             icon: Icon(Icons.language, color: Colors.white),
+          //             label: Text(controller.selectedLanguage.value,
+          //                 style: TextStyle(
+          //                     fontSize: 14.sp,
+          //                     color: Colors.white,
+          //                     fontWeight: FontWeight.w600)),
+          //             style: TextButton.styleFrom(
+          //               backgroundColor: Colors.red[400]!,
+          //               shape: RoundedRectangleBorder(
+          //                   borderRadius: BorderRadius.circular(5)),
+          //             ),
+          //           ),
+          //           if (controller.isLanguageDropdownVisible.value)
+          //             Positioned(
+          //               right: 0,
+          //               top: 40,
+          //               child: Material(
+          //                 color: Colors.white,
+          //                 elevation: 6,
+          //                 borderRadius: BorderRadius.circular(5),
+          //                 child: Container(
+          //                   width: 32.w,
+          //                   child: ListView(
+          //                     shrinkWrap: true,
+          //                     children: controller.languages
+          //                         .map((lang) => ListTile(
+          //                               title: Text(lang),
+          //                               selected:
+          //                                   controller.selectedLanguage.value ==
+          //                                       lang,
+          //                               selectedTileColor: Colors.red.shade50,
+          //                               onTap: () =>
+          //                                   controller.setLanguage(lang),
+          //                             ))
+          //                         .toList(),
+          //                   ),
+          //                 ),
+          //               ),
+          //             ),
+          //         ],
+          //       )),
+          // ),
         ],
       ),
       body: SingleChildScrollView(
@@ -92,25 +92,31 @@ class UserRegistrationScreen extends StatelessWidget {
               children: [
                 SizedBox(height: 2.h),
                 Text("Personal Information",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 18.sp)),
-                SizedBox(height: 3.h),
+                    style: TextHelper.h7.copyWith(
+                      fontFamily: boldFont,
+                    )),
+                SizedBox(height: 1.h),
                 Text("Full Name",
-                    style: TextStyle(
-                        fontSize: 15.sp, fontWeight: FontWeight.w600)),
+                    style: TextHelper.size19.copyWith(
+                      fontFamily: semiBoldFont,
+                    )),
                 SizedBox(height: 1.h),
                 TextFormField(
                   controller: controller.fullNameController,
-                  style:
-                      TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w400),
+                  style: TextHelper.size18.copyWith(
+                    fontFamily: regularFont,
+                  ),
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.person),
+                    prefixIcon: Icon(
+                      Icons.person,
+                      color: ColorsForApp.primaryDarkColor,
+                    ),
                     hintText: "Enter your full name",
-                    hintStyle:
-                        TextStyle(fontWeight: FontWeight.w400, fontSize: 15.sp),
+                    hintStyle: TextHelper.size18.copyWith(
+                      fontFamily: regularFont,
+                    ),
                     errorStyle: TextStyle(fontSize: 13.sp),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(9)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -121,25 +127,31 @@ class UserRegistrationScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 2.h),
                 Text("Gender",
-                    style: TextStyle(
-                        fontSize: 15.sp, fontWeight: FontWeight.w600)),
+                    style: TextHelper.size19.copyWith(
+                      fontFamily: semiBoldFont,
+                    )),
                 SizedBox(height: 1.h),
                 Obx(() => DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(9)),
-                        errorText: controller.genderError.value
-                            ? "Please select Gender"
-                            : null,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
+                        errorText: controller.genderError.value ? "Please select Gender" : null,
                       ),
-                      hint: Text("Select Gender"),
-                      value: controller.selectedGender.value.isEmpty
-                          ? null
-                          : controller.selectedGender.value,
+                      hint: Text(
+                        "Select Gender",
+                        style: TextHelper.size18.copyWith(
+                          fontFamily: regularFont,
+                        ),
+                      ),
+                      value: controller.selectedGender.value.isEmpty ? null : controller.selectedGender.value,
                       items: controller.genders
                           .map((gender) => DropdownMenuItem(
                                 value: gender,
-                                child: Text(gender),
+                                child: Text(
+                                  gender,
+                                  style: TextHelper.size18.copyWith(
+                                    fontFamily: regularFont,
+                                  ),
+                                ),
                               ))
                           .toList(),
                       onChanged: (value) {
@@ -148,21 +160,28 @@ class UserRegistrationScreen extends StatelessWidget {
                     )),
                 SizedBox(height: 2.h),
                 Text("Business Name",
-                    style: TextStyle(
-                        fontSize: 15.sp, fontWeight: FontWeight.w600)),
+                    style: TextHelper.size19.copyWith(
+                      fontFamily: semiBoldFont,
+                    )),
                 SizedBox(height: 1.h),
                 TextFormField(
                   controller: controller.businessNameController,
-                  style:
-                      TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w400),
+                  style: TextHelper.size18.copyWith(
+                    fontFamily: regularFont,
+                  ),
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.business),
+                    prefixIcon: Icon(
+                      Icons.business,
+                      color: ColorsForApp.primaryDarkColor,
+                    ),
                     hintText: "Enter your business name",
-                    errorStyle: TextStyle(fontSize: 13.sp),
-                    hintStyle:
-                        TextStyle(fontWeight: FontWeight.w400, fontSize: 15.sp),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(9)),
+                    errorStyle: TextHelper.size16.copyWith(
+                      fontFamily: regularFont,
+                    ),
+                    hintStyle: TextHelper.size18.copyWith(
+                      fontFamily: regularFont,
+                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -173,21 +192,28 @@ class UserRegistrationScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 2.h),
                 Text("Current Address",
-                    style: TextStyle(
-                        fontSize: 15.sp, fontWeight: FontWeight.w600)),
+                    style: TextHelper.size19.copyWith(
+                      fontFamily: semiBoldFont,
+                    )),
                 SizedBox(height: 1.h),
                 TextFormField(
                   controller: controller.currentAddressController,
-                  style:
-                      TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w400),
+                  style: TextHelper.size18.copyWith(
+                    fontFamily: regularFont,
+                  ),
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.place),
+                    prefixIcon: Icon(
+                      Icons.place,
+                      color: ColorsForApp.primaryDarkColor,
+                    ),
                     hintText: "Enter your current address",
-                    errorStyle: TextStyle(fontSize: 13.sp),
-                    hintStyle:
-                        TextStyle(fontWeight: FontWeight.w400, fontSize: 15.sp),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(9)),
+                    errorStyle: TextHelper.size16.copyWith(
+                      fontFamily: semiBoldFont,
+                    ),
+                    hintStyle: TextHelper.size18.copyWith(
+                      fontFamily: regularFont,
+                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
                   ),
                   inputFormatters: [
                     // Limit input to 100 characters
@@ -201,29 +227,35 @@ class UserRegistrationScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 2.h),
                 Text("Email Address",
-                    style: TextStyle(
-                        fontSize: 15.sp, fontWeight: FontWeight.w600)),
+                    style: TextHelper.size19.copyWith(
+                      fontFamily: semiBoldFont,
+                    )),
                 SizedBox(height: 1.h),
                 TextFormField(
                   controller: controller.emailController,
-                  style:
-                      TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w400),
+                  style: TextHelper.size18.copyWith(
+                    fontFamily: regularFont,
+                  ),
                   decoration: InputDecoration(
-                    errorStyle: TextStyle(fontSize: 13.sp),
-                    prefixIcon: Icon(Icons.email),
+                    errorStyle: TextHelper.size16.copyWith(
+                      fontFamily: regularFont,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.email,
+                      color: ColorsForApp.primaryDarkColor,
+                    ),
                     hintText: "Enter your email address",
-                    hintStyle:
-                        TextStyle(fontWeight: FontWeight.w400, fontSize: 15.sp),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(9)),
+                    hintStyle: TextHelper.size18.copyWith(
+                      fontFamily: regularFont,
+                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
                   ),
                   validator: (value) {
                     if (controller.emailController.text.isEmpty) {
                       return 'Please enter your email address';
                     }
                     // Simple email regex
-                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                        .hasMatch(controller.emailController.text)) {
+                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(controller.emailController.text)) {
                       return 'Please enter a valid email address';
                     }
                     return null;
@@ -231,12 +263,15 @@ class UserRegistrationScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 4.h),
                 Text("Service Types",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16.sp)),
+                    style: TextHelper.h7.copyWith(
+                      fontFamily: boldFont,
+                    )),
                 SizedBox(height: 0.6.h),
                 Text(
                   "Select the services you want to provide",
-                  style: TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
+                  style: TextHelper.size18.copyWith(
+                    fontFamily: regularFont,
+                  ),
                 ),
                 SizedBox(height: 1.h),
                 Obx(() => ListView.builder(
@@ -246,8 +281,7 @@ class UserRegistrationScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final type = controller.serviceTypes[index];
                         return Obx(() {
-                          final isSelected =
-                              controller.selectedService.value == type;
+                          final isSelected = controller.selectedService.value == type;
                           return Padding(
                             padding: EdgeInsets.only(bottom: 1.5.h),
                             child: GestureDetector(
@@ -255,32 +289,19 @@ class UserRegistrationScreen extends StatelessWidget {
                               child: Container(
                                 key: ValueKey(type),
                                 decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? Colors.orange.shade100.withOpacity(0.32)
-                                      : Colors.white,
+                                  color: isSelected ? Colors.orange.shade100.withOpacity(0.32) : Colors.white,
                                   border: Border.all(
-                                    color: isSelected
-                                        ? Colors.orange
-                                        : Colors.grey.shade300,
+                                    color: isSelected ? Colors.orange : Colors.grey.shade300,
                                     width: isSelected ? 2 : 1,
                                   ),
                                   borderRadius: BorderRadius.circular(9),
                                 ),
                                 child: ListTile(
-                                  title: Text(
-                                    type,
-                                    style: TextStyle(
-                                      color: isSelected && type == 'None'
-                                          ? Colors.orange
-                                          : Colors.black,
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 14.sp,
-                                    ),
-                                  ),
-                                  trailing: Icon(Icons.chevron_right,
-                                      color: Colors.grey),
-                                  contentPadding:
-                                      EdgeInsets.symmetric(horizontal: 2.w),
+                                  title: Text(type,
+                                      style: TextHelper.size18.copyWith(
+                                          fontFamily: regularFont, color: isSelected && type == 'None' ? Colors.orange : Colors.black)),
+                                  trailing: Icon(Icons.chevron_right, color: Colors.grey),
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 2.w),
                                 ),
                               ),
                             ),
@@ -301,8 +322,7 @@ class UserRegistrationScreen extends StatelessWidget {
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorsForApp.gradientTop,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               padding: EdgeInsets.symmetric(vertical: 1.8.h),
             ),
             onPressed: () {
@@ -317,11 +337,7 @@ class UserRegistrationScreen extends StatelessWidget {
               }
             },
             child: Center(
-              child: Text("Complete Registration",
-                  style: TextStyle(
-                      fontSize: 16.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold)),
+              child: Text("Complete Registration", style: TextHelper.size20.copyWith(color: ColorsForApp.whiteColor, fontFamily: boldFont)),
             ),
           ),
         ),

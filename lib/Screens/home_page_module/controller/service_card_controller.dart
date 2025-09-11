@@ -1,58 +1,57 @@
 import 'package:get/get.dart';
-import 'package:flutter/material.dart';
-import '../../../utils/app_enums.dart';
-import '../model/service_card_model.dart';
+
+import '../../../api/api_manager.dart';
+import '../model/vendor_emergency_model.dart';
+import '../repository/home_repository.dart';
 
 class EmergencyServicesCardController extends GetxController {
-  late List<ServiceCardModel> _allCards;
-  RxList<ServiceCardModel> serviceCards = <ServiceCardModel>[].obs;
+  var vendors = <Vendors>[].obs;
+  var isLoading = false.obs;
+  var isMoreDataAvailable = true.obs;
+  var totalVendors = 0.obs; // store total vendors
+
+  RxInt currentPage = 1.obs;
+  final int limit = 10;
+  final String category;
+
+  HomeRepository authRepository = HomeRepository(APIManager());
+  EmergencyServicesCardController({required this.category});
 
   @override
   void onInit() {
     super.onInit();
-    loadInitialData();
+    fetchVendors();
   }
-  void loadInitialData() {
-    _allCards = [
-      ServiceCardModel(
-        title: "Quick Fix Tyre Service",
-        location: "Sector 14, Gurgaon",
-        time: "11:00 PM",
-        distanceKm: 0.8,
-        isOpen: true,
-        responseTime: "15 mins",
-        serviceType: "puncture",
-      ),
-      ServiceCardModel(
-        title: "Dont know this service",
-        location: "Far Far away",
-        time: "10:00 AM",
-        distanceKm: 1000.0,
-        isOpen: false,
-        responseTime: "1000 hours",
-        serviceType: "puncture",
-      ),
-      ServiceCardModel(
-        title: "You are sick",
-        location: "Heaven",
-        time: "12:00 AM",
-        distanceKm: 0.0,
-        isOpen: true,
-        responseTime: "0 secs",
-        serviceType: "hospital",
-      ),
-    ];
 
-    serviceCards.value = [];
+  void fetchVendors() async {
+    if (!isMoreDataAvailable.value || isLoading.value) return;
+
+    try {
+      isLoading.value = true;
+
+      final response = await authRepository.getVendors(
+        category: category,
+        page: currentPage.value,
+        limit: limit,
+      );
+      // store total count from API
+      totalVendors.value = response.total ?? 0;
+
+      if (response.vendors != null && response.vendors!.isNotEmpty) {
+        vendors.addAll(response.vendors!);
+        currentPage++;
+        isMoreDataAvailable.value = response.isNext ?? false;
+      } else {
+        isMoreDataAvailable.value = false;
+      }
+    } finally {
+      isLoading.value = false;
+    }
   }
-  // void filterByServiceType(ServiceType type) {
-  //   debugPrint("---------------Filtering cards for serviceType: $type");
-  //
-  //   List<ServiceCardModel> filtered = _allCards.where((card) => card.serviceType == type).toList();
-  //
-  //   debugPrint("----------------Filtered cards count: ${filtered.length}");
-  //
-  //   serviceCards.value = filtered;
-  // }
 
+  void loadMore() {
+    if (isMoreDataAvailable.value) {
+      fetchVendors();
+    }
+  }
 }

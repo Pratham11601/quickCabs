@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../../utils/app_colors.dart';
 import '../../../widgets/common_widgets.dart';
 import '../../../widgets/shimmer_widget.dart';
+import '../../post_lead_module/controller/post_controller.dart';
 import '../controller/my_lead_controller.dart';
 import '../lead_widgets/completed_card.dart';
 import '../lead_widgets/my_lead_card.dart';
@@ -83,14 +84,14 @@ class MyLeadsPage extends StatelessWidget {
 
                     // ✅ One RefreshIndicator for the whole TabBarView
                     Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: () async {
-                          await controller.fetchLeads(forceRefresh: true);
-                        },
-                        child: TabBarView(
-                          children: [
-                            // Active Leads Tab
-                            Obx(() => ListView.builder(
+                      child: TabBarView(
+                        children: [
+                          // Active Leads Tab
+                          Obx(() => RefreshIndicator(
+                                onRefresh: () async {
+                                  await controller.fetchLeads(forceRefresh: true);
+                                },
+                                child: ListView.builder(
                                   physics: const AlwaysScrollableScrollPhysics(),
                                   itemCount: controller.filteredActiveLeads.length,
                                   itemBuilder: (_, index) => LeadCard(
@@ -103,18 +104,23 @@ class MyLeadsPage extends StatelessWidget {
                                     },
                                     onDelete: () => print("Delete"),
                                   ),
-                                )),
+                                ),
+                              )),
 
-                            // Completed Leads Tab
-                            Obx(() => ListView.builder(
+                          // Completed Leads Tab
+                          Obx(() => RefreshIndicator(
+                                onRefresh: () async {
+                                  await controller.fetchLeads(forceRefresh: true);
+                                },
+                                child: ListView.builder(
                                   physics: const AlwaysScrollableScrollPhysics(),
                                   itemCount: controller.filteredCompletedLeads.length,
                                   itemBuilder: (_, index) => CompletedLeadCard(
                                     lead: controller.filteredCompletedLeads[index],
                                   ),
-                                )),
-                          ],
-                        ),
+                                ),
+                              )),
+                        ],
                       ),
                     ),
                   ],
@@ -128,6 +134,7 @@ class MyLeadsPage extends StatelessWidget {
   }
 
   void showEditLeadBottomSheet(BuildContext context, MyLeadsController controller) {
+    final locCtrl = Get.put(PostController(), permanent: true);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true, // 👈 allows full height scroll
@@ -243,37 +250,113 @@ class MyLeadsPage extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // From Location
-                Obx(() => TextFormField(
-                      controller: TextEditingController(text: controller.fromLocation.value)
-                        ..selection = TextSelection.fromPosition(
-                          TextPosition(offset: controller.fromLocation.value.length),
-                        ),
-                      style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                      decoration: InputDecoration(
-                        labelText: "Location From",
-                        labelStyle: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                        prefixIcon: Icon(Icons.location_on_outlined, color: ColorsForApp.primaryDarkColor),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                TextFormField(
+                  controller: controller.fromLocationController,
+                  onTap: () => controller.isEditing.value = true,
+                  onChanged: (val) => controller.fromLocation.value = val,
+                  style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                  decoration: InputDecoration(
+                    labelText: "Location From",
+                    labelStyle: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                    prefixIcon: Icon(Icons.location_on_outlined, color: ColorsForApp.primaryDarkColor),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+                // suggestions container
+                Obx(() {
+                  if (controller.isLoadingPickup.value) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: LinearProgressIndicator(minHeight: 2),
+                    );
+                  }
+
+                  if (!controller.showPickupSuggestions.value || controller.pickupSuggestions.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 220),
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: controller.pickupSuggestions.length,
+                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          final item = controller.pickupSuggestions[index];
+                          return ListTile(
+                            leading: const Icon(Icons.location_on_outlined),
+                            title: Text(item['name'] ?? '',
+                                style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                            subtitle: Text(item['address'] ?? '',
+                                style: TextHelper.size16.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont)),
+                            onTap: () => controller.selectSuggestion(isPickup: true, name: item['name'] ?? ''),
+                          );
+                        },
                       ),
-                      onChanged: (val) => controller.fromLocation.value = val,
-                    )),
+                    ),
+                  );
+                }),
                 const SizedBox(height: 16),
 
                 // To Location
-                Obx(() => TextFormField(
-                      controller: TextEditingController(text: controller.toLocation.value)
-                        ..selection = TextSelection.fromPosition(
-                          TextPosition(offset: controller.toLocation.value.length),
-                        ),
-                      style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                      decoration: InputDecoration(
-                        labelText: "To Location",
-                        labelStyle: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                        prefixIcon: Icon(Icons.location_on_outlined, color: ColorsForApp.primaryDarkColor),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                TextFormField(
+                  controller: controller.toLocationController,
+                  onTap: () => controller.isEditing.value = true,
+                  onChanged: (val) => controller.toLocation.value = val,
+                  style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                  decoration: InputDecoration(
+                    labelText: "To Location",
+                    labelStyle: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                    prefixIcon: Icon(Icons.location_on_outlined, color: ColorsForApp.primaryDarkColor),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+                Obx(() {
+                  if (controller.isLoadingDrop.value) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: LinearProgressIndicator(minHeight: 2),
+                    );
+                  }
+
+                  if (!controller.showDropSuggestions.value || controller.dropSuggestions.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 220),
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: controller.dropSuggestions.length,
+                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          final item = controller.dropSuggestions[index];
+                          return ListTile(
+                            leading: const Icon(Icons.location_on, color: Colors.red),
+                            title: Text(
+                              item['name'] ?? '',
+                              style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+                            ),
+                            subtitle: Text(item['address'] ?? '',
+                                style: TextHelper.size16.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont)),
+                            onTap: () => controller.selectSuggestion(isPickup: false, name: item['name'] ?? ''),
+                          );
+                        },
                       ),
-                      onChanged: (val) => controller.toLocation.value = val,
-                    )),
+                    ),
+                  );
+                }),
+
                 const SizedBox(height: 16),
 
                 // Car Model

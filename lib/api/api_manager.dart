@@ -47,8 +47,7 @@ class APIManager {
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           options.headers['Content-Type'] = 'application/json';
-          if (getAuthToken.isNotEmpty)
-            options.headers['Authorization'] = 'Bearer $getAuthToken';
+          if (getAuthToken.isNotEmpty) options.headers['Authorization'] = 'Bearer $getAuthToken';
           return handler.next(options);
         },
       ),
@@ -58,6 +57,10 @@ class APIManager {
   // Function to check & return if the token is valid
   String get getAuthToken {
     return _appController.userToken.toString();
+  }
+
+  void clearAuthorizationHeader() {
+    _dio.options.headers.remove('Authorization');
   }
 
   // GET
@@ -263,9 +266,7 @@ class APIManager {
       try {
         final formData = FormData.fromMap({
           ...params,
-          if (fileKey != null && file != null)
-            fileKey: await MultipartFile.fromFile(file.path,
-                filename: file.path.split('/').last),
+          if (fileKey != null && file != null) fileKey: await MultipartFile.fromFile(file.path, filename: file.path.split('/').last),
         });
         final response = await _dio
             .post(
@@ -372,9 +373,7 @@ class APIManager {
       try {
         final formData = FormData.fromMap({
           ...params,
-          if (fileKey != null && file != null)
-            fileKey: await MultipartFile.fromFile(file.path,
-                filename: file.path.split('/').last),
+          if (fileKey != null && file != null) fileKey: await MultipartFile.fromFile(file.path, filename: file.path.split('/').last),
         });
         final response = await _dio
             .put(
@@ -453,12 +452,10 @@ class APIManager {
               handleNotFound(error.response!.statusMessage ?? '');
               break;
             default:
-              handleGenericBadResponse(
-                  error.response!.statusCode, error.response!.data);
+              handleGenericBadResponse(error.response!.statusCode, error.response!.data);
           }
         } else {
-          throw FetchDataException(
-              'Received invalid status code: ${error.response?.statusCode}');
+          throw FetchDataException('Received invalid status code: ${error.response?.statusCode}');
         }
         break;
       case DioExceptionType.cancel:
@@ -483,25 +480,19 @@ class APIManager {
   }
 
   void handleBadRequest(dynamic data) {
-    final message = data is Map<String, dynamic> && data.containsKey('message')
-        ? data['message']
-        : data;
+    final message = data is Map<String, dynamic> && data.containsKey('message') ? data['message'] : data;
     // errorSnackBar(message: '$message');
     throw BadRequestException(message, 400);
   }
 
   void handleUnauthorized(dynamic data) {
-    final message = data is Map<String, dynamic> && data.containsKey('message')
-        ? data['message']
-        : data;
+    final message = data is Map<String, dynamic> && data.containsKey('message') ? data['message'] : data;
     // errorSnackBar(message: '$message');
     throw UnauthorizedException(message, 401);
   }
 
   void handleForbidden(dynamic data) {
-    final message = data is Map<String, dynamic> && data.containsKey('message')
-        ? data['message']
-        : data;
+    final message = data is Map<String, dynamic> && data.containsKey('message') ? data['message'] : data;
     // errorSnackBar(message: '$message');
     throw UnauthorizedException(message, 403);
   }
@@ -520,9 +511,7 @@ class APIManager {
   void handleGenericError(error, StackTrace stackTrace) {
     if (error.toString().contains('Connection closed while receiving data')) {
       // errorSnackBar(message: 'An error occurred while communicating with the server');
-    } else if (error
-        .toString()
-        .contains('Connection closed before full header was received')) {
+    } else if (error.toString().contains('Connection closed before full header was received')) {
       log('\x1B[91m[Handle Generic Error] => Request Canceled\x1B[0m');
     } else {
       // errorSnackBar(message: 'Server error');
@@ -566,8 +555,7 @@ class APIManager {
       default:
         // errorSnackBar(message: 'An error occurred while communicating to server with status code: ${response.statusCode}');
         log('\x1B[91m[Internal Server Error (${response.statusCode})] => ${response.data}\x1B[0m');
-        throw FetchDataException(
-            'Error occurred with code : ${response.statusCode}');
+        throw FetchDataException('Error occurred with code : ${response.statusCode}');
     }
   }
 
@@ -577,8 +565,7 @@ class APIManager {
     log('\x1B[94m[Method] => \x1B[95m${response.requestOptions.method}\x1B[0m');
     log('\x1B[94m[Headers] => \x1B[95m${response.requestOptions.headers}\x1B[0m');
     log('\x1B[94m[Url] => \x1B[95m${response.requestOptions.uri}\x1B[0m');
-    if (response.requestOptions.method == 'POST' ||
-        response.requestOptions.method == 'PUT') {
+    if (response.requestOptions.method == 'POST' || response.requestOptions.method == 'PUT') {
       var data = response.requestOptions.data;
       if (data is FormData) {
         log('\x1B[94m[Body] => \x1B[95mFormData\x1B[0m');
