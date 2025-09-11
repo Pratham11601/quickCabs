@@ -1,18 +1,17 @@
+import 'package:QuickCab/Screens/login_signup_module/controller/user_registration_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../Screens/document_verification_module/controller/document_verification_controller.dart';
 import '../Screens/landing_page/controller/dashboard_controller.dart';
 import '../generated/assets.dart';
 import '../utils/app_colors.dart';
 import '../utils/text_styles.dart';
-
 /// Utility: Calculates responsive horizontal padding
 /// - >=1000px: centers content with ~720px column
 /// - >=600px: 32px padding
 /// - else: 16px padding
+/// 
 double horizontalPadding(BuildContext context) {
   final w = MediaQuery.of(context).size.width;
   if (w >= 1000) return (w - 720) / 2; // center a 720px-ish column on web/tablet
@@ -334,7 +333,7 @@ class Bullet extends StatelessWidget {
 /// Header for Document Verification page with progress indicator
 class DocHeader extends StatelessWidget {
   const DocHeader({super.key, required this.controller});
-  final DocVerifyController controller;
+  final UserRegistrationController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -390,7 +389,6 @@ class DocHeader extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-
             // Subtitle with icon and description
             Row(
               children: [

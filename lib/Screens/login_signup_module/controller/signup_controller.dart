@@ -222,6 +222,7 @@ class SignupController extends GetxController {
   }
 
   RxString leadBy = ''.obs;
+  RxInt leadById = 0.obs;
 
   RxList<LeadByListData> leadByList = <LeadByListData>[].obs;
   Future<bool> getLeadByList() async {

@@ -1,3 +1,4 @@
+import 'dart:io';
 
 import '../../../api/api_manager.dart';
 import '../model/lead_by_model.dart';
@@ -52,13 +53,26 @@ class AuthRepository {
     return response;
   }
 
-    // User  registration 
-  Future<UserRegistrationModel>userRegistrationApiCall({
+  // User  registration
+  // Future<UserRegistrationModel> userRegistrationApiCall({
+  //   required Map<String, dynamic> params,
+  // }) async {
+  //   var jsonData = await apiManager.postAPICall(
+  //     url: '/vendorDetails/registervendorDetails/verify-otp',
+  //     params: params,
+  //   );
+  //   var response = UserRegistrationModel.fromJson(jsonData);
+  //   return response;
+  // }
+
+  Future<UserRegistrationModel> registerVendor({
     required Map<String, dynamic> params,
+    Map<String, File>? files,
   }) async {
-    var jsonData = await apiManager.postAPICall(
-      url: '/vendorDetails/registervendorDetails/verify-otp',
+    var jsonData = await apiManager.multipartPost2APICall(
+      url: "/vendorDetails/registers-user",
       params: params,
+      files: files,
     );
     var response = UserRegistrationModel.fromJson(jsonData);
     return response;

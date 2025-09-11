@@ -17,7 +17,6 @@ import '../Screens/profile_module/ui/subscription_screen.dart';
 import '../Screens/splash_screen.dart';
 import '../binding/app_binding.dart';
 import '../binding/auth_binding.dart';
-import '../binding/doc_verification_binding.dart';
 
 class AppPages {
   AppPages._();
@@ -47,7 +46,7 @@ class AppPages {
     GetPage(
       name: Routes.DOCUMENT_VERIFICATION_PAGE,
       page: () => DocumentVerificationPage(),
-      binding: DocVerificationBinding(),
+      binding: AuthBinding(),
     ),
     GetPage(
       name: Routes.HOME_PAGE,

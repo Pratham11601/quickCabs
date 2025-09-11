@@ -1,60 +1,71 @@
+import 'package:QuickCab/Screens/login_signup_module/controller/user_registration_controller.dart';
 import 'package:flutter/material.dart' hide Chip;
 import 'package:get/get.dart';
-import 'package:QuickCab/Screens/document_verification_module/controller/document_verification_controller.dart';
 import 'package:QuickCab/Screens/login_signup_module/controller/signup_controller.dart';
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:QuickCab/utils/text_styles.dart';
 
 import '../../../routes/routes.dart';
 import '../../../widgets/common_widgets.dart';
+import '../../../widgets/snackbar.dart';
+import '../../login_signup_module/model/lead_by_model.dart';
 import '../model/docItemModel.dart';
 
 class DocumentVerificationPage extends StatelessWidget {
   DocumentVerificationPage({super.key});
 
-  final DocVerifyController docVerifyController =
-      Get.put(DocVerifyController());
   final SignupController signupController = Get.find();
+  final UserRegistrationController userRegistrationController = Get.find();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorsForApp.bg,
-      body: Column(
-        children: [
-          DocHeader(controller: docVerifyController),
-          Expanded(
-            child: Obx(() => ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                  children: [
-                    LeadByCard(signupController: signupController),
-                    const SizedBox(height: 16),
-                    ...List.generate(docVerifyController.docs.length, (i) {
-                      return Padding(
-                        padding: EdgeInsets.only(
-                            bottom: i == docVerifyController.docs.length - 1
-                                ? 0
-                                : 16),
-                        child:
-                            DocCard(index: i, controller: docVerifyController),
-                      );
-                    }),
-                    const SizedBox(height: 16),
-                    DocHelpBox(),
-                    const SizedBox(height: 16),
-                    FooterProceedButton(controller: docVerifyController),
-                    const SizedBox(height: 18),
-                    Text(
-                      'All required documents must be uploaded to continue',
-                      textAlign: TextAlign.center,
-                      style: TextHelper.size18
-                          .copyWith(color: ColorsForApp.subtitle),
-                    ),
-                  ],
-                )),
+      body: Obx(() {
+        return LoadingOverlay(
+          isLoading: userRegistrationController.isLoading.value,
+          child: Column(
+            children: [
+              DocHeader(controller: userRegistrationController),
+              Expanded(
+                child: Obx(() => ListView(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                      children: [
+                        LeadByCard(signupController: signupController),
+                        const SizedBox(height: 16),
+                        ...List.generate(userRegistrationController.docs.length,
+                            (i) {
+                          return Padding(
+                            padding: EdgeInsets.only(
+                                bottom: i ==
+                                        userRegistrationController.docs.length -
+                                            1
+                                    ? 0
+                                    : 16),
+                            child: DocCard(
+                                index: i,
+                                controller: userRegistrationController),
+                          );
+                        }),
+                        const SizedBox(height: 16),
+                        DocHelpBox(),
+                        const SizedBox(height: 16),
+                        FooterProceedButton(
+                            controller: userRegistrationController),
+                        const SizedBox(height: 18),
+                        Text(
+                          'All required documents must be uploaded to continue',
+                          textAlign: TextAlign.center,
+                          style: TextHelper.size18
+                              .copyWith(color: ColorsForApp.subtitle),
+                        ),
+                      ],
+                    )),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      }),
     );
   }
 }
@@ -92,63 +103,68 @@ class LeadByCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Lead By',
-                  style: TextHelper.size18.copyWith(
+                  'Referred By',
+                  style: TextHelper.size20.copyWith(
                     color: ColorsForApp.blackColor,
                     fontFamily: semiBoldFont,
                   ),
                 ),
                 const SizedBox(height: 10),
                 Obx(() {
-                  return DropdownButtonFormField<String>(
-                    value: signupController.leadBy.value.isEmpty
-                        ? null
-                        : signupController.leadBy.value,
-                    icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                    decoration: InputDecoration(
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 14),
-                      filled: true,
-                      fillColor: Colors.white,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          color: ColorsForApp.blackColor.withValues(alpha: 0.3),
-                          width: 1,
+                  return DropdownButtonFormField<LeadByListData>(
+                      value: signupController.leadByList.firstWhereOrNull(
+                        (item) => item.id == signupController.leadById.value,
+                      ),
+                      icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                      decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 14),
+                        filled: true,
+                        fillColor: Colors.white,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color:
+                                ColorsForApp.blackColor.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                              color: ColorsForApp.orange, width: 1),
                         ),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                            color: ColorsForApp.orange, width: 1),
-                      ),
-                    ),
-                    style: TextHelper.size19.copyWith(
-                      color: ColorsForApp.blackColor,
-                      fontFamily: semiBoldFont,
-                    ),
-                    hint: Text(
-                      'Select who referred you',
                       style: TextHelper.size19.copyWith(
-                        color: ColorsForApp.subTitleColor,
+                        color: ColorsForApp.blackColor,
                         fontFamily: semiBoldFont,
                       ),
-                    ),
-                    items: signupController.leadByList
-                        .map(
-                          (item) => DropdownMenuItem<String>(
-                            value: item.name, // depends on your API model field
-                            child: Text(
-                              item.name ?? '',
-                              style: TextHelper.size18
-                                  .copyWith(color: ColorsForApp.blackColor),
+                      hint: Text(
+                        'Select who referred you',
+                        style: TextHelper.size19.copyWith(
+                          color: ColorsForApp.subTitleColor,
+                          fontFamily: semiBoldFont,
+                        ),
+                      ),
+                      items: signupController.leadByList
+                          .map(
+                            (item) => DropdownMenuItem<LeadByListData>(
+                              value: item, // depends on your API model field
+                              child: Text(
+                                item.name ?? '',
+                                style: TextHelper.size18
+                                    .copyWith(color: ColorsForApp.blackColor),
+                              ),
                             ),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (v) => signupController.leadBy.value = v ?? '',
-                  );
+                          )
+                          .toList(),
+                      onChanged: (v) {
+                        signupController.leadBy.value = v!.name ?? '';
+                        signupController.leadById.value = v.id ?? 0;
+                        debugPrint(
+                            "Selected Lead By: ${signupController.leadBy.value} (ID: ${signupController.leadById.value})");
+                      });
                 }),
               ],
             ),
@@ -163,7 +179,7 @@ class LeadByCard extends StatelessWidget {
 class DocCard extends StatelessWidget {
   const DocCard({super.key, required this.index, required this.controller});
   final int index;
-  final DocVerifyController controller;
+  final UserRegistrationController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -234,7 +250,8 @@ class DocCard extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
                   ),
-                  onPressed: () => controller.openUploadSheet(index),
+                  onPressed: () => controller.openUploadSheet(
+                      index, d.title == "Selfie Photo" ? true : false),
                   icon: const Icon(Icons.upload_rounded,
                       color: ColorsForApp.orange),
                   label: Text('Upload Document',
@@ -281,24 +298,14 @@ class DocCard extends StatelessWidget {
 
               // actions: Preview Replace Delete
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ActionLink(
-                    icon: Icons.remove_red_eye_outlined,
-                    color: Colors.blue,
-                    label: 'Preview',
-                    onTap: () {
-                      if (d.filePath == null) return;
-                      Get.snackbar('Preview', d.fileName ?? '',
-                          snackPosition: SnackPosition.BOTTOM,
-                          margin: const EdgeInsets.all(12));
-                    },
-                  ),
                   ActionLink(
                     icon: Icons.autorenew_rounded,
                     color: ColorsForApp.yellow,
                     label: 'Replace',
-                    onTap: () => controller.replaceDoc(index),
+                    onTap: () => controller.replaceDoc(
+                        index, d.title == "Selfie Photo" ? true : false),
                   ),
                   ActionLink(
                     icon: Icons.delete_outline_rounded,
@@ -326,8 +333,10 @@ class DocCard extends StatelessWidget {
 
 /// ---------- FOOTER Button for proceed ----------
 class FooterProceedButton extends StatelessWidget {
-  const FooterProceedButton({super.key, required this.controller});
-  final DocVerifyController controller;
+  FooterProceedButton({super.key, required this.controller});
+  final UserRegistrationController controller;
+  final UserRegistrationController userRegistrationController = Get.find();
+  final SignupController signupController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -341,17 +350,29 @@ class FooterProceedButton extends StatelessWidget {
 
       return GestureDetector(
         onTap: allUploaded
-            ? () {
-                // Show dialog when all docs uploaded
-                showAppDialog(
-                  title: 'Document uploaded successfully',
-                  message: 'Your verification is in process.',
-                  icon: Icons.check_circle_rounded,
-                  buttonText: 'OK',
-                  onConfirm: () {
-                    Get.offAllNamed(Routes.DASHBOARD_PAGE);
-                  },
-                );
+            ? () async {
+                if (signupController.leadBy.value.isEmpty &&
+                    signupController.leadById.value == 0) {
+                  ShowSnackBar.info(message: "Please select who referred you");
+                } else {
+                  bool result = await userRegistrationController.registerVendor(
+                      email: userRegistrationController.emailController.text,
+                      password: signupController.passCtrl.text.trim(),
+                      businessName: userRegistrationController
+                          .businessNameController.text,
+                      // city: userRegistrationController.cityName.value,
+                      vendorCat:
+                          userRegistrationController.selectedService.value,
+                      currentAddress: userRegistrationController
+                          .currentAddressController.text,
+                      pinCode: '',
+                      carNumber: '',
+                      referredBy: signupController.leadById.value,
+                      phoneNumber: signupController.phoneCtrl.text.trim());
+                  if (result) {
+                    Get.offAllNamed(Routes.LOGIN_SCREEN);
+                  }
+                }
               }
             : null, // disabled when docs missing
         child: Container(

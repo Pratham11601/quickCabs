@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:QuickCab/Screens/login_signup_module/controller/signup_controller.dart';
 import 'package:QuickCab/routes/routes.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../../../utils/app_colors.dart';
 import '../../../../utils/text_styles.dart';
@@ -46,7 +47,7 @@ class OtpVerifyContainer extends StatelessWidget {
           // OTP Input
           Obx(() => OutlinedField(
                 isFocused: signupController.isOtpFocused.value,
-                child: TextField(
+                child: TextFormField(
                   controller: signupController.otpController,
                   focusNode: signupController.otpFocusNode,
                   keyboardType: TextInputType.number,
@@ -58,6 +59,11 @@ class OtpVerifyContainer extends StatelessWidget {
                       fontFamily: semiBoldFont),
                   decoration: const InputDecoration(
                     counterText: '',
+                    hintText: "Enter Your OTP",
+                    hintStyle: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                        color: Colors.grey),
                     contentPadding: EdgeInsets.symmetric(
                       vertical: 5, // keeps it comfortable, not too tall/short
                     ),
@@ -101,8 +107,7 @@ class OtpVerifyContainer extends StatelessWidget {
                     const Icon(Icons.access_time, size: 16),
                     const SizedBox(width: 5),
                     Text("Resend OTP in ${signupController.resendTimer.value}s",
-                        style:
-                            const TextStyle(fontSize: 14, color: Colors.grey)),
+                        style: TextStyle(fontSize: 14, color: Colors.grey)),
                   ],
                 )
               : InkWell(

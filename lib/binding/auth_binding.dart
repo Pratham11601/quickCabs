@@ -1,3 +1,4 @@
+import 'package:QuickCab/Screens/login_signup_module/controller/user_registration_controller.dart';
 import 'package:get/get.dart';
 
 import '../Screens/login_signup_module/controller/login_controller.dart';
@@ -8,5 +9,7 @@ class AuthBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<LoginController>(() => LoginController(), fenix: true);
     Get.lazyPut<SignupController>(() => SignupController(), fenix: true);
+    Get.lazyPut<UserRegistrationController>(() => UserRegistrationController(),
+        fenix: true);
   }
 }
