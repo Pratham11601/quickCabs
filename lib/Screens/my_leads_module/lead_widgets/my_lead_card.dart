@@ -375,57 +375,47 @@ class LeadCard extends StatelessWidget {
             SizedBox(height: 8.sp),
             // Third Row: Date & Time
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(Icons.calendar_today, size: 16, color: ColorsForApp.blackColor),
-                SizedBox(width: 6),
-                Text(
-                  lead.date != null
-                      ? "${lead.date.year.toString().padLeft(4, '0')}-${lead.date.month.toString().padLeft(2, '0')}-${lead.date.day.toString().padLeft(2, '0')}"
-                      : '',
-                  style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  children: [
+                    Icon(Icons.calendar_today, size: 16, color: ColorsForApp.blackColor),
+                    SizedBox(width: 6),
+                    Text(
+                      lead.date != null
+                          ? "${lead.date.year.toString().padLeft(4, '0')}-${lead.date.month.toString().padLeft(2, '0')}-${lead.date.day.toString().padLeft(2, '0')}"
+                          : '',
+                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  width: 39.w,
-                ),
-                Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
-                SizedBox(width: 6),
-                Text(
-                  lead.time ?? '',
-                  style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  children: [
+                    Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
+                    SizedBox(width: 6),
+                    Text(
+                      lead.time ?? '',
+                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
               ],
             ),
-            SizedBox(height: 7.sp),
+            SizedBox(height: 10.sp),
 
             // Fourth Row: Phone & PIN
-            Row(
-              children: [
-                Icon(Icons.phone, size: 16, color: ColorsForApp.blackColor),
-                SizedBox(width: 6),
-                Flexible(
-                  child: Text(
-                    lead.vendorContact ?? '',
-                    style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                SizedBox(
-                  width: 40.w,
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    "PIN: ${lead.otp ?? ''}",
-                    style: TextHelper.size18.copyWith(color: ColorsForApp.primaryDarkColor),
-                  ),
-                ),
-              ],
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                "PIN: ${lead.otp ?? ''}",
+                style: TextHelper.size18.copyWith(color: ColorsForApp.primaryDarkColor),
+              ),
             ),
           ],
         ),

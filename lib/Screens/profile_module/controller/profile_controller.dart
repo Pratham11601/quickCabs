@@ -1,5 +1,4 @@
 import 'package:QuickCab/Screens/profile_module/model/profile_details_model.dart';
-import 'package:QuickCab/Screens/profile_module/profile_repository.dart';
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -9,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../api/api_manager.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/storage_config.dart';
+import '../repository/profile_repository.dart';
 
 class ProfileController extends GetxController {
   ProfileRepository profileRepository = ProfileRepository(APIManager());

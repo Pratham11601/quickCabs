@@ -543,29 +543,29 @@ class PostScreen extends StatelessWidget {
 
   // Seat option (reactive)
   Widget _seatOption(String text, int value) {
-    return Expanded(
-      child: Obx(() {
-        final bool isSelected = controller.selectedSeatConfig.value == value;
-        return GestureDetector(
-          onTap: () => controller.selectSeatConfig(value),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: isSelected ? Colors.blue.shade50 : Colors.white,
-              border: Border.all(color: isSelected ? Colors.blue : Colors.grey.shade300, width: 2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Center(
-                child: Column(
+    return Obx(() {
+      final bool isSelected = controller.selectedSeatConfig.value == value;
+      return GestureDetector(
+        onTap: () => controller.selectSeatConfig(value),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.blue.shade50 : Colors.white,
+            border: Border.all(color: isSelected ? Colors.blue : Colors.grey.shade300, width: 2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.group_outlined, color: ColorsForApp.colorBlue),
                 Text(text, style: TextHelper.size18),
               ],
-            )),
+            ),
           ),
-        );
-      }),
-    );
+        ),
+      );
+    });
   }
 
   // Simple input-like box for date/time display (kept local for styling)
