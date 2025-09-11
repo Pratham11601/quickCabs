@@ -1,7 +1,8 @@
 import 'package:QuickCab/Screens/home_page_module/home_widgets/service_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sizer/sizer.dart';
+
+import '../../../widgets/common_widgets.dart';
 import '../controller/service_card_controller.dart';
 
 class EmergencyServicesScreen extends StatelessWidget {
@@ -18,70 +19,23 @@ class EmergencyServicesScreen extends StatelessWidget {
 
   final EmergencyServicesCardController controller = Get.put(EmergencyServicesCardController());
   String title = Get.arguments[0];
-  String subtitle=Get.arguments[1];
-  String serviceType=Get.arguments[2];
+  String subtitle = Get.arguments[1];
+  String serviceType = Get.arguments[2];
 
   EmergencyServicesScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(10.h),
-        child: AppBar(
-          automaticallyImplyLeading: true,
-          elevation: 0,
-          backgroundColor: const Color(0xffF44336),
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFFFE6A37), Color(0xffF44336)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-          centerTitle: true,
-          title: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // this is icon if you dont need emoji
-                  // Icon(
-                  //   Icons.build,
-                  //   color: Colors.white,
-                  //   size: 22.sp,
-                  // ),
-                  SizedBox(width: 2.w),
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.5.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 1.h),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 16.5.sp,
-                ),
-              ),
-            ],
-          ),
-        ),
+      appBar: CustomAppBar(
+        title: title,
+        subtitle: subtitle,
       ),
-      body:   ListView.builder(
+      body: ListView.builder(
         itemCount: 3,
         itemBuilder: (context, index) {
-          return EmergencyServiceCard(title: "you dont know",
-            location:"pune",
+          return EmergencyServiceCard(
+            title: "you dont know",
+            location: "pune",
             serviceType: "hospital",
           );
         },

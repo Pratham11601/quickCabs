@@ -1,13 +1,14 @@
+import 'package:QuickCab/Screens/profile_module/model/profile_details_model.dart';
+import 'package:QuickCab/utils/app_colors.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:QuickCab/Screens/profile_module/model/profile_details_model.dart';
-import 'package:QuickCab/Screens/profile_module/profile_repository.dart';
-import 'package:QuickCab/utils/app_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/api_manager.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/storage_config.dart';
+import '../repository/profile_repository.dart';
 
 class ProfileController extends GetxController {
   ProfileRepository profileRepository = ProfileRepository(APIManager());
@@ -23,6 +24,9 @@ class ProfileController extends GetxController {
   void toggleNotifications(bool value) {
     isNotificationEnabled.value = value;
   }
+
+  var userDetails = Rxn<Vendor>(); // vendor model from response
+  var isLoading = false.obs;
 
   /// Change language
   void changeLanguage(String lang) {
@@ -59,17 +63,20 @@ class ProfileController extends GetxController {
 
   Rx<Vendor> userDeatils = Vendor().obs;
 
-  Future<bool> getProfileDetails() async {
+  Future<void> getProfileDetails() async {
     try {
+      isLoading.value = true;
       ProfileDetailsModel model = await profileRepository.getProfileDetailsApiCall();
+
       if (model.status == true) {
-        userDeatils.value = model.vendor!;
-        return true;
+        userDetails.value = model.vendor;
       } else {
-        return false;
+        debugPrint("Error: ${model.vendor!.fullname!}");
       }
     } catch (e) {
-      return false;
+      debugPrint("Error: $e");
+    } finally {
+      isLoading.value = false;
     }
   }
 }

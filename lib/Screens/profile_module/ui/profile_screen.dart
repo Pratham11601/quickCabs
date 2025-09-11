@@ -36,7 +36,6 @@ class ProfileScreen extends StatelessWidget {
                 SettingItem(
                   icon: Icons.description_outlined,
                   title: "documents".tr,
-                  label: "Incomplete",
                   onTap: () {
                     Get.toNamed(Routes.MY_DOCUMENTS);
                   },
@@ -56,7 +55,7 @@ class ProfileScreen extends StatelessWidget {
                     await UrlLauncherHelper.openUrl("https://quickcabpune.com/privacy-policy.html");
                   },
                 ),
-                SettingItem(icon: FontAwesomeIcons.chessKing, title: "Subscription Pro", onTap: () => Get.toNamed(Routes.SUBSCRIPTION)),
+                SettingItem(icon: FontAwesomeIcons.chessKing, title: "subscription_pro".tr, onTap: () => Get.toNamed(Routes.SUBSCRIPTION)),
               ],
             ),
 

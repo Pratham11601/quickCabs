@@ -1,10 +1,9 @@
+import 'package:QuickCab/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../routes/routes.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
-import '../../../widgets/common_widgets.dart';
 import '../controller/post_controller.dart';
 import '../post_widgets/post_lead_widgets.dart'; // <- your stepCircle & buildInputField live here
 
@@ -20,7 +19,7 @@ class PostScreen extends StatelessWidget {
 
       // ───────────────────────────── AppBar (kept your design) ─────────────────────────────
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(230),
+        preferredSize: const Size.fromHeight(215),
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -99,120 +98,299 @@ class PostScreen extends StatelessWidget {
       ),
 
       // ───────────────────────────────────────── Body ──────────────────────────────────────
-      body: Obx(() {
-        switch (controller.currentStep.value) {
-          case 0:
-            return _buildRouteDetails(context);
-          case 1:
-            return _buildTripInformation(context);
-          case 2:
-            return buildPriceConfirmation();
-          default:
-            return _buildRouteDetails(context);
-        }
-      }),
-
-      // ───────────────────────────────────── Bottom Buttons ─────────────────────────────────
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Obx(() {
-          bool isRouteDetails = controller.currentStep.value == 0;
-          final isLastStep = controller.currentStep.value == 2; //  2 is your last page (Price Confirmation)
-
-          return Row(
+      body: SingleChildScrollView(
+        child: LoadingOverlay(
+          isLoading: controller.isLoading.value,
+          child: Column(
             children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: isRouteDetails ? controller.cancel : controller.previousStep,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: Colors.grey.shade200,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  child: Text(
-                    isRouteDetails ? "cancel".tr : "previous".tr,
-                    style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: controller.isFormValid.value
-                      ? () async {
-                    if (controller.currentStep.value == 2) {
-                      await controller.submitRideLead();
-                    } else {
-                      controller.nextStep();
-                    }
-                  }
-                  : null,
-                  style: ButtonStyle(
-                    minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
-                    backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                      (states) {
-                        if (states.contains(WidgetState.disabled)) {
-                          return ColorsForApp.cta;
-                        }
-                        return ColorsForApp.primaryColor;
-                      },
-                    ),
-                    shape: WidgetStateProperty.all(
-                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                  ),
-                  child: Text(
-                    isLastStep ? "share_lead".tr : "next_step".tr,
-                    style: TextHelper.size20.copyWith(color: Colors.white),
-                  ),
-                ),
+              Obx(() {
+                switch (controller.currentStep.value) {
+                  case 0:
+                    return _buildRouteDetails(context);
+                  case 1:
+                    return _buildTripInformation(context);
+                  case 2:
+                    return buildPriceConfirmation();
+                  default:
+                    return _buildRouteDetails(context);
+                }
+              }),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Obx(() {
+                  bool isRouteDetails = controller.currentStep.value == 0;
+                  final isLastStep = controller.currentStep.value == 2; //  2 is your last page (Price Confirmation)
+
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: isRouteDetails ? controller.cancel : controller.previousStep,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            backgroundColor: Colors.grey.shade200,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                          child: Text(
+                            isRouteDetails ? "cancel".tr : "previous".tr,
+                            style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: controller.isFormValid.value
+                              ? () async {
+                                  if (controller.currentStep.value == 2) {
+                                    await controller.submitRideLead();
+                                  } else {
+                                    controller.nextStep();
+                                  }
+                                }
+                              : null,
+                          style: ButtonStyle(
+                            minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
+                            backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                              (states) {
+                                if (states.contains(WidgetState.disabled)) {
+                                  return ColorsForApp.cta;
+                                }
+                                return ColorsForApp.primaryColor;
+                              },
+                            ),
+                            shape: WidgetStateProperty.all(
+                              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                          ),
+                          child: Text(
+                            isLastStep ? "share_lead".tr : "next_step".tr,
+                            style: TextHelper.size20.copyWith(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }),
               ),
             ],
-          );
-        }),
+          ),
+        ),
       ),
+
+      // ───────────────────────────────────── Bottom Buttons ─────────────────────────────────
+      // bottomNavigationBar: Padding(
+      //   padding: const EdgeInsets.all(16),
+      //   child: Obx(() {
+      //     bool isRouteDetails = controller.currentStep.value == 0;
+      //     final isLastStep = controller.currentStep.value == 2; //  2 is your last page (Price Confirmation)
+      //
+      //     return Row(
+      //       children: [
+      //         Expanded(
+      //           child: ElevatedButton(
+      //             onPressed: isRouteDetails ? controller.cancel : controller.previousStep,
+      //             style: ElevatedButton.styleFrom(
+      //               padding: const EdgeInsets.symmetric(vertical: 14),
+      //               backgroundColor: Colors.grey.shade200,
+      //               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      //             ),
+      //             child: Text(
+      //               isRouteDetails ? "cancel".tr : "previous".tr,
+      //               style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor),
+      //             ),
+      //           ),
+      //         ),
+      //         const SizedBox(width: 12),
+      //         Expanded(
+      //           child: ElevatedButton(
+      //             onPressed: controller.isFormValid.value
+      //                 ? () async {
+      //                     if (controller.currentStep.value == 2) {
+      //                       await controller.submitRideLead();
+      //                     } else {
+      //                       controller.nextStep();
+      //                     }
+      //                   }
+      //                 : null,
+      //             style: ButtonStyle(
+      //               minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
+      //               backgroundColor: WidgetStateProperty.resolveWith<Color>(
+      //                 (states) {
+      //                   if (states.contains(WidgetState.disabled)) {
+      //                     return ColorsForApp.cta;
+      //                   }
+      //                   return ColorsForApp.primaryColor;
+      //                 },
+      //               ),
+      //               shape: WidgetStateProperty.all(
+      //                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      //               ),
+      //             ),
+      //             child: Text(
+      //               isLastStep ? "share_lead".tr : "next_step".tr,
+      //               style: TextHelper.size20.copyWith(color: Colors.white),
+      //             ),
+      //           ),
+      //         ),
+      //       ],
+      //     );
+      //   }),
+      // ),
     );
   }
 
   // ─────────────────────────────────── Step 1: Route Details ───────────────────────────────────
   Widget _buildRouteDetails(BuildContext context) {
+    final PostController locCtrl = Get.find<PostController>(); // your controller
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text("route_details".tr, style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont)),
-        const SizedBox(height: 6),
-        Text(
-          "enter_the_pickup_message".tr,
-          style: TextHelper.size18.copyWith(color: ColorsForApp.subTitleColor, fontFamily: regularFont),
-        ),
-        const SizedBox(height: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ... other widgets above
 
-        // Your reusable text-fields
-        buildInputField(
-          "pick_up_location".tr,
-          "enter_pick_up_location".tr,
-          Icons.location_on_outlined,
-          Colors.green,
-          controller.pickupController,
-        ),
-        const SizedBox(height: 12),
-        buildInputField(
-          "drop_off_location".tr,
-          "enter_drop_off_location".tr,
-          Icons.location_on,
-          Colors.red,
-          controller.dropController,
-        ),
+          // PICKUP FIELD + SUGGESTIONS
+          buildInputField(
+            "pick_up_location".tr,
+            "enter_pick_up_location".tr,
+            Icons.location_on_outlined,
+            Colors.green,
+            locCtrl.pickupController,
+            focusNode: locCtrl.pickupFocus,
+            onChanged: (val) => locCtrl.debouncePickup.value = val,
+          ),
 
-        const SizedBox(height: 20),
-        Text("Trip Type", style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont)),
-        const SizedBox(height: 12),
+          // small gap
+          const SizedBox(height: 6),
 
-        // Each card is reactive on its own
-        _tripTypeCard("return_trip".tr, "round_trip_journey".tr, Icons.autorenew, Colors.blue),
-        _tripTypeCard("one_way".tr, "single_journey".tr, Icons.arrow_forward, Colors.orange),
-        _tripTypeCard("rented".tr, "daily_rental".tr, Icons.calendar_today, Colors.blueAccent),
-      ]),
+          // suggestions container
+          Obx(() {
+            if (locCtrl.isLoadingPickup.value) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: LinearProgressIndicator(minHeight: 2),
+              );
+            }
+
+            if (!locCtrl.showPickupSuggestions.value || locCtrl.pickupSuggestions.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            return Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 220),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  itemCount: locCtrl.pickupSuggestions.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final item = locCtrl.pickupSuggestions[index];
+                    return ListTile(
+                      leading: const Icon(Icons.location_on_outlined),
+                      title: Text(item['name'] ?? '',
+                          style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                      subtitle: Text(item['address'] ?? '',
+                          style: TextHelper.size16.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont)),
+                      onTap: () => locCtrl.selectSuggestion(isPickup: true, name: item['name'] ?? ''),
+                    );
+                  },
+                ),
+              ),
+            );
+          }),
+
+          const SizedBox(height: 12),
+
+          // DROP FIELD + SUGGESTIONS
+          buildInputField(
+            "drop_off_location".tr,
+            "enter_drop_off_location".tr,
+            Icons.location_on,
+            Colors.red,
+            locCtrl.dropController,
+            focusNode: locCtrl.dropFocus,
+            onChanged: (val) => locCtrl.debounceDrop.value = val,
+          ),
+
+          const SizedBox(height: 6),
+
+          Obx(() {
+            if (locCtrl.isLoadingDrop.value) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: LinearProgressIndicator(minHeight: 2),
+              );
+            }
+
+            if (!locCtrl.showDropSuggestions.value || locCtrl.dropSuggestions.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            return Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 220),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  itemCount: locCtrl.dropSuggestions.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final item = locCtrl.dropSuggestions[index];
+                    return ListTile(
+                      leading: const Icon(Icons.location_on, color: Colors.red),
+                      title: Text(
+                        item['name'] ?? '',
+                        style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+                      ),
+                      subtitle: Text(item['address'] ?? '',
+                          style: TextHelper.size16.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont)),
+                      onTap: () => locCtrl.selectSuggestion(isPickup: false, name: item['name'] ?? ''),
+                    );
+                  },
+                ),
+              ),
+            );
+          }),
+
+          const SizedBox(height: 20),
+
+          Text(
+            "Trip Type",
+            style: TextHelper.size20.copyWith(
+              color: ColorsForApp.blackColor,
+              fontFamily: boldFont,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          _tripTypeCard(
+            "return_trip".tr,
+            "round_trip_journey".tr,
+            Icons.autorenew,
+            Colors.blue,
+          ),
+          _tripTypeCard(
+            "one_way".tr,
+            "single_journey".tr,
+            Icons.arrow_forward,
+            Colors.orange,
+          ),
+          _tripTypeCard(
+            "rented".tr,
+            "daily_rental".tr,
+            Icons.calendar_today,
+            Colors.blueAccent,
+          ),
+        ],
+      ),
     );
   }
 
@@ -283,11 +461,24 @@ class PostScreen extends StatelessWidget {
             children: [
               Text("seat_configuration".tr, style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
               const SizedBox(height: 8),
-              Row(children: [
-                _seatOption("7-seater", 7),
-                const SizedBox(width: 8),
-                _seatOption("8-seater", 8),
-              ]),
+              GridView.count(
+                crossAxisCount: 3, // 3 items per row
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                childAspectRatio: 1.5, // width / height ratio
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  _seatOption("9-seater", 9),
+                  _seatOption("13-seater", 13),
+                  _seatOption("17-seater", 17),
+                  _seatOption("20-seater", 20),
+                  _seatOption("27-seater", 27),
+                  _seatOption("32-seater", 32),
+                  _seatOption("45-seater", 45),
+                  _seatOption("50-seater", 50),
+                ],
+              )
             ],
           );
         }),
@@ -352,29 +543,29 @@ class PostScreen extends StatelessWidget {
 
   // Seat option (reactive)
   Widget _seatOption(String text, int value) {
-    return Expanded(
-      child: Obx(() {
-        final bool isSelected = controller.selectedSeatConfig.value == value;
-        return GestureDetector(
-          onTap: () => controller.selectSeatConfig(value),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: isSelected ? Colors.blue.shade50 : Colors.white,
-              border: Border.all(color: isSelected ? Colors.blue : Colors.grey.shade300, width: 2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Center(
-                child: Column(
+    return Obx(() {
+      final bool isSelected = controller.selectedSeatConfig.value == value;
+      return GestureDetector(
+        onTap: () => controller.selectSeatConfig(value),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.blue.shade50 : Colors.white,
+            border: Border.all(color: isSelected ? Colors.blue : Colors.grey.shade300, width: 2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.group_outlined, color: ColorsForApp.colorBlue),
                 Text(text, style: TextHelper.size18),
               ],
-            )),
+            ),
           ),
-        );
-      }),
-    );
+        ),
+      );
+    });
   }
 
   // Simple input-like box for date/time display (kept local for styling)
@@ -416,15 +607,15 @@ class PostScreen extends StatelessWidget {
           controller.fareController,
           isNumeric: true,
         ),
-        const SizedBox(height: 12),
-        buildInputField(
-          "distance".tr,
-          "0.0",
-          Icons.navigation_outlined,
-          Colors.blue,
-          controller.distanceController,
-          isNumeric: true,
-        ),
+        // const SizedBox(height: 12),
+        // buildInputField(
+        //   "distance".tr,
+        //   "0.0",
+        //   Icons.navigation_outlined,
+        //   Colors.blue,
+        //   controller.distanceController,
+        //   isNumeric: true,
+        // ),
       ]),
     );
   }

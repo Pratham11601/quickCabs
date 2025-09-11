@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -8,7 +9,7 @@ import '../routes/routes.dart';
 
 class NetworkController extends GetxController {
   RxBool isInternetAvailable = false.obs;
-  Connectivity connectivity = Connectivity();
+  final Connectivity connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? streamSubscription;
 
   @override
@@ -20,11 +21,9 @@ class NetworkController extends GetxController {
 
   Future<void> initConnectivity() async {
     try {
-      // checkConnectivity now returns a List<ConnectivityResult>
-      final results = await connectivity.checkConnectivity();
-
-      isInternetAvailable.value = results.contains(ConnectivityResult.mobile) ||
-          results.contains(ConnectivityResult.wifi);
+      // ✅ returns a single ConnectivityResult
+      final result = await connectivity.checkConnectivity();
+      _updateConnectionStatus(result as ConnectivityResult);
     } on PlatformException catch (e) {
       errorSnackBar(message: e.message ?? "Connectivity error");
     }
@@ -35,25 +34,41 @@ class NetworkController extends GetxController {
     streamSubscription?.cancel();
     super.onClose();
   }
+
   void callStreamSubscription() {
-    streamSubscription = connectivity.onConnectivityChanged
-        .listen((List<ConnectivityResult> results) {
+    streamSubscription = connectivity.onConnectivityChanged.listen((List<ConnectivityResult> results) {
       try {
-        if (results.contains(ConnectivityResult.mobile) ||
-            results.contains(ConnectivityResult.wifi)) {
-          isInternetAvailable.value = true;
-          log('🛜 => 🟢');
-        } else if (results.contains(ConnectivityResult.none)) {
-          isInternetAvailable.value = false;
-          log('🛜 => 🔴');
-          Get.toNamed(Routes.NO_INTERNET_CONNECTION_SCREEN);
+        if (results.isNotEmpty) {
+          _updateConnectionStatus(results.first);
         } else {
-          throw Exception('Network Error, Try after sometime!');
+          _updateConnectionStatus(ConnectivityResult.none);
         }
       } catch (e) {
         errorSnackBar(message: e.toString());
       }
     });
+  }
+
+  void _updateConnectionStatus(ConnectivityResult result) {
+    if (result == ConnectivityResult.mobile || result == ConnectivityResult.wifi) {
+      isInternetAvailable.value = true;
+      log('🛜 => 🟢');
+
+      // If on no internet screen, close it
+      if (Get.currentRoute == Routes.NO_INTERNET_CONNECTION_SCREEN) {
+        Get.back();
+      }
+    } else {
+      isInternetAvailable.value = false;
+      log('🛜 => 🔴');
+      _showNoInternetScreen();
+    }
+  }
+
+  void _showNoInternetScreen() {
+    if (Get.currentRoute != Routes.NO_INTERNET_CONNECTION_SCREEN) {
+      Get.toNamed(Routes.NO_INTERNET_CONNECTION_SCREEN);
+    }
   }
 
   void errorSnackBar({required String message}) {

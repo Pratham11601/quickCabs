@@ -317,7 +317,7 @@ showExitDialog(BuildContext context) {
 // Common message dialog
 showCommonMessageDialog(BuildContext context, String title, String message, GestureTapCallback onClick) {
   showDialog(
-    barrierDismissible: true,
+    barrierDismissible: false,
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(

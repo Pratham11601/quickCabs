@@ -1,9 +1,10 @@
-import 'package:get/get.dart';
-import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:QuickCab/widgets/snackbar.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
 import '../../../api/api_manager.dart';
-import '../../../utils/app_colors.dart';
 import '../repository/accept_lead_repository.dart';
 import 'home_controller.dart';
 
@@ -58,22 +59,31 @@ class AcceptLeadOtpPopupController extends GetxController {
   Future<void> handleAcceptLead(BuildContext context) async {
     FocusScope.of(context).unfocus();
     debugPrint('Sending OTP: ${otpText.value} for leadId: $leadId');
+
     try {
       final response = await repository.acceptLeadApiCall(
         leadId: leadId,
         otp: otpText.value,
       );
+
       debugPrint('Response status: ${response.status}');
       debugPrint('Response message: ${response.message}');
-      if (response.status == 1) {
-        final homeController = Get.find<HomeController>();
-        final acceptedLeadId = response.lead.id;
-        final acceptedById = response.lead.acceptedById;
-        final index = homeController.activeLeads.indexWhere((post) => post.id == acceptedLeadId);
 
+      final homeController = Get.find<HomeController>();
+
+      if (response.status == 1) {
+        final acceptedLeadId = response.lead.id;
+
+        // ✅ Find index
+        final index = homeController.activeLeads.indexWhere((lead) => lead.id == acceptedLeadId);
 
         if (index != -1) {
-          homeController.activeLeads[index].acceptedById = acceptedById;
+          // Update the status or acceptedById property
+          homeController.activeLeads[index].isActive = 0; // or status = 'Booked'
+          homeController.activeLeads[index].acceptedById = response.lead.acceptedById;
+
+          // ✅ Trigger UI refresh
+          homeController.activeLeads[index] = homeController.activeLeads[index];
           homeController.activeLeads.refresh();
         }
 
@@ -83,18 +93,11 @@ class AcceptLeadOtpPopupController extends GetxController {
         if (context.mounted) {
           Get.back();
         }
-        Get.snackbar(
-          'Success',
-          'Lead accepted successfully',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: ColorsForApp.primaryColor,
-          colorText: Colors.white,
 
-          margin: EdgeInsets.all(12),
-          duration: Duration(seconds: 2),
-
+        ShowSnackBar.success(
+          title: 'Success',
+          message: 'Lead accepted successfully',
         );
-
       } else {
         showError.value = true;
         showSuccess.value = false;
@@ -105,6 +108,4 @@ class AcceptLeadOtpPopupController extends GetxController {
       showSuccess.value = false;
     }
   }
-
-
 }

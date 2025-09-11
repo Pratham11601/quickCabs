@@ -20,7 +20,7 @@ import '../binding/auth_binding.dart';
 
 class AppPages {
   AppPages._();
-  static const String initialRoute = Routes.LOGIN_SCREEN;
+  static const String initialRoute = Routes.SPLASH_SCREEN;
 
   static final route = [
     GetPage(

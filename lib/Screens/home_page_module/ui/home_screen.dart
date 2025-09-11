@@ -6,9 +6,10 @@ import '../../../routes/routes.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
 import '../../../widgets/constant_widgets.dart';
+import '../../../widgets/shimmer_widget.dart';
 import '../../landing_page/controller/dashboard_controller.dart';
 import '../controller/home_controller.dart';
-import '../home_widgets/driver_network_status.dart'; 
+import '../home_widgets/driver_network_status.dart';
 import '../home_widgets/emergency_service_item.dart';
 import '../home_widgets/lead_card.dart';
 import '../home_widgets/ride_request_card.dart';
@@ -31,117 +32,68 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> callAsyncAPI() async {
-    bool result = await homeController.checkProfileCompletion();
-    if (result) {
-      if (!homeController.isKycCompleted.value) {
+    try {
+      // Profile check
+      bool result = await homeController.checkProfileCompletion();
+      if (result && !homeController.isKycCompleted.value) {
         showCommonMessageDialog(
           Get.context!,
           'Profile Incomplete',
-          'Your profile is not completed please complete you profile',
+          'Your profile is not completed please complete your profile',
           () {
-            Get.toNamed(Routes.MY_DOCUMENTS);
+            Get.toNamed(Routes.HELP_PAGE);
           },
         );
       }
+
+      // Refresh both lists
+      await Future.wait([
+        homeController.fetchLiveLeads(),
+        homeController.fetchActiveLeads(),
+      ]);
+    } catch (e) {
+      debugPrint("Error in callAsyncAPI: $e");
     }
-    //🔴🔴here is the reason if error occurs🔴🔴
-    //await homeController.fetchLeads();
-    await homeController.fetchLiveLeads();
-    await homeController.fetchActiveLeads();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(left: 15, top: 25, right: 15, bottom: 15),
-      child: RefreshIndicator(
-        onRefresh:() async {
-          callAsyncAPI();
-        },
+    return RefreshIndicator(
+      onRefresh: () async {
+        await callAsyncAPI(); // 🔹 This will refresh both APIs
+      },
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(left: 15, top: 25, right: 15, bottom: 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             //booking and available
             Center(
               child: Container(
-                width: 88.w,
-                padding: EdgeInsets.symmetric(
-                    horizontal: 1.w, vertical: 0.6.h),
+                width: MediaQuery.of(context).size.width * 0.7, // 60% of screen width
+                padding: EdgeInsets.symmetric(horizontal: 0.5.w, vertical: 0.6.h),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade200,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Obx(() => Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            homeController.selectedIndex.value = 0;
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 6.w, vertical: 1.2.h),
-                            decoration: BoxDecoration(
-                              color: homeController.selectedIndex.value == 0
-                                  ? Colors.white
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: homeController.selectedIndex.value == 0
-                                  ? [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 5,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ]
-                                  : [],
-                            ),
-                            child: Text(
-                              "Booking",
-                              style: TextStyle(
-                                fontSize: 14.5.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 8.w),
-                        GestureDetector(
-                          onTap: () {
-                            homeController.selectedIndex.value = 1;
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 6.w,
-                                vertical: 1.2.h),
-                            decoration: BoxDecoration(
-                              color: homeController.selectedIndex.value == 1
-                                  ? Colors.white
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: homeController.selectedIndex.value == 1
-                                  ? [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 5,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ]
-                                  : [],
-                            ),
-                            child: Text(
-                              "Available",
-                              style: TextStyle(
-                                fontSize: 14.5.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    )),
+                child: Obx(
+                  () => Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildTab(
+                        title: "Booking",
+                        index: 0,
+                        controller: homeController,
+                      ),
+                      SizedBox(width: 8.w),
+                      _buildTab(
+                        title: "Available",
+                        index: 1,
+                        controller: homeController,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
             SizedBox(height: 14.5.sp),
@@ -169,44 +121,147 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            dashboardController.currentIndex.value = 1;
+                            Get.bottomSheet(
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text("Filter Leads", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
+                                    const SizedBox(height: 16),
+                                    TextField(
+                                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                                      decoration: InputDecoration(
+                                        labelText: "From Location",
+                                        labelStyle: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onChanged: (value) => homeController.fromLocation.value = value,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    TextField(
+                                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                                      decoration: InputDecoration(
+                                        labelText: "To Location",
+                                        labelStyle: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onChanged: (value) => homeController.toLocation.value = value,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              homeController.applyFilter();
+                                              Get.back(); // close bottomsheet
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: ColorsForApp.primaryColor, // 👈 set background color
+                                              padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(12), // 👈 rounded corners
+                                              ),
+                                            ),
+                                            child: Text(
+                                              "Apply",
+                                              style: TextHelper.size20.copyWith(color: ColorsForApp.whiteColor, fontFamily: semiBoldFont),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: OutlinedButton(
+                                            onPressed: () {
+                                              homeController.clearFilter();
+                                              Get.back();
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: ColorsForApp.whiteColor, // 👈 set background color
+                                              padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(12), // 👈 rounded corners
+                                              ),
+                                            ),
+                                            child: Text("Clear",
+                                                style:
+                                                    TextHelper.size20.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
                           },
-                          child: Text(
-                            "View All",
-                            style: TextHelper.size19.copyWith(
-                              fontFamily: semiBoldFont,
-                              color: ColorsForApp.primaryDarkColor,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.redAccent,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.filter_alt_outlined, color: ColorsForApp.whiteColor, size: 16),
+                                SizedBox(width: 4),
+                                Text("Filter", style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.whiteColor)),
+                              ],
                             ),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Obx(() => ListView.builder(
-                      shrinkWrap: true, // If you're inside a scrollable parent
-                      physics: NeverScrollableScrollPhysics(), // Prevent double scrolling
-                      itemCount: homeController.activeLeads.length,
-                      itemBuilder: (_, index) {
-                        final lead = homeController.activeLeads[index];
-                        return LeadCard(
-                          lead: {
-                            'name': lead.vendorFullname,
-                            'from': lead.locationFrom,
-                            'to': lead.toLocation,
-                            'price': lead.fare,
-                            'car': lead.carModel,
-                            'distance': lead.toLocationArea,
-                            'date': lead.date,
-                            'time': lead.time,
-                            'phone': lead.vendorContact,
-                            'note': lead.addOn,
-                            'acceptedById': lead.acceptedById,
-                          },
-                          onAccept: () => homeController.acceptLead(index),
+                    Obx(() {
+                      if (homeController.isLoadingActiveLeads.value) {
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: 3,
+                          itemBuilder: (_, __) => leadCardShimmer(),
                         );
-                      },
-                    )),
+                      }
 
+                      final leadsToShow = homeController.isFilterApplied.value
+                          ? homeController.filteredActiveLeads
+                          : homeController.activeLeads; // 👈 switch list
+
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: leadsToShow.length,
+                        itemBuilder: (_, index) {
+                          final lead = leadsToShow[index];
+                          return LeadCard(
+                            lead: {
+                              'name': lead.vendorFullname,
+                              'from': lead.locationFrom,
+                              'to': lead.toLocation,
+                              'price': lead.fare,
+                              'car': lead.carModel,
+                              'distance': lead.toLocationArea,
+                              'date': lead.date,
+                              'time': lead.time,
+                              'phone': lead.vendorContact,
+                              'note': lead.addOn,
+                              'acceptedById': lead.acceptedById,
+                            },
+                            onAccept: () => homeController.acceptLead(index),
+                            onWhatsApp: (phone) => homeController.openWhatsApp(phone),
+                            onCall: (phone) => homeController.makeCall(phone),
+                          );
+                        },
+                      );
+                    }),
 
                     const SizedBox(height: 12),
 
@@ -221,90 +276,86 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               } else {
                 return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    //this is driver status container
+                    // Driver Status Card
                     Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
-                      padding: EdgeInsets.all(4.w),
+                      margin: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.2.h),
+                      padding: EdgeInsets.all(2.w),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        border: Border.all(
-                            color: const Color(0xffD9F1E4), width: 0.5.w),
-                        borderRadius: BorderRadius.circular(4.w),
+                        border: Border.all(color: const Color(0xffD9F1E4), width: 0.4.w),
+                        borderRadius: BorderRadius.circular(3.w),
                         boxShadow: const [
                           BoxShadow(
-                            offset: Offset(0, 0.3),
-                            blurRadius: 10,
+                            offset: Offset(0, 2),
+                            blurRadius: 6,
                             color: Color(0x14000000),
                           ),
                         ],
                       ),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          // Left Icon Circle
                           Container(
-                            height: 7.h,
-                            width: 7.h,
+                            height: 6.5.h,
+                            width: 6.5.h,
                             decoration: BoxDecoration(
-                              color: Color(0xff1BB56E),
+                              color: ColorsForApp.green,
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(Icons.smartphone,
-                                color: Colors.white, size: 3.5.h),
+                            child: Icon(Icons.smartphone, color: Colors.white, size: 3.2.h),
                           ),
-                          SizedBox(width: 4.w),
+                          SizedBox(width: 3.5.w),
 
-                          // Title + subtitle
+                          // Text Section
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'Driver Status',
-                                  style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xff1C1C1E),
+                                  style: TextHelper.size20.copyWith(
+                                    fontFamily: boldFont,
+                                    color: ColorsForApp.blackColor,
                                   ),
                                 ),
-                                SizedBox(height: 0.8.h),
+                                SizedBox(height: 0.4.h),
                                 Text(
-                                  'You are online and\naccepting rides',
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
+                                  'You are online and accepting rides',
+                                  style: TextHelper.size17.copyWith(
+                                    fontFamily: regularFont,
+                                    color: ColorsForApp.subTitleColor,
                                     height: 1.3,
-                                    color: Color(0xff666A6D),
                                   ),
                                 ),
                               ],
                             ),
                           ),
 
-                          // Right action button
+                          // Right Action Button
                           SizedBox(
-                            height: 5.5.h,
+                            height: 5.h,
                             child: ElevatedButton(
                               onPressed: () {
-                                // handle go offline / online
+                                // Toggle online/offline
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xffFF6A3D),
+                                backgroundColor: const Color(0xffFF6A3D),
                                 foregroundColor: Colors.white,
-                                elevation: 0,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 5.w, vertical: 1.5.h),
+                                elevation: 1,
+                                padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.2.h),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(3.w),
-                                ),
-                                textStyle: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 11.sp,
+                                  borderRadius: BorderRadius.circular(2.5.w),
                                 ),
                               ),
                               child: Text(
                                 'Go Offline',
-                                style: TextStyle(
-                                    fontSize: 14.sp, fontWeight: FontWeight.w600),
+                                style: TextHelper.size18.copyWith(
+                                  fontFamily: boldFont,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
@@ -312,56 +363,51 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
 
-                    //live ride Requests
-                    Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
+                    // Live Ride Requests
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.2.h),
                       child: Row(
                         children: [
                           Container(
-                            height: 5.5.h,
-                            width: 5.5.h,
+                            height: 5.2.h,
+                            width: 5.2.h,
                             decoration: BoxDecoration(
-                              color: Color(0xffFFE8DF),
-                              borderRadius: BorderRadius.circular(3.w),
+                              color: ColorsForApp.primaryDarkColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(2.5.w),
                             ),
-                            child: Icon(Icons.monitor_heart,
-                                color: Color(0xffFF6A3D), size: 3.h),
+                            child: Icon(Icons.monitor_heart, color: ColorsForApp.primaryColor, size: 2.6.h),
                           ),
                           SizedBox(width: 3.w),
 
                           Expanded(
                             child: Text(
                               'Live Ride Requests',
-                              style: TextStyle(
-                                fontSize: 17.sp,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xff1C1C1E),
+                              style: TextHelper.size20.copyWith(
+                                fontFamily: semiBoldFont,
+                                color: ColorsForApp.blackColor,
                               ),
                             ),
                           ),
 
                           // "New" pill
                           Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 5.w, vertical: 0.8.h),
+                            padding: EdgeInsets.symmetric(horizontal: 4.5.w, vertical: 0.6.h),
                             decoration: BoxDecoration(
-                              color: Color(0xffFF6A3D),
-                              borderRadius: BorderRadius.circular(6.w),
-                              boxShadow: [
+                              color: ColorsForApp.primaryDarkColor,
+                              borderRadius: BorderRadius.circular(50),
+                              boxShadow: const [
                                 BoxShadow(
-                                  blurRadius: 6,
-                                  offset: Offset(0, 0.3),
+                                  blurRadius: 4,
+                                  offset: Offset(0, 2),
                                   color: Color(0x14000000),
-                                )
+                                ),
                               ],
                             ),
                             child: Text(
                               'New',
-                              style: TextStyle(
+                              style: TextHelper.size18.copyWith(
+                                fontFamily: boldFont,
                                 color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14.sp,
                               ),
                             ),
                           ),
@@ -369,35 +415,29 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
 
-                    ///cards
-
-                    // Obx(() {
-                    //   return ListView.separated(
-                    //     shrinkWrap: true,
-                    //     physics: const NeverScrollableScrollPhysics(),
-                    //     itemCount: homeController.leads.length,
-                    //     separatorBuilder: (_, __) => SizedBox(height: 8),
-                    //     itemBuilder: (_, i) => RideRequestCard(
-                    //       lead: homeController.leads[i],
-                    //       onDecline: () => homeController.declineLead(i),
-                    //       onAccept:  () => homeController.acceptLead(i),
-                    //     ),
-                    //   );
-                    // })
+                    // Ride Request Cards
                     Obx(() {
+                      if (homeController.isLoadingLiveLeads.value) {
+                        return ListView.separated(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: 3,
+                          separatorBuilder: (_, __) => SizedBox(height: 12),
+                          itemBuilder: (_, __) => rideRequestCardShimmer(),
+                        );
+                      }
                       return ListView.separated(
                         shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
+                        physics: NeverScrollableScrollPhysics(),
                         itemCount: homeController.liveLeads.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 8),
+                        separatorBuilder: (_, __) => SizedBox(height: 12),
                         itemBuilder: (_, i) => RideRequestCard(
                           lead: homeController.liveLeads[i],
                           onDecline: () => homeController.declineLiveLead(i),
-                          onAccept:  () => homeController.acceptLiveLead(i),
+                          onAccept: () => homeController.acceptLiveLead(i),
                         ),
                       );
-                    }),
-
+                    })
                   ],
                 );
               }
@@ -407,4 +447,33 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+// Reusable tab widget
+Widget _buildTab({
+  required String title,
+  required int index,
+  required HomeController controller,
+}) {
+  final isSelected = controller.selectedIndex.value == index;
+  return GestureDetector(
+    onTap: () => controller.selectedIndex.value = index,
+    child: Container(
+      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.2.h),
+      decoration: BoxDecoration(
+        color: isSelected ? Colors.white : Colors.transparent,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: isSelected
+            ? [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 5,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : [],
+      ),
+      child: Text(title, style: TextHelper.size18.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
+    ),
+  );
 }
