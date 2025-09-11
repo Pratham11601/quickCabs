@@ -117,8 +117,8 @@ class MyLeadsController extends GetxController {
 
   Future<bool> editRideLead({bool isLoaderShow = true}) async {
     final params = {
-      "date": selectedDate.value == null ? "" : DateFormat('yyyy-MM-dd').format(selectedDate.value!),
-      "time": selectedTime.value == null ? "" : selectedTime.value!.format(Get.context!),
+      "date": DateFormat('yyyy-MM-dd').format(selectedDate.value),
+      "time": selectedTime.value.format(Get.context!),
       "location_from": fromLocation.value,
       "location_from_area": "",
       "to_location": toLocation.value,
