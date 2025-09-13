@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../generated/assets.dart';
+import '../routes/routes.dart';
 import '../utils/app_colors.dart';
 import '../utils/text_styles.dart';
 
@@ -256,15 +257,11 @@ showExitDialog(BuildContext context) {
         elevation: 4,
         title: Text(
           'Exit',
-          style: TextHelper.size20.copyWith(
-            fontFamily: mediumFont,
-          ),
+          style: TextHelper.h7.copyWith(fontFamily: boldFont, color: ColorsForApp.blackColor),
         ),
         content: Text(
           'Are you sure you want to exit?',
-          style: TextHelper.size18.copyWith(
-            color: ColorsForApp.blackColor.withValues(alpha: 0.7),
-          ),
+          style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
         ),
         actions: [
           Row(
@@ -280,8 +277,8 @@ showExitDialog(BuildContext context) {
                 borderRadius: BorderRadius.circular(100),
                 child: Text(
                   'Cancel',
-                  style: TextHelper.size18.copyWith(
-                    fontFamily: mediumFont,
+                  style: TextHelper.size19.copyWith(
+                    fontFamily: regularFont,
                     color: ColorsForApp.blackColor,
                   ),
                 ),
@@ -300,9 +297,9 @@ showExitDialog(BuildContext context) {
                 borderRadius: BorderRadius.circular(100),
                 child: Text(
                   'Confirm',
-                  style: TextHelper.size18.copyWith(
-                    fontFamily: mediumFont,
-                    color: ColorsForApp.blackColor,
+                  style: TextHelper.size19.copyWith(
+                    fontFamily: regularFont,
+                    color: ColorsForApp.primaryDarkColor,
                   ),
                 ),
               ),
@@ -327,15 +324,13 @@ showCommonMessageDialog(BuildContext context, String title, String message, Gest
         elevation: 4,
         title: Text(
           title,
-          style: TextHelper.size20.copyWith(
-            fontFamily: mediumFont,
+          style: TextHelper.h7.copyWith(
+            fontFamily: boldFont,
           ),
         ),
         content: Text(
           message,
-          style: TextHelper.size18.copyWith(
-            color: ColorsForApp.blackColor.withValues(alpha: 0.7),
-          ),
+          style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor.withValues(alpha: 0.7), fontFamily: regularFont),
         ),
         actions: [
           InkWell(
@@ -356,3 +351,67 @@ showCommonMessageDialog(BuildContext context, String title, String message, Gest
     },
   );
 } //
+
+// Common Dialog For Subscription
+showSubscriptionAlertDialog(BuildContext context, String title, String message, GestureTapCallback onClick) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(
+        title,
+        style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont),
+      ),
+      content: Text(
+        message,
+        style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+      ),
+      actions: [
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  Get.back();
+                  Get.toNamed(Routes.SUBSCRIPTION);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorsForApp.primaryColor,
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  "Subscribe",
+                  style: TextHelper.size20.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () => Get.back(),
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  "Cancel",
+                  style: TextHelper.size20.copyWith(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}

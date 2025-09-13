@@ -8,27 +8,37 @@ class DashboardController extends GetxController {
   HomeRepository authRepository = HomeRepository(APIManager());
 
   var currentIndex = 0.obs;
+  final isLoading = false.obs; // True when API call is in progress
 
   void changeTab(int index) {
     currentIndex.value = index;
   }
 
+  @override
+  void onInit() {
+    super.onInit();
+    checkSubscriptionStatus();
+  }
+
   RxBool isSubscribed = false.obs;
   Rx<SubscriptionStatusModel> subscriptionStatusModel = SubscriptionStatusModel().obs;
 
-  Future<bool> checkSubscriptionStatus() async {
+  Future<void> checkSubscriptionStatus() async {
     try {
-      subscriptionStatusModel.value = await authRepository.checkSubscriptionStatusApiCall();
-      if (subscriptionStatusModel.value.status == 1) {
-        isSubscribed.value = subscriptionStatusModel.value.isSubscribtionActive ?? false;
-        return true;
+      isLoading.value = true;
+      final response = await authRepository.checkSubscriptionStatusApiCall();
+      subscriptionStatusModel.value = response;
+
+      if (response.status == 1) {
+        isLoading.value = false;
+        isSubscribed.value = response.isSubscribtionActive ?? false;
       } else {
         isSubscribed.value = false;
-        return false;
+        isLoading.value = false;
       }
     } catch (e) {
+      isLoading.value = false;
       isSubscribed.value = false;
-      return false;
     }
   }
 }

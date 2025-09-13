@@ -159,6 +159,42 @@ class UserRegistrationScreen extends StatelessWidget {
                       },
                     )),
                 SizedBox(height: 2.h),
+                Text("Aadhar Number",
+                    style: TextHelper.size19.copyWith(
+                      fontFamily: semiBoldFont,
+                    )),
+                SizedBox(height: 1.h),
+                TextFormField(
+                  controller: controller.aadharNumberController,
+                  maxLength: 12,
+                  keyboardType: TextInputType.number,
+                  style: TextHelper.size18.copyWith(
+                    fontFamily: regularFont,
+                  ),
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(
+                      Icons.credit_card,
+                      color: ColorsForApp.primaryDarkColor,
+                    ),
+                    hintText: "Enter your aadhar number",
+                    errorStyle: TextHelper.size16.copyWith(
+                      fontFamily: regularFont,
+                    ),
+                    hintStyle: TextHelper.size18.copyWith(
+                      fontFamily: regularFont,
+                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your aadhar number';
+                    } else if (value.length < 12) {
+                      return 'Please enter correct aadhar number';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 2.h),
                 Text("Business Name",
                     style: TextHelper.size19.copyWith(
                       fontFamily: semiBoldFont,

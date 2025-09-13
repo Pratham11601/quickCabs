@@ -24,9 +24,13 @@ class ProfileScreen extends StatelessWidget {
           children: [
             /// Profile Info Card
             Obx(() => ProfileInfoCard(
-                  name: controller.userDeatils.value.fullname ?? "unknown",
-                  phone: controller.userDeatils.value.phone ?? "-",
-                  email: controller.userDeatils.value.email ?? "-",
+                  name: controller.userDetails.value?.fullname ?? "Unknown",
+                  phone: controller.userDetails.value?.phone ?? "-",
+                  email: controller.userDetails.value?.email ?? "-",
+                  profileImage:
+                      (controller.userDetails.value?.profileImgUrl != null && controller.userDetails.value!.profileImgUrl!.isNotEmpty)
+                          ? "https://quickcabpune.com/app/${controller.userDetails.value!.profileImgUrl}"
+                          : "",
                 )),
 
             /// Account Section
@@ -70,11 +74,11 @@ class ProfileScreen extends StatelessWidget {
                     Get.toNamed(Routes.HELP_PAGE);
                   },
                 ),
-                SettingItem(
-                  icon: Icons.location_on_outlined,
-                  title: "state_support".tr,
-                  onTap: () {},
-                ),
+                // SettingItem(
+                //   icon: Icons.location_on_outlined,
+                //   title: "state_support".tr,
+                //   onTap: () {},
+                // ),
                 SettingItem(
                   icon: Icons.language,
                   title: "language".tr,

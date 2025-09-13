@@ -1,5 +1,7 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../routes/routes.dart';
@@ -38,8 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
       if (result && !homeController.isKycCompleted.value) {
         showCommonMessageDialog(
           Get.context!,
-          'Profile Incomplete',
-          'Your profile is not completed please complete your profile',
+          'KYC Submitted',
+          'Please wait or contact to Administrator..!',
           () {
             Get.toNamed(Routes.HELP_PAGE);
           },
@@ -97,6 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             SizedBox(height: 14.5.sp),
+
             Obx(() {
               // if booking is selectd →original content
               // if available is selected → card content
@@ -106,7 +109,74 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     // Emergency services
                     EmergencyServicesSection(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
+                    // Banner Carousel
+                    Obx(() {
+                      if (homeController.isBannerLoading.value) {
+                        // 🔥 Shimmer while loading
+                        return Shimmer.fromColors(
+                          baseColor: Colors.grey.shade300,
+                          highlightColor: Colors.grey.shade100,
+                          child: Container(
+                            height: 20.h,
+                            width: double.infinity,
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        );
+                      } else {
+                        // 🔥 Actual Carousel once banners load
+                        return CarouselSlider(
+                          options: CarouselOptions(
+                            height: 20.h,
+                            autoPlay: true,
+                            enlargeCenterPage: true,
+                            viewportFraction: 0.9,
+                            aspectRatio: 16 / 9,
+                            autoPlayInterval: Duration(seconds: 3),
+                          ),
+                          items: homeController.banners.map((banner) {
+                            final imageUrl = banner.image!.trim().isNotEmpty
+                                ? "https://quickcabpune.com/app/${banner.image}"
+                                : "https://via.placeholder.com/400x200.png?text=No+Image";
+
+                            return Builder(
+                              builder: (BuildContext context) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(color: Colors.grey.shade200, width: 2),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.network(
+                                      imageUrl,
+                                      fit: BoxFit.contain, // fills width, keeps aspect ratio
+                                      width: MediaQuery.of(context).size.width,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Container(
+                                          color: Colors.grey.shade200,
+                                          child: Center(
+                                            child: Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }).toList(),
+                        );
+                      }
+                    }),
+
+                    SizedBox(height: 20),
+
                     // Leads
 
                     Row(
@@ -255,9 +325,48 @@ class _HomeScreenState extends State<HomeScreen> {
                               'note': lead.addOn,
                               'acceptedById': lead.acceptedById,
                             },
-                            onAccept: () => homeController.acceptLead(index),
-                            onWhatsApp: (phone) => homeController.openWhatsApp(phone),
-                            onCall: (phone) => homeController.makeCall(phone),
+                            onAccept: () {
+                              if (dashboardController.isSubscribed.value) {
+                                homeController.acceptLead(index);
+                              } else {
+                                showSubscriptionAlertDialog(
+                                  Get.context!,
+                                  'Subscription Required',
+                                  'Your subscription is not active. Please subscribe to post a lead.',
+                                  () {
+                                    Get.toNamed(Routes.SUBSCRIPTION);
+                                  },
+                                );
+                              }
+                            },
+                            onWhatsApp: (phone) {
+                              if (dashboardController.isSubscribed.value) {
+                                homeController.openWhatsApp(phone);
+                              } else {
+                                showSubscriptionAlertDialog(
+                                  Get.context!,
+                                  'Subscription Required',
+                                  'Your subscription is not active. Please subscribe to post a lead.',
+                                  () {
+                                    Get.toNamed(Routes.SUBSCRIPTION);
+                                  },
+                                );
+                              }
+                            },
+                            onCall: (phone) {
+                              if (dashboardController.isSubscribed.value) {
+                                homeController.makeCall(phone);
+                              } else {
+                                showSubscriptionAlertDialog(
+                                  Get.context!,
+                                  'Subscription Required',
+                                  'Your subscription is not active. Please subscribe to post a lead.',
+                                  () {
+                                    Get.toNamed(Routes.SUBSCRIPTION);
+                                  },
+                                );
+                              }
+                            },
                           );
                         },
                       );

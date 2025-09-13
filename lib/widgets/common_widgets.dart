@@ -648,23 +648,20 @@ Widget buildNavItem({
   required DashboardController controller,
 }) {
   final isSelected = controller.currentIndex.value == index;
-  return GestureDetector(
-    onTap: () => controller.changeTab(index),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          size: 26,
-          color: isSelected ? ColorsForApp.primaryColor : ColorsForApp.blackColor,
-        ),
-        const SizedBox(height: 5),
-        Text(label,
-            style: TextHelper.size17.copyWith(
-                color: isSelected ? ColorsForApp.primaryColor : ColorsForApp.blackColor,
-                fontFamily: isSelected ? semiBoldFont : regularFont)),
-      ],
-    ),
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(
+        icon,
+        size: 26,
+        color: isSelected ? ColorsForApp.primaryColor : ColorsForApp.blackColor,
+      ),
+      const SizedBox(height: 5),
+      Text(label,
+          style: TextHelper.size17.copyWith(
+              color: isSelected ? ColorsForApp.primaryColor : ColorsForApp.blackColor,
+              fontFamily: isSelected ? semiBoldFont : regularFont)),
+    ],
   );
 }
 

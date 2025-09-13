@@ -1,12 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:get/get.dart';
 import 'package:QuickCab/Screens/home_page_module/ui/home_screen.dart';
 import 'package:QuickCab/Screens/landing_page/controller/dashboard_controller.dart';
 import 'package:QuickCab/Screens/my_leads_module/ui/my_leads_screen.dart';
 import 'package:QuickCab/Screens/post_lead_module/ui/post_screen.dart';
 import 'package:QuickCab/Screens/profile_module/ui/profile_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
 
+import '../../../routes/routes.dart';
 import '../../../utils/app_colors.dart';
 import '../../../widgets/common_widgets.dart';
 import '../../../widgets/constant_widgets.dart';
@@ -31,16 +32,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   void initState() {
-    callAsyncAPI();
     super.initState();
-  }
-
-  Future<void> callAsyncAPI() async {
-    // This will internally set controller.isSubscribed.value
-    // Call API once when screen loads
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await controller.checkSubscriptionStatus();
-    });
   }
 
   @override
@@ -99,53 +91,48 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    buildNavItem(
-                      icon: Icons.home_outlined,
-                      label: "Home",
-                      index: 0,
-                      controller: controller,
-                    ),
-                    buildNavItem(
-                      icon: Icons.list,
-                      label: "My Leads",
-                      index: 1,
-                      controller: controller,
+                    // Home
+                    GestureDetector(
+                      onTap: () => controller.currentIndex.value = 0,
+                      child: buildNavItem(
+                        icon: Icons.home_outlined,
+                        label: "Home",
+                        index: 0,
+                        controller: controller,
+                      ),
                     ),
 
-                    // 🔹 Post Lead restricted
+                    // My Leads
                     GestureDetector(
-                      onTap: () {
-                        if (controller.isSubscribed.value == true) {
-                          controller.currentIndex.value = 2; // Navigate to Post Lead
+                      onTap: () => controller.currentIndex.value = 1,
+                      child: buildNavItem(
+                        icon: Icons.list,
+                        label: "My Leads",
+                        index: 1,
+                        controller: controller,
+                      ),
+                    ),
+
+                    // Post Lead (restricted)
+                    GestureDetector(
+                      onTap: () async {
+                        // Check result
+                        if (controller.isSubscribed.value) {
+                          controller.currentIndex.value = 2;
                         } else {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: const Text("Subscription Required"),
-                                content: const Text(
-                                  "Your subscription is not active. Please subscribe to post a lead.",
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Get.back(),
-                                    child: const Text("Cancel"),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Get.back();
-                                      Get.toNamed("/subscription");
-                                    },
-                                    child: const Text("Subscribe"),
-                                  ),
-                                ],
-                              ),
-                            );
-                          });
+                          showSubscriptionAlertDialog(
+                            Get.context!,
+                            'Subscription Required',
+                            'Your subscription is not active. Please subscribe to post a lead.',
+                            () {
+                              Get.toNamed(Routes.SUBSCRIPTION);
+                            },
+                          );
                         }
                       },
-                      child: Obx(
-                        () => buildNavItem(
+                      child: LoadingOverlay(
+                        isLoading: controller.isLoading.value,
+                        child: buildNavItem(
                           icon: Icons.add_circle_outline,
                           label: "Post Lead",
                           index: 2,
@@ -154,11 +141,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
 
-                    buildNavItem(
-                      icon: Icons.person_2_outlined,
-                      label: "Profile",
-                      index: 3,
-                      controller: controller,
+                    // Profile
+                    GestureDetector(
+                      onTap: () => controller.currentIndex.value = 3,
+                      child: buildNavItem(
+                        icon: Icons.person_2_outlined,
+                        label: "Profile",
+                        index: 3,
+                        controller: controller,
+                      ),
                     ),
                   ],
                 ),

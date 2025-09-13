@@ -46,7 +46,7 @@ class MyDocumentsPage extends StatelessWidget {
             "name": "Aadhar Card",
             "status": "Uploaded",
             "icon": Icons.credit_card,
-            "url": vendor.documentImgUrl!,
+            "url": "https://quickcabpune.com/app/${vendor.documentImgUrl!}",
           });
         }
 
@@ -55,7 +55,7 @@ class MyDocumentsPage extends StatelessWidget {
             "name": "License",
             "status": "Uploaded",
             "icon": Icons.badge,
-            "url": vendor.licenseImgUrl!,
+            "url": "https://quickcabpune.com/app/${vendor.licenseImgUrl!}",
           });
         }
 
@@ -64,7 +64,7 @@ class MyDocumentsPage extends StatelessWidget {
             "name": "Shop",
             "status": "Uploaded",
             "icon": Icons.store,
-            "url": vendor.shopImgUrl!,
+            "url": "https://quickcabpune.com/app/${vendor.shopImgUrl!}",
           });
         }
 
@@ -73,7 +73,7 @@ class MyDocumentsPage extends StatelessWidget {
             "name": "Vehicle",
             "status": "Uploaded",
             "icon": Icons.directions_car,
-            "url": vendor.vehicleImgUrl!,
+            "url": "https://quickcabpune.com/app/${vendor.vehicleImgUrl!}",
           });
         }
 

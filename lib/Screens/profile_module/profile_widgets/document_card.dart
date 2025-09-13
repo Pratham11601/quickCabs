@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:QuickCab/utils/text_styles.dart';
+import 'package:flutter/material.dart';
 
 import '../../../generated/assets.dart';
 import '../../../utils/app_colors.dart';
@@ -22,7 +22,7 @@ class DocumentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: ColorsForApp.whiteColor,
@@ -39,9 +39,9 @@ class DocumentCard extends StatelessWidget {
       child: Row(
         children: [
           CircleAvatar(
-            radius: 25,
+            radius: 30,
             backgroundColor: Colors.orange.shade100,
-            child: Icon(icon, size: 25, color: ColorsForApp.primaryDarkColor),
+            child: Icon(icon, size: 30, color: ColorsForApp.primaryDarkColor),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -50,7 +50,7 @@ class DocumentCard extends StatelessWidget {
               children: [
                 Text(
                   docName,
-                  style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+                  style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -62,35 +62,39 @@ class DocumentCard extends StatelessWidget {
             ),
           ),
           // ✅ Document Image instead of View button
-          GestureDetector(
-            onTap: () {
-              showImagePreview(context, documentImageUrl!);
-            },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(5),
-              child: Container(
-                padding: EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: ColorsForApp.colorBlue.withValues(alpha: 0.2), // border color
-                    width: 1.2,
+          SizedBox(
+            width: 80, // fix width for image container
+            height: 80,
+            child: GestureDetector(
+              onTap: () {
+                showImagePreview(context, documentImageUrl!);
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: ColorsForApp.colorBlue.withValues(alpha: 0.2),
+                      width: 1.2,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.network(
-                  documentImageUrl ?? "",
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    return CircleAvatar(
-                      radius: 40,
-                      backgroundColor: ColorsForApp.blackColor.withValues(alpha: 0.9),
-                      child: Image.asset(
-                        height: 40,
-                        Assets.iconsLogo,
-                        fit: BoxFit.fill,
-                      ),
-                    );
-                  },
+                  child: Image.network(
+                    documentImageUrl ?? "",
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return CircleAvatar(
+                        radius: 40,
+                        backgroundColor: ColorsForApp.blackColor.withValues(alpha: 0.9),
+                        child: Image.asset(
+                          height: 40,
+                          Assets.iconsLogo,
+                          fit: BoxFit.fill,
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),

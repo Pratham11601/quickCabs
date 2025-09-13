@@ -32,19 +32,19 @@ class Vendor {
   String? city;
   String? vendorCat;
   String? profileImgUrl;
-  Null? vehicleImgUrl;
-  Null? shopImgUrl;
+  String? vehicleImgUrl;
+  String? shopImgUrl;
   String? documentImgUrl;
   String? licenseImgUrl;
   String? currentAddress;
   String? pinCode;
-  Null? carnumber;
-  Null? subscriptionPlan;
-  Null? subscriptionDate;
-  Null? subEndDate;
+  String? carnumber;
+  String? subscriptionPlan;
+  String? subscriptionDate;
+  String? subEndDate;
   String? vendorGender;
   String? fcmToken;
-  Null? referredBy;
+  String? referredBy;
   String? createdAt;
   String? updatedAt;
 

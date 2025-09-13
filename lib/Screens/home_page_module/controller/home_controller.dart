@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../api/api_manager.dart';
 import '../home_widgets/accept_lead_popup.dart';
 import '../model/active_lead_model.dart';
+import '../model/banner_model.dart';
 import '../repository/active_lead_repository.dart';
 
 class HomeController extends GetxController {
@@ -17,6 +18,7 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     fetchActiveLeads();
+    fetchBanners();
   }
 
   /// Emergency services list (can come from API later)
@@ -289,6 +291,24 @@ class HomeController extends GetxController {
       await launchUrl(callUrl);
     } else {
       Get.snackbar("Error", "Could not make a call");
+    }
+  }
+
+  // Banners api
+  // Banners api
+  var banners = <BannerModel>[].obs; // ✅ correct type
+  var isBannerLoading = true.obs;
+
+  void fetchBanners() async {
+    try {
+      isBannerLoading(true);
+
+      final response = await activeLeadRepository.fetchBannersApiCall();
+      banners.assignAll(response); // ✅ directly assign list
+    } catch (e) {
+      debugPrint("Error fetching banners: $e");
+    } finally {
+      isBannerLoading(false);
     }
   }
 }

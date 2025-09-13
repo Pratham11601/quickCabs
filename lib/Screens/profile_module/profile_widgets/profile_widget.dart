@@ -9,12 +9,14 @@ class ProfileInfoCard extends StatelessWidget {
   final String name;
   final String phone;
   final String email;
+  final String profileImage;
 
   const ProfileInfoCard({
     super.key,
     required this.name,
     required this.phone,
     required this.email,
+    required this.profileImage,
   });
 
   @override
@@ -38,13 +40,17 @@ class ProfileInfoCard extends StatelessWidget {
         children: [
           /// Circle Avatar with initials
           CircleAvatar(
-            radius: 30,
+            radius: 50,
             backgroundColor: Colors.orange.shade100,
-            child: Text(
-              name.isNotEmpty ? name[0] : "?",
-              style: TextHelper.h4.copyWith(color: ColorsForApp.red, fontFamily: semiBoldFont),
-            ),
+            backgroundImage: (profileImage.isNotEmpty) ? NetworkImage(profileImage) : null,
+            child: (profileImage.isEmpty)
+                ? Text(
+                    name.isNotEmpty ? name[0].toUpperCase() : "?",
+                    style: TextHelper.h4.copyWith(color: ColorsForApp.red, fontFamily: semiBoldFont),
+                  )
+                : null,
           ),
+
           const SizedBox(width: 16),
 
           /// User Info

@@ -176,9 +176,9 @@ class SubscriptionScreen extends StatelessWidget {
                             orderId: controller.createOrderModelResponse.value.order!.id ?? "",
                             planId: controller.selectedPlanId.value,
                             amount: selectedPkg.totalPrice ?? 0,
-                            name: profileController.userDeatils.value.fullname ?? "unknown", // user’s full name
-                            contact: profileController.userDeatils.value.phone ?? "-", // user’s mobile
-                            email: profileController.userDeatils.value.email ?? "-", // user’s email
+                            name: profileController.userDetails.value!.fullname ?? "unknown", // user’s full name
+                            contact: profileController.userDetails.value!.phone ?? "-", // user’s mobile
+                            email: profileController.userDetails.value!.email ?? "-", // user’s email
                           );
                         }
                       : null,

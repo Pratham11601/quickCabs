@@ -43,11 +43,26 @@ class APIManager {
 
   APIManager._internal() {
     // Add Interceptors for common tasks (authentication, caching, etc.)
+    // _dio.interceptors.add(
+    //   InterceptorsWrapper(
+    //     onRequest: (options, handler) async {
+    //       options.headers['Content-Type'] = 'application/json';
+    //       if (getAuthToken.isNotEmpty) options.headers['Authorization'] = 'Bearer $getAuthToken';
+    //       return handler.next(options);
+    //     },
+    //   ),
+    // );
+
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           options.headers['Content-Type'] = 'application/json';
-          if (getAuthToken.isNotEmpty) options.headers['Authorization'] = 'Bearer $getAuthToken';
+
+          final token = await LocalStorage.fetchValue(StorageKey.token); // 🔥
+          if (token != null && token.isNotEmpty) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+
           return handler.next(options);
         },
       ),
@@ -303,13 +318,13 @@ class APIManager {
   Future<dynamic> multipartPost2APICall({
     required String url,
     required Map<String, dynamic> params,
-    Map<String, File>? files, // multiple files ke liye
+    Map<String, File>? files,
     Map<String, dynamic>? queryParameters,
     bool showLoading = true,
     int timeOut = 60,
   }) async {
     if (_appController.connection.hasInternet) {
-      Loader.instance.showLoader();
+      if (showLoading) Loader.instance.showLoader();
 
       try {
         final formData = FormData.fromMap({
@@ -324,22 +339,22 @@ class APIManager {
                 )),
         });
 
+        // Debug print FormData
+        print("🚀 Final FormData to be sent:");
+        formData.fields.forEach((f) => print("   Field: ${f.key} = ${f.value}"));
+        formData.files.forEach((f) => print("   File: ${f.key} = ${f.value.filename}"));
+
         final response = await _dio
             .post(
           url,
           data: formData,
           queryParameters: queryParameters,
-          options: Options(
-            headers: {'Content-Type': 'multipart/form-data'},
-          ),
+          options: Options(headers: {'Content-Type': 'multipart/form-data'}),
           cancelToken: cancelToken,
         )
-            .timeout(
-          Duration(seconds: timeOut),
-          onTimeout: () {
-            throw TimeoutException(message: 'Timeout');
-          },
-        );
+            .timeout(Duration(seconds: timeOut), onTimeout: () {
+          throw TimeoutException(message: 'Timeout');
+        });
 
         var responseJson = _response(response);
         logAPICallDetails(response);
@@ -349,7 +364,7 @@ class APIManager {
       } on DioException catch (error) {
         handleDioError(error);
       } finally {
-        Loader.instance.removeLoader();
+        if (showLoading) Loader.instance.removeLoader();
       }
     }
 

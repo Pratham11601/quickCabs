@@ -124,10 +124,10 @@ class SubscriptionController extends GetxController {
       'key': 'rzp_live_RECNVaxXQHFOa1', // Replace with your real test/live key
       'order_id': createOrderModelResponse.value.order?.id ?? "",
       'amount': 1 ?? 0, // from backend
-      'name': profileController.userDeatils.value.fullname ?? "Unknown", // Or "${user.name}'s Subscription"
+      'name': profileController.userDetails.value!.fullname ?? "Unknown", // Or "${user.name}'s Subscription"
       'prefill': {
-        'contact': profileController.userDeatils.value.phone ?? "-", // from user profile
-        'email': profileController.userDeatils.value.email ?? "-", // from user profile
+        'contact': profileController.userDetails.value!.phone ?? "-", // from user profile
+        'email': profileController.userDetails.value!.email ?? "-", // from user profile
       },
     };
 

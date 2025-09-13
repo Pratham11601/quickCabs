@@ -1,3 +1,4 @@
+import 'package:QuickCab/Screens/home_page_module/model/banner_model.dart';
 
 import '../../../api/api_manager.dart';
 import '../model/active_lead_model.dart';
@@ -9,9 +10,22 @@ class ActiveLeadRepository {
   //Active lead api call
   Future<ActiveLeadModel> activeLeadApiCall() async {
     var jsonData = await apiManager.getAPICall(
-      url: 'https://quickcabpune.com/dev/api/leads/active?page=1&pageSize=10',
+      url: '/leads/active?page=1&pageSize=10',
     );
     var response = ActiveLeadModel.fromJson(jsonData);
     return response;
+  }
+
+  Future<List<BannerModel>> fetchBannersApiCall() async {
+    var jsonData = await apiManager.getAPICall(
+      url: '/advertise',
+    );
+
+    // ensure response is a List
+    if (jsonData is List) {
+      return jsonData.map((e) => BannerModel.fromJson(e)).toList();
+    } else {
+      return [];
+    }
   }
 }
