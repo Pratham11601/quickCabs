@@ -8,9 +8,9 @@ class ActiveLeadRepository {
   ActiveLeadRepository(this.apiManager);
 
   //Active lead api call
-  Future<ActiveLeadModel> activeLeadApiCall() async {
+  Future<ActiveLeadModel> activeLeadApiCall(dynamic pageNumber) async {
     var jsonData = await apiManager.getAPICall(
-      url: '/leads/active?page=1&pageSize=10',
+      url: '/leads/active?page=$pageNumber&pageSize=10',
     );
     var response = ActiveLeadModel.fromJson(jsonData);
     return response;
