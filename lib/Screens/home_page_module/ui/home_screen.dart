@@ -499,24 +499,29 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
 
                           // "New" pill
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 4.5.w, vertical: 0.6.h),
-                            decoration: BoxDecoration(
-                              color: ColorsForApp.primaryDarkColor,
-                              borderRadius: BorderRadius.circular(50),
-                              boxShadow: const [
-                                BoxShadow(
-                                  blurRadius: 4,
-                                  offset: Offset(0, 2),
-                                  color: Color(0x14000000),
+                          GestureDetector(
+                            onTap: () {
+                              showPostAvailabilityDialog(context);
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 4.5.w, vertical: 0.6.h),
+                              decoration: BoxDecoration(
+                                color: ColorsForApp.primaryDarkColor,
+                                borderRadius: BorderRadius.circular(50),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    blurRadius: 4,
+                                    offset: Offset(0, 2),
+                                    color: Color(0x14000000),
+                                  ),
+                                ],
+                              ),
+                              child: Text(
+                                'Post Availability',
+                                style: TextHelper.size18.copyWith(
+                                  fontFamily: boldFont,
+                                  color: Colors.white,
                                 ),
-                              ],
-                            ),
-                            child: Text(
-                              'New',
-                              style: TextHelper.size18.copyWith(
-                                fontFamily: boldFont,
-                                color: Colors.white,
                               ),
                             ),
                           ),
@@ -555,6 +560,16 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  void showPostAvailabilityDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(),
+          );
+        });
   }
 }
 
