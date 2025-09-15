@@ -16,15 +16,18 @@ import '../repository/profile_repository.dart';
 /// - Open Razorpay checkout
 /// - Verify payment with backend
 class SubscriptionController extends GetxController {
+  
   late Razorpay _razorpay;
-  final profileController = Get.put(ProfileController()); // ✅ access existing instance
+  final profileController =
+      Get.put(ProfileController()); // ✅ access existing instance
   final ProfileRepository profileRepository = ProfileRepository(APIManager());
   var isActive = false.obs;
 
   // Observables
   Rx<PackagesModel> packagesModelResponse = PackagesModel().obs;
   Rx<CreateOrderModel> createOrderModelResponse = CreateOrderModel().obs;
-  Rx<SubscriptionStatusModel> subscriptionStatusResponse = SubscriptionStatusModel().obs;
+  Rx<SubscriptionStatusModel> subscriptionStatusResponse =
+      SubscriptionStatusModel().obs;
 
   Rx<RechargeRazorModel> rechargeRazorModelResponse = RechargeRazorModel().obs;
   RxString selectedPlanId = ''.obs;
@@ -124,10 +127,13 @@ class SubscriptionController extends GetxController {
       'key': 'rzp_live_RECNVaxXQHFOa1', // Replace with your real test/live key
       'order_id': createOrderModelResponse.value.order?.id ?? "",
       'amount': 1 ?? 0, // from backend
-      'name': profileController.userDetails.value!.fullname ?? "Unknown", // Or "${user.name}'s Subscription"
+      'name': profileController.userDetails.value!.fullname ??
+          "Unknown", // Or "${user.name}'s Subscription"
       'prefill': {
-        'contact': profileController.userDetails.value!.phone ?? "-", // from user profile
-        'email': profileController.userDetails.value!.email ?? "-", // from user profile
+        'contact': profileController.userDetails.value!.phone ??
+            "-", // from user profile
+        'email': profileController.userDetails.value!.email ??
+            "-", // from user profile
       },
     };
 
@@ -149,7 +155,8 @@ class SubscriptionController extends GetxController {
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
-    ShowSnackBar.error(message: "Payment failed: ${response.code} - ${response.message}");
+    ShowSnackBar.error(
+        message: "Payment failed: ${response.code} - ${response.message}");
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {

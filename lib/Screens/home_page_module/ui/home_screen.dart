@@ -29,7 +29,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final DashboardController dashboardController = Get.find();
-  final HomeController homeController = Get.put(HomeController());
+  final HomeController homeController = Get.find();
 
   late final _pagingController = PagingController<int, Post>(
     getNextPageKey: (state) =>
@@ -61,8 +61,6 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         );
       }
-
-   
     } catch (e) {
       debugPrint("Error in callAsyncAPI: $e");
     }
@@ -72,7 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
-        await callAsyncAPI(); // 🔹 This will refresh both APIs
+        await homeController.fetchActiveLeads(1);
+        await callAsyncAPI();
+        // 🔹 This will refresh both APIs
       },
       child: SingleChildScrollView(
         padding:
@@ -81,33 +81,30 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             //booking and available
-            Center(
-              child: Container(
-                width: MediaQuery.of(context).size.width *
-                    0.7, // 60% of screen width
-                padding:
-                    EdgeInsets.symmetric(horizontal: 0.5.w, vertical: 0.6.h),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Obx(
-                  () => Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildTab(
-                        title: "Booking",
-                        index: 0,
-                        controller: homeController,
-                      ),
-                      SizedBox(width: 8.w),
-                      _buildTab(
-                        title: "Available",
-                        index: 1,
-                        controller: homeController,
-                      ),
-                    ],
-                  ),
+            Container(
+              width: 100.w, // 60% of screen width
+              padding: EdgeInsets.symmetric(horizontal: 0.5.w, vertical: 0.6.h),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Obx(
+                () => Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    _buildTab(
+                      title: "Booking",
+                      index: 0,
+                      controller: homeController,
+                    ),
+                    SizedBox(width: 8.w),
+                    _buildTab(
+                      title: "Available",
+                      index: 1,
+                      controller: homeController,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -375,9 +372,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 );
                               }, noItemsFoundIndicatorBuilder: (context) {
                                 return NoDataFoundScreen(
-                                  title: "Your support inbox is empty.",
+                                  title: "NO LEADS FOUND",
                                   subTitle:
-                                      "Let us know if anything’s troubling you.",
+                                      "MEANWHILE, YOU CAN CHECK BACK OR REFRESH.",
                                 );
                               }, itemBuilder: (context, item, index) {
                                 final lead = item;
@@ -713,7 +710,8 @@ Widget _buildTab({
   required HomeController controller,
 }) {
   final isSelected = controller.selectedIndex.value == index;
-  return GestureDetector(
+  return InkWell(
+    highlightColor: ColorsForApp.primaryColor,
     onTap: () => controller.selectedIndex.value = index,
     child: Container(
       padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.2.h),

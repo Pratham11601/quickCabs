@@ -12,12 +12,12 @@ import '../repository/active_lead_repository.dart';
 
 class HomeController extends GetxController {
   HomeRepository authRepository = HomeRepository(APIManager());
-  ActiveLeadRepository activeLeadRepository = ActiveLeadRepository(APIManager());
+  ActiveLeadRepository activeLeadRepository =
+      ActiveLeadRepository(APIManager());
 
   @override
   void onInit() {
     super.onInit();
-    fetchActiveLeads(1);
     fetchBanners();
   }
 
@@ -29,13 +29,13 @@ class HomeController extends GetxController {
     {'title': 'Cab', 'icon': '🚕'},
   ].obs;
 
-
   final liveLeads = <Map<String, dynamic>>[].obs;
 
   RxBool isKycCompleted = false.obs;
   Future<bool> checkProfileCompletion() async {
     try {
-      CheckProfileCompletionModel checkProfileCompletionModel = await authRepository.checkProfileCompletionApiCall();
+      CheckProfileCompletionModel checkProfileCompletionModel =
+          await authRepository.checkProfileCompletionApiCall();
       if (checkProfileCompletionModel.status == true) {
         isKycCompleted.value = checkProfileCompletionModel.isComplete ?? false;
         return true;
@@ -112,8 +112,6 @@ class HomeController extends GetxController {
   //   }
   // }
 
-  
-
   /// Button actions
   void declineLiveLead(int index) {
     if (index >= 0 && index < liveLeads.length) liveLeads.removeAt(index);
@@ -140,7 +138,7 @@ class HomeController extends GetxController {
       activeLeads.assignAll(response.posts);
       filteredActiveLeads.clear(); // 👈 reset filter results
       isFilterApplied.value = false;
-      
+
       return response;
     } catch (e) {
       errorMsg.value = 'Failed to load active leads';
@@ -150,7 +148,7 @@ class HomeController extends GetxController {
       isLoadingActiveLeads.value = false;
     }
   }
-   
+
   //    RxList<Post> activeList = <Post>[].obs;
 
   // Future<ActiveLeadModel?> fetchActiveLead(int pageNumber) async {
@@ -178,8 +176,14 @@ class HomeController extends GetxController {
 
   void applyFilter() {
     filteredActiveLeads.assignAll(activeLeads.where((lead) {
-      final matchesFrom = fromLocation.value.isEmpty || (lead.locationFrom ?? "").toLowerCase().contains(fromLocation.value.toLowerCase());
-      final matchesTo = toLocation.value.isEmpty || (lead.toLocation ?? "").toLowerCase().contains(toLocation.value.toLowerCase());
+      final matchesFrom = fromLocation.value.isEmpty ||
+          (lead.locationFrom ?? "")
+              .toLowerCase()
+              .contains(fromLocation.value.toLowerCase());
+      final matchesTo = toLocation.value.isEmpty ||
+          (lead.toLocation ?? "")
+              .toLowerCase()
+              .contains(toLocation.value.toLowerCase());
       return matchesFrom && matchesTo;
     }).toList());
 
@@ -239,7 +243,6 @@ class HomeController extends GetxController {
   void fetchBanners() async {
     try {
       isBannerLoading(true);
-
       final response = await activeLeadRepository.fetchBannersApiCall();
       banners.assignAll(response); // ✅ directly assign list
     } catch (e) {
