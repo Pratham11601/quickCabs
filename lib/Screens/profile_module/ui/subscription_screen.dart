@@ -78,10 +78,7 @@ class SubscriptionScreen extends StatelessWidget {
                             onChanged: (val) async {
                               controller.selectedPlanId.value = val ?? "";
 
-                              // Also create order on radio selection
-                              if (val != null && val.isNotEmpty) {
-                                await controller.createOrderAPI(val);
-                              }
+
                             },
                           ),
                           const SizedBox(width: 10),
@@ -181,12 +178,16 @@ class SubscriptionScreen extends StatelessWidget {
                 height: 56,
                 child: ElevatedButton(
                   onPressed: controller.selectedPlanId.value.isNotEmpty
-                      ? () {
+                      ? () async {
                           final selectedPkg = packages.firstWhere(
                             (p) =>
                                 p.id.toString() ==
                                 controller.selectedPlanId.value,
                           );
+
+
+                          await controller.createOrderAPI(selectedPkg.id.toString());
+
 
                           controller.openCheckout(
                             orderId: controller

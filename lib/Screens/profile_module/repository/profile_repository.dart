@@ -40,7 +40,7 @@ class ProfileRepository {
     required Map<String, dynamic> params,
   }) async {
     var jsonData = await apiManager.postAPICall(
-      url: 'vendorDetails/recharge-on-razorpay',
+      url: '/vendorDetails/recharge-on-razorpay',
       params: params,
     );
     var response = RechargeRazorModel.fromJson(jsonData);
