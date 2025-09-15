@@ -12,7 +12,8 @@ class AuthRepository {
   AuthRepository(this.apiManager);
 
   //Login api
-  Future<LoginModel> loginApiCall({required var params, bool isLoaderShow = true}) async {
+  Future<LoginModel> loginApiCall(
+      {required var params, bool isLoaderShow = true}) async {
     var jsonData = await apiManager.postAPICall(
       url: '/vendorDetails/login',
       params: params,
@@ -67,11 +68,12 @@ class AuthRepository {
   Future<UserRegistrationModel> registerVendor({
     required Map<String, dynamic> params,
     Map<String, File>? files,
+    Map<String, List<int>>? byteFiles,
   }) async {
     var jsonData = await apiManager.multipartPost2APICall(
       url: "/vendorDetails/registers-user",
       params: params,
-      files: files,
+      byteFiles: byteFiles,
     );
 
     return UserRegistrationModel.fromJson(jsonData);

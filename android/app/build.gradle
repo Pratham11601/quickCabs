@@ -1,11 +1,8 @@
 plugins {
     id "com.android.application"
-    // START: FlutterFire Configuration
-    // END: FlutterFire Configuration
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
-    id 'com.google.gms.google-services'
-
+    id "com.google.gms.google-services"
 }
 
 android {
@@ -13,47 +10,56 @@ android {
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
-    compileOptions {
-        // ADD THIS LINE: Enable core library desugaring
-        coreLibraryDesugaringEnabled true
-
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
-    }
-
     defaultConfig {
         applicationId = "com.quickcabpune.quickcab"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     buildTypes {
         release {
+            // For now, using debug signing for testing release build
             signingConfig = signingConfigs.debug
+            // Recommended: enable minification and proguard if needed
+            minifyEnabled false
+            shrinkResources false
         }
     }
 }
+
+// ✅ Fix mapReleaseSourceSetPaths error
 afterEvaluate {
     tasks.matching { it.name == "mapDebugSourceSetPaths" }.configureEach {
         dependsOn("processDebugGoogleServices")
     }
+    tasks.matching { it.name == "mapReleaseSourceSetPaths" }.configureEach {
+        dependsOn("processReleaseGoogleServices")
+    }
+    tasks.matching { it.name == "mergeReleaseResources" }.configureEach {
+        dependsOn("processReleaseGoogleServices")
+    }
 }
 
 
-// ADD THESE LINES: Add the desugaring dependency
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
-    implementation platform('com.google.firebase:firebase-bom:32.0.0') // Add this
-    implementation 'com.google.firebase:firebase-analytics' // Add this
-    implementation 'com.google.firebase:firebase-messaging' // Add this for FCM
+
+    // Firebase BOM (keeps versions consistent)
+    implementation platform('com.google.firebase:firebase-bom:32.0.0')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-messaging'
 }
 
 flutter {

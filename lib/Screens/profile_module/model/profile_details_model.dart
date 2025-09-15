@@ -6,14 +6,14 @@ class ProfileDetailsModel {
 
   ProfileDetailsModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
-    vendor = json['vendor'] != null ? new Vendor.fromJson(json['vendor']) : null;
+    vendor = json['vendor'] != null ? Vendor.fromJson(json['vendor']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    if (this.vendor != null) {
-      data['vendor'] = this.vendor!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
+    if (vendor != null) {
+      data['vendor'] = vendor!.toJson();
     }
     return data;
   }
@@ -23,7 +23,7 @@ class Vendor {
   int? id;
   String? fullname;
   String? phone;
-  String? aadhaarNumber;
+String? aadhaarNumber;
   String? email;
   String? password;
   int? status;
@@ -44,7 +44,7 @@ class Vendor {
   String? subEndDate;
   String? vendorGender;
   String? fcmToken;
-  String? referredBy;
+  int? referredBy;
   String? createdAt;
   String? updatedAt;
 
@@ -108,34 +108,34 @@ class Vendor {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['fullname'] = this.fullname;
-    data['phone'] = this.phone;
-    data['aadhaar_number'] = this.aadhaarNumber;
-    data['email'] = this.email;
-    data['password'] = this.password;
-    data['status'] = this.status;
-    data['isVerified'] = this.isVerified;
-    data['businessName'] = this.businessName;
-    data['city'] = this.city;
-    data['vendor_cat'] = this.vendorCat;
-    data['profileImgUrl'] = this.profileImgUrl;
-    data['vehicleImgUrl'] = this.vehicleImgUrl;
-    data['shopImgUrl'] = this.shopImgUrl;
-    data['documentImgUrl'] = this.documentImgUrl;
-    data['licenseImgUrl'] = this.licenseImgUrl;
-    data['currentAddress'] = this.currentAddress;
-    data['pin_code'] = this.pinCode;
-    data['carnumber'] = this.carnumber;
-    data['subscriptionPlan'] = this.subscriptionPlan;
-    data['subscription_date'] = this.subscriptionDate;
-    data['sub_end_date'] = this.subEndDate;
-    data['vendor_gender'] = this.vendorGender;
-    data['fcmToken'] = this.fcmToken;
-    data['referred_by'] = this.referredBy;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['fullname'] = fullname;
+    data['phone'] = phone;
+    data['aadhaar_number'] = aadhaarNumber;
+    data['email'] = email;
+    data['password'] = password;
+    data['status'] = status;
+    data['isVerified'] = isVerified;
+    data['businessName'] = businessName;
+    data['city'] = city;
+    data['vendor_cat'] = vendorCat;
+    data['profileImgUrl'] = profileImgUrl;
+    data['vehicleImgUrl'] = vehicleImgUrl;
+    data['shopImgUrl'] = shopImgUrl;
+    data['documentImgUrl'] = documentImgUrl;
+    data['licenseImgUrl'] = licenseImgUrl;
+    data['currentAddress'] = currentAddress;
+    data['pin_code'] = pinCode;
+    data['carnumber'] = carnumber;
+    data['subscriptionPlan'] = subscriptionPlan;
+    data['subscription_date'] = subscriptionDate;
+    data['sub_end_date'] = subEndDate;
+    data['vendor_gender'] = vendorGender;
+    data['fcmToken'] = fcmToken;
+    data['referred_by'] = referredBy;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
     return data;
   }
 }

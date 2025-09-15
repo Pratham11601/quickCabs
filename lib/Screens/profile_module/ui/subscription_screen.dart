@@ -41,7 +41,8 @@ class SubscriptionScreen extends StatelessWidget {
                 separatorBuilder: (_, __) => const SizedBox(height: 16),
                 itemBuilder: (context, index) {
                   final pkg = packages[index];
-                  final isSelected = controller.selectedPlanId.value == pkg.id.toString();
+                  final isSelected =
+                      controller.selectedPlanId.value == pkg.id.toString();
 
                   return InkWell(
                     borderRadius: BorderRadius.circular(12),
@@ -49,6 +50,8 @@ class SubscriptionScreen extends StatelessWidget {
                     highlightColor: Colors.transparent,
                     onTap: () async {
                       controller.selectedPlanId.value = pkg.id.toString();
+                      debugPrint(
+                          "Selected Plan ID: ${controller.selectedPlanId.value}");
 
                       // Call order creation here so it's ready in advance
                       await controller.createOrderAPI(pkg.id.toString());
@@ -56,9 +59,13 @@ class SubscriptionScreen extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: isSelected ? ColorsForApp.orange.withOpacity(0.1) : Colors.grey[100],
+                        color: isSelected
+                            ? ColorsForApp.orange.withOpacity(0.1)
+                            : Colors.grey[100],
                         border: Border.all(
-                          color: isSelected ? ColorsForApp.orange : Colors.transparent,
+                          color: isSelected
+                              ? ColorsForApp.orange
+                              : Colors.transparent,
                           width: 2,
                         ),
                         borderRadius: BorderRadius.circular(12),
@@ -86,7 +93,9 @@ class SubscriptionScreen extends StatelessWidget {
                                   pkg.packageName ?? "Unnamed",
                                   style: TextHelper.size20.copyWith(
                                     fontFamily: semiBoldFont,
-                                    color: isSelected ? ColorsForApp.orange : Colors.black,
+                                    color: isSelected
+                                        ? ColorsForApp.orange
+                                        : Colors.black,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
@@ -103,7 +112,9 @@ class SubscriptionScreen extends StatelessWidget {
                             "₹ ${pkg.totalPrice}",
                             style: TextHelper.size18.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: isSelected ? ColorsForApp.orange : Colors.black,
+                              color: isSelected
+                                  ? ColorsForApp.orange
+                                  : Colors.black,
                             ),
                           ),
                         ],
@@ -121,12 +132,15 @@ class SubscriptionScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: ColorsForApp.colorBlue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: ColorsForApp.colorBlue.withValues(alpha: 0.2)),
+                border: Border.all(
+                    color: ColorsForApp.colorBlue.withValues(alpha: 0.2)),
               ),
               child: Column(
                 children: [
                   Text("Why Choose Quick Cabs Pro?",
-                      style: TextHelper.h5.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                      style: TextHelper.h5.copyWith(
+                          color: ColorsForApp.blackColor,
+                          fontFamily: semiBoldFont)),
                   SizedBox(height: 10),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,22 +183,34 @@ class SubscriptionScreen extends StatelessWidget {
                   onPressed: controller.selectedPlanId.value.isNotEmpty
                       ? () {
                           final selectedPkg = packages.firstWhere(
-                            (p) => p.id.toString() == controller.selectedPlanId.value,
+                            (p) =>
+                                p.id.toString() ==
+                                controller.selectedPlanId.value,
                           );
 
                           controller.openCheckout(
-                            orderId: controller.createOrderModelResponse.value.order!.id ?? "",
+                            orderId: controller
+                                    .createOrderModelResponse.value.order!.id ??
+                                "",
                             planId: controller.selectedPlanId.value,
                             amount: selectedPkg.totalPrice ?? 0,
-                            name: profileController.userDetails.value!.fullname ?? "unknown", // user’s full name
-                            contact: profileController.userDetails.value!.phone ?? "-", // user’s mobile
-                            email: profileController.userDetails.value!.email ?? "-", // user’s email
+                            name:
+                                profileController.userDetails.value!.fullname ??
+                                    "unknown", // user’s full name
+                            contact:
+                                profileController.userDetails.value!.phone ??
+                                    "-", // user’s mobile
+                            email: profileController.userDetails.value!.email ??
+                                "-", // user’s email
                           );
                         }
                       : null,
                   style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    backgroundColor: controller.selectedPlanId.value.isNotEmpty ? ColorsForApp.orange : Colors.grey,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
+                    backgroundColor: controller.selectedPlanId.value.isNotEmpty
+                        ? ColorsForApp.orange
+                        : Colors.grey,
                   ),
                   child: Text(
                     "Subscribe",
@@ -219,7 +245,8 @@ class BenefitItem extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: TextHelper.size17.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+              style: TextHelper.size17.copyWith(
+                  color: ColorsForApp.blackColor, fontFamily: regularFont),
             ),
           ),
         ],

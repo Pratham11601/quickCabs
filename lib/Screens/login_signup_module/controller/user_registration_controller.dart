@@ -6,19 +6,21 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-
+import 'package:image/image.dart' as img;
 import '../../../api/api_manager.dart';
 import '../../../utils/app_colors.dart';
 import '../../../widgets/snackbar.dart';
 import '../../document_verification_module/model/docItemModel.dart';
 import '../../document_verification_module/model/upload_source.dart';
-import '../../document_verification_module/ui/uploadSheet.dart' show UploadSheet;
+import '../../document_verification_module/ui/uploadSheet.dart'
+    show UploadSheet;
 import '../repository/auth_repository.dart';
 
 class UserRegistrationController extends GetxController {
   AuthRepository authRepository = AuthRepository(APIManager());
 
-  final RxList<String> genders = <String>['Male', 'Female', 'Other', 'Prefer Not to say'].obs;
+  final RxList<String> genders =
+      <String>['Male', 'Female', 'Other', 'Prefer Not to say'].obs;
   final RxString selectedGender = ''.obs;
 
   TextEditingController emailController = TextEditingController();
@@ -26,6 +28,7 @@ class UserRegistrationController extends GetxController {
   TextEditingController aadharNumberController = TextEditingController();
   TextEditingController businessNameController = TextEditingController();
   TextEditingController cityNameController = TextEditingController();
+  TextEditingController carNumberController = TextEditingController();
   TextEditingController pinCodeController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
   TextEditingController currentAddressController = TextEditingController();
@@ -178,21 +181,19 @@ class UserRegistrationController extends GetxController {
     required String pinCode,
     required String carNumber,
     required int referredBy,
-    File? profileImgUrl,
-    File? documentImage,
-    File? shopImgUrl,
-    File? vehicleImgUrl,
-    // File? licenseImage,
   }) async {
     try {
       isLoading.value = true;
 
-      // 1. Prepare params (text fields)
+      // 1️⃣ Prepare text params
       final params = {
         "fullname": fullNameController.text.trim(),
         "aadhaar_number": aadharNumberController.text.trim(),
         "phone": phoneNumber.trim(),
         "email": email,
+        "pin_code": pinCodeController.text.trim(),
+        "carnumber": carNumber.trim(),
+        "city": cityNameController.text.trim(),
         "password": password,
         "businessName": businessName,
         "vendor_cat": vendorCat,
@@ -201,50 +202,53 @@ class UserRegistrationController extends GetxController {
         "referred_by": referredBy,
       };
 
-      // 2. Prepare files
-      final files = <String, File>{};
+      // 2️⃣ Prepare byteFiles map
+      final byteFiles = <String, List<int>>{};
 
-      void addFileIfExists(String key, String? path) {
+      /// Helper: compress image and add to byteFiles
+      Future<void> addCompressedByteFile(String key, String? path) async {
         if (path != null && path.isNotEmpty) {
-          final file = File(path);
-          if (file.existsSync()) files[key] = file;
+          final bytes = await File(path).readAsBytes();
+          final compressedBytes = await compressImage(bytes);
+          byteFiles[key] = compressedBytes;
         }
       }
 
-      addFileIfExists(
+      await addCompressedByteFile(
         'documentImage',
         docs.firstWhereOrNull((d) => d.title == "Aadhar Card")?.filePath,
       );
-      addFileIfExists(
+      await addCompressedByteFile(
         'profileImgUrl',
         docs.firstWhereOrNull((d) => d.title == "Selfie Photo")?.filePath,
       );
-      addFileIfExists(
+      await addCompressedByteFile(
         'shopImgUrl',
         docs.firstWhereOrNull((d) => d.title == "Shop Photo")?.filePath,
       );
-      addFileIfExists(
+      await addCompressedByteFile(
         'vehicleImgUrl',
         docs.firstWhereOrNull((d) => d.title == "Vehicle Photo")?.filePath,
       );
-      // addFileIfExists(
-      //   'licenseImage',
-      //   docs.firstWhereOrNull((d) => d.title == "Driving License")?.filePath,
-      // );
+      await addCompressedByteFile(
+        'licenseImgUrl',
+        docs.firstWhereOrNull((d) => d.title == "Driving License")?.filePath,
+      );
 
-      // Debug print before sending
+      // 3️⃣ Debug prints
       print("📌 Params:");
       params.forEach((k, v) => print("   $k: $v"));
 
-      print("📌 Files:");
-      files.forEach((k, v) => print("   $k: ${v.path}"));
+      print("📌 Byte files:");
+      byteFiles.forEach((k, v) => print("   $k: ${v.length} bytes"));
 
-      // 3. Call Repository
+      // 4️⃣ Call repository with byteFiles
       final response = await authRepository.registerVendor(
         params: params,
-        files: files.isEmpty ? null : files,
+        byteFiles: byteFiles.isEmpty ? null : byteFiles,
       );
 
+      // 5️⃣ Handle response
       if (response.status == true) {
         ShowSnackBar.success(message: "Registration successful!");
         return true;
@@ -252,7 +256,8 @@ class UserRegistrationController extends GetxController {
         ShowSnackBar.error(message: response.message ?? "Registration failed.");
         return false;
       }
-    } catch (e) {
+    } catch (e, st) {
+      debugPrint('Vendor registration error: $e\n$st');
       ShowSnackBar.error(message: e.toString());
       return false;
     } finally {
@@ -261,8 +266,17 @@ class UserRegistrationController extends GetxController {
   }
 
 // Service types
-  final RxList<String> serviceTypes =
-      <String>['Cab', 'Towing', 'Repairing', 'Puncture', 'Drivers', 'Fuel', 'Restaurant', 'Hospital', 'Car Sell'].obs;
+  final RxList<String> serviceTypes = <String>[
+    'Cab',
+    'Towing',
+    'Repairing',
+    'Puncture',
+    'Drivers',
+    'Fuel',
+    'Restaurant',
+    'Hospital',
+    'Car Sell'
+  ].obs;
 
 // Selected service - only one at a time
   final RxString selectedService = ''.obs;
@@ -456,69 +470,65 @@ class UserRegistrationController extends GetxController {
 
   RxDouble progress = 0.0.obs; // 0.0 -> 1.0
 
-  File? selectedFile;
+  // File? selectedFile;
+  Rx<File?> selectedFile = Rx<File?>(null);
+
   String? fileName;
+
+  /// Compress Image before upload
+  Future<List<int>> compressImage(Uint8List imageBytes) async {
+    final image = img.decodeImage(imageBytes)!;
+    final resized = img.copyResize(image, width: 800);
+    return img.encodeJpg(resized, quality: 85);
+  }
 
   /// pick from Camera/Gallery/Files
   Future<void> uploadDoc(int index, UploadSource source) async {
     try {
       final picker = ImagePicker();
-      XFile? picked;
+      final pickedFile;
 
       switch (source) {
         case UploadSource.camera:
-          picked = await picker.pickImage(source: ImageSource.camera);
+          pickedFile = await picker.pickImage(source: ImageSource.camera);
           break;
         case UploadSource.gallery:
-          picked = await picker.pickImage(source: ImageSource.gallery);
+          pickedFile = await picker.pickImage(source: ImageSource.gallery);
           break;
       }
 
-      if (picked == null) return;
+      if (pickedFile == null) return;
 
-      // Get filename safely (fallback to timestamp if empty)
-      final fileName =
-          (picked.path != null && picked.path.isNotEmpty) ? p.basename(picked.path) : 'img_${DateTime.now().millisecondsSinceEpoch}';
+      selectedFile.value = File(pickedFile.path);
 
-      String savedPath;
-
-      // Mobile: persist a copy into app documents directory (avoids content:// / temp cache issues)
-      if (!kIsWeb) {
-        final bytes = await picked.readAsBytes();
-        final appDir = await getApplicationDocumentsDirectory();
-        final saveFile = File('${appDir.path}/$fileName');
-        await saveFile.writeAsBytes(bytes, flush: true);
-        savedPath = saveFile.path;
-
-        debugPrint('Picked original path: ${picked.path}');
-        debugPrint('Saved copy path: $savedPath');
-        debugPrint('Exists: ${saveFile.existsSync()}');
-      } else {
-        // Web: there is no regular file path. You can store bytes or a data URL.
-        // For display on web use Image.memory; here we write a temp file if path_provider supports it.
-        final bytes = await picked.readAsBytes();
-        final appDir = await getTemporaryDirectory(); // on web this may or may not be supported
-        final saveFile = File('${appDir.path}/$fileName');
-        await saveFile.writeAsBytes(bytes, flush: true);
-        savedPath = saveFile.path;
-        debugPrint('Web saved path (if supported): $savedPath');
+      if (selectedFile.value == null) {
+        throw Exception("No picture selected.");
       }
 
-      // update your model
-      final item = docs[index];
-      item.filePath = savedPath;
-      item.fileName = fileName;
-      item.status = DocStatus.verified;
-      item.date = DateTime.now();
+      final selectedImageBytes = await selectedFile.value!.readAsBytes();
+      final compressedImgBytes = await compressImage(selectedImageBytes);
 
-      docs[index] = item; // trigger UI update in your state management
+      // Use pickedFile.path directly instead of savedPath
+      final filePath = pickedFile.path;
+      final fileName =
+          pickedFile.name; // requires image_picker 1.0.0+ (supports .name)
+
+      // ✅ Update your model safely
+      docs[index] = docs[index].copyWith(
+        filePath: filePath,
+        fileName: fileName,
+        status: DocStatus.verified,
+        date: DateTime.now(),
+      );
+
       recomputeProgress();
     } catch (e, st) {
       debugPrint('Upload failed: $e\n$st');
     }
   }
 
-  void replaceDoc(int index, bool isOnlysSelfie) => openUploadSheet(index, isOnlysSelfie);
+  void replaceDoc(int index, bool isOnlysSelfie) =>
+      openUploadSheet(index, isOnlysSelfie);
 
   void deleteDoc(int index) {
     final i = docs[index];
@@ -532,13 +542,15 @@ class UserRegistrationController extends GetxController {
 
   void recomputeProgress() {
     final totalRequired = docs.where((d) => d.required).length;
-    final doneRequired = docs.where((d) => d.required && d.status != DocStatus.empty).length;
+    final doneRequired =
+        docs.where((d) => d.required && d.status != DocStatus.empty).length;
     progress.value = totalRequired == 0 ? 0 : doneRequired / totalRequired;
   }
 
   int remainingRequiredCount() {
     final totalRequired = docs.where((d) => d.required).length;
-    final doneRequired = docs.where((d) => d.required && d.status != DocStatus.empty).length;
+    final doneRequired =
+        docs.where((d) => d.required && d.status != DocStatus.empty).length;
     return (totalRequired - doneRequired).clamp(0, totalRequired);
   }
 

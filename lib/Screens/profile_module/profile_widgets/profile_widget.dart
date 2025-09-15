@@ -40,13 +40,15 @@ class ProfileInfoCard extends StatelessWidget {
         children: [
           /// Circle Avatar with initials
           CircleAvatar(
-            radius: 50,
+            radius: 40,
             backgroundColor: Colors.orange.shade100,
-            backgroundImage: (profileImage.isNotEmpty) ? NetworkImage(profileImage) : null,
+            backgroundImage:
+                (profileImage.isNotEmpty) ? NetworkImage(profileImage) : null,
             child: (profileImage.isEmpty)
                 ? Text(
                     name.isNotEmpty ? name[0].toUpperCase() : "?",
-                    style: TextHelper.h4.copyWith(color: ColorsForApp.red, fontFamily: semiBoldFont),
+                    style: TextHelper.h4.copyWith(
+                        color: ColorsForApp.red, fontFamily: semiBoldFont),
                   )
                 : null,
           ),
@@ -58,21 +60,32 @@ class ProfileInfoCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: TextHelper.h6.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                Text(name,
+                    style: TextHelper.h6.copyWith(
+                        color: ColorsForApp.blackColor,
+                        fontFamily: semiBoldFont)),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.phone_outlined, size: 18, color: ColorsForApp.subtitle),
+                    Icon(Icons.phone_outlined,
+                        size: 18, color: ColorsForApp.subtitle),
                     const SizedBox(width: 6),
-                    Text(phone, style: TextHelper.size18.copyWith(color: ColorsForApp.subtitle, fontFamily: semiBoldFont)),
+                    Text(phone,
+                        style: TextHelper.size17.copyWith(
+                            color: ColorsForApp.subtitle,
+                            fontFamily: semiBoldFont)),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.email_outlined, size: 18, color: ColorsForApp.subtitle),
+                    Icon(Icons.email_outlined,
+                        size: 18, color: ColorsForApp.subtitle),
                     const SizedBox(width: 6),
-                    Text(email, style: TextHelper.size18.copyWith(color: ColorsForApp.subtitle, fontFamily: semiBoldFont)),
+                    Text(email,
+                        style: TextHelper.size17.copyWith(
+                            color: ColorsForApp.subtitle,
+                            fontFamily: semiBoldFont)),
                   ],
                 ),
               ],
@@ -135,7 +148,9 @@ class SettingsCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// Section Title
-            Text(sectionTitle, style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+            Text(sectionTitle,
+                style: TextHelper.size20.copyWith(
+                    color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
             const SizedBox(height: 12),
 
             /// Items List
@@ -145,13 +160,15 @@ class SettingsCard extends StatelessWidget {
                 return Column(
                   children: [
                     InkWell(
-                      splashColor: ColorsForApp.subTitleColor.withValues(alpha: 0.1), // custom ripple color
+                      splashColor: ColorsForApp.subTitleColor
+                          .withValues(alpha: 0.1), // custom ripple color
                       onTap: item.hasSwitch ? null : item.onTap,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         child: Row(
                           children: [
-                            Icon(item.icon, size: 23, color: ColorsForApp.primaryDarkColor),
+                            Icon(item.icon,
+                                size: 23, color: ColorsForApp.primaryDarkColor),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Text(
@@ -166,7 +183,8 @@ class SettingsCard extends StatelessWidget {
                             /// Label (optional)
                             if (item.label != null)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFFFF4D6),
                                   borderRadius: BorderRadius.circular(6),
@@ -185,7 +203,8 @@ class SettingsCard extends StatelessWidget {
                                 ? (item.toggleValue != null
                                     ? Obx(() => Switch(
                                           value: item.toggleValue!.value,
-                                          onChanged: (val) => item.toggleValue!.value = val,
+                                          onChanged: (val) =>
+                                              item.toggleValue!.value = val,
                                           activeColor: Colors.white,
                                           activeTrackColor: Colors.redAccent,
                                         ))
@@ -214,18 +233,22 @@ class SettingsCard extends StatelessWidget {
                                               ),
                                             ),
                                             const SizedBox(width: 8),
-                                            const Icon(Icons.chevron_right, color: Colors.black45),
+                                            const Icon(Icons.chevron_right,
+                                                color: Colors.black45),
                                           ],
                                         ),
                                       )
-                                    : const Icon(Icons.chevron_right, color: Colors.black45),
+                                    : const Icon(Icons.chevron_right,
+                                        color: Colors.black45),
                           ],
                         ),
                       ),
                     ),
 
                     /// Divider except last item
-                    if (index != items.length - 1) const Divider(height: 1, thickness: 0.6, color: Colors.black12),
+                    if (index != items.length - 1)
+                      const Divider(
+                          height: 1, thickness: 0.6, color: Colors.black12),
                   ],
                 );
               }),
@@ -256,7 +279,8 @@ class LogoutButton extends StatelessWidget {
         leading: const Icon(Icons.logout, size: 30, color: ColorsForApp.red),
         title: Text(
           "Logout",
-          style: TextHelper.h6.copyWith(color: ColorsForApp.red, fontFamily: semiBoldFont),
+          style: TextHelper.h6
+              .copyWith(color: ColorsForApp.red, fontFamily: semiBoldFont),
         ),
         onTap: onLogout,
       ),

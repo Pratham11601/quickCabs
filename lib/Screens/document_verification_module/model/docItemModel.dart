@@ -21,4 +21,25 @@ class DocItem {
   DateTime? date;
 
   bool get hasFile => filePath != null && fileName != null;
+
+  /// CopyWith method for updating fields
+  DocItem copyWith({
+    String? title,
+    String? subtitle,
+    bool? required,
+    String? filePath,
+    String? fileName,
+    DocStatus? status,
+    DateTime? date,
+  }) {
+    return DocItem(
+      title: title ?? this.title,
+      subtitle: subtitle ?? this.subtitle,
+      required: required ?? this.required,
+      filePath: filePath ?? this.filePath,
+      fileName: fileName ?? this.fileName,
+      status: status ?? this.status,
+      date: date ?? this.date,
+    );
+  }
 }

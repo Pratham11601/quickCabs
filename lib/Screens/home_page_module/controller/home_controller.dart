@@ -12,12 +12,12 @@ import '../repository/active_lead_repository.dart';
 
 class HomeController extends GetxController {
   HomeRepository authRepository = HomeRepository(APIManager());
-  ActiveLeadRepository activeLeadRepository = ActiveLeadRepository(APIManager());
+  ActiveLeadRepository activeLeadRepository =
+      ActiveLeadRepository(APIManager());
 
   @override
   void onInit() {
     super.onInit();
-    fetchActiveLeads();
     fetchBanners();
   }
 
@@ -29,51 +29,13 @@ class HomeController extends GetxController {
     {'title': 'Cab', 'icon': '🚕'},
   ].obs;
 
-  /// Shared leads (mock data now, replace with API later)
-  final leads = [
-    {
-      'name': 'Amit Singh',
-      'price': 850,
-      'from': 'Connaught Place',
-      'to': 'IGI Airport',
-      'car': 'Sedan',
-      'distance': '24.5 km',
-      'date': '2025-08-08',
-      'time': '14:30',
-      'phone': '+91 9876543210',
-      'note': 'Premium customer, AC required, luggage space needed'
-    },
-    {
-      'name': 'Priya Sharma',
-      'price': 300,
-      'from': 'Gurgaon',
-      'to': 'Cyber Hub',
-      'car': 'Hatchback',
-      'distance': '8.2 km',
-      'date': '2025-08-08',
-      'time': '15:00',
-      'phone': '+91 9876543211',
-      'note': 'Return trip possible'
-    },
-    {
-      'name': 'Mohammed Ali',
-      'price': 650,
-      'from': 'Noida',
-      'to': 'Greater Noida',
-      'car': 'SUV',
-      'distance': '18.8 km',
-      'date': '2025-08-08',
-      'time': '16:15',
-      'phone': '+91 9876543212',
-      'note': 'Family trip, child seat available'
-    }
-  ].obs;
   final liveLeads = <Map<String, dynamic>>[].obs;
 
   RxBool isKycCompleted = false.obs;
   Future<bool> checkProfileCompletion() async {
     try {
-      CheckProfileCompletionModel checkProfileCompletionModel = await authRepository.checkProfileCompletionApiCall();
+      CheckProfileCompletionModel checkProfileCompletionModel =
+          await authRepository.checkProfileCompletionApiCall();
       if (checkProfileCompletionModel.status == true) {
         isKycCompleted.value = checkProfileCompletionModel.isComplete ?? false;
         return true;
@@ -150,99 +112,78 @@ class HomeController extends GetxController {
   //   }
   // }
 
-  Future<void> fetchLiveLeads() async {
-    try {
-      isLoadingLiveLeads.value = true;
-      errorMsg.value = '';
-      await Future.delayed(const Duration(milliseconds: 400)); // demo delay
-
-      liveLeads.assignAll([
-        {
-          'name': 'Amit Singh',
-          'from': 'Connaught Place',
-          'to': 'IGI Airport',
-          'price': 850,
-          'distance': '24.5 km',
-          'time': '14:30',
-        },
-        {
-          'name': 'Priya Sharma',
-          'from': 'Gurgaon',
-          'to': 'Cyber Hub',
-          'price': 300,
-          'distance': '8.2 km',
-          'time': '15:00',
-        },
-        {
-          'name': 'Mohammed Ali',
-          'from': 'Noida',
-          'to': 'Greater Noida',
-          'price': 650,
-          'distance': '18.8 km',
-          'time': '16:15',
-        },
-        {
-          'name': 'Sopan',
-          'from': 'Pune',
-          'to': 'Mumbai',
-          'price': 69,
-          'distance': '11.1 km',
-          'time': '12:15',
-        },
-        {
-          'name': 'Topan',
-          'from': 'Katraj',
-          'to': 'Karve nagar',
-          'price': 69,
-          'distance': '11.1 km',
-          'time': '12:15',
-        },
-      ]);
-    } catch (e) {
-      errorMsg.value = 'Failed to load rides';
-    } finally {
-      isLoadingLiveLeads.value = false;
-    }
-  }
-
   /// Button actions
   void declineLiveLead(int index) {
     if (index >= 0 && index < liveLeads.length) liveLeads.removeAt(index);
   }
 
-  void acceptLiveLead(int index) {
-    if (index >= 0 && index < liveLeads.length) {
-      final lead = liveLeads[index];
-      // TODO: call accept API / navigate with `lead`
-    }
-  }
+  // void acceptLiveLead(int index) {
+  //   if (index >= 0 && index < liveLeads.length) {
+  //     final lead = liveLeads[index];
+  //     // TODO: call accept API / navigate with `lead`
+  //   }
+  // }
 
   RxList<String> emergencyServiceList = <String>[].obs;
 
   ///active api logic method and veriavble
   RxList<Post> activeLeads = <Post>[].obs;
 
-  Future<void> fetchActiveLeads() async {
+  Future<ActiveLeadModel> fetchActiveLeads(dynamic pageNumber) async {
     try {
       isLoadingActiveLeads.value = true;
       errorMsg.value = '';
-      final response = await activeLeadRepository.activeLeadApiCall();
+      final response = await activeLeadRepository.activeLeadApiCall(pageNumber);
       debugPrint('Fetched leads count: ${response.posts.length}');
       activeLeads.assignAll(response.posts);
       filteredActiveLeads.clear(); // 👈 reset filter results
       isFilterApplied.value = false;
+
+      return response;
     } catch (e) {
       errorMsg.value = 'Failed to load active leads';
       debugPrint('Error fetching leads: $e');
+      return ActiveLeadModel(posts: []);
     } finally {
       isLoadingActiveLeads.value = false;
     }
   }
 
+  //    RxList<Post> activeList = <Post>[].obs;
+
+  // Future<ActiveLeadModel?> fetchActiveLead(int pageNumber) async {
+  //   try {
+  //     isLoading.value = true;
+  //     final response = await activeLeadRepository.activeLeadApiCall(pageNumber);
+  //     if (response.status == true) {
+  //       final activeListModel = NewsModel.fromJson(response);
+  //       if (newsModel.result != null) {
+  //         newsList.addAll(newsModel.result!);
+  //       }
+  //       isLoading.value = false;
+  //       logger.i("News list retrieved successfully: $response");
+
+  //       return newsModel;
+  //     } else {
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     isLoading.value = false;
+  //     logger.e("News api failed. Please try again.");
+  //     return null;
+  //   }
+  // }
+
   void applyFilter() {
     filteredActiveLeads.assignAll(activeLeads.where((lead) {
-      final matchesFrom = fromLocation.value.isEmpty || (lead.locationFrom ?? "").toLowerCase().contains(fromLocation.value.toLowerCase());
-      final matchesTo = toLocation.value.isEmpty || (lead.toLocation ?? "").toLowerCase().contains(toLocation.value.toLowerCase());
+      final matchesFrom = fromLocation.value.isEmpty ||
+          (lead.locationFrom ?? "")
+              .toLowerCase()
+              .contains(fromLocation.value.toLowerCase());
+      final matchesTo = toLocation.value.isEmpty ||
+          (lead.toLocation ?? "")
+              .toLowerCase()
+              .contains(toLocation.value.toLowerCase());
       return matchesFrom && matchesTo;
     }).toList());
 
@@ -302,7 +243,6 @@ class HomeController extends GetxController {
   void fetchBanners() async {
     try {
       isBannerLoading(true);
-
       final response = await activeLeadRepository.fetchBannersApiCall();
       banners.assignAll(response); // ✅ directly assign list
     } catch (e) {
