@@ -1,4 +1,5 @@
 import 'package:QuickCab/Screens/home_page_module/model/check_profile_completion_model.dart';
+import 'package:QuickCab/Screens/home_page_module/model/driver_availability_model.dart';
 
 import '../../../api/api_manager.dart';
 import '../../profile_module/model/subscription_status_model.dart';
@@ -45,5 +46,16 @@ class HomeRepository {
     );
 
     return VendorResponse.fromJson(jsonData);
+  }
+
+  Future<DriverAvailabilityModel> postDriverAvailabilityApiCall({
+    required Map<String, dynamic> params,
+    bool isLoaderShow = true,
+  }) async {
+    var jsonData = await apiManager.postAPICall(
+      url: '/driver-availability/post-avability',
+      params: params,
+    );
+    return DriverAvailabilityModel.fromJson(jsonData);
   }
 }

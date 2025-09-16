@@ -35,14 +35,15 @@ class EmergencyServicesCardController extends GetxController {
         limit: limit,
       );
       // store total count from API
-      totalVendors.value = response.total ?? 0;
+      if (response.status == 1) {
+        totalVendors.value = response.total ?? 0;
 
-      if (response.vendors != null && response.vendors!.isNotEmpty) {
-        vendors.addAll(response.vendors!);
-        currentPage++;
-        isMoreDataAvailable.value = response.isNext ?? false;
-      } else {
-        isMoreDataAvailable.value = false;
+        if (response.vendors != null && response.vendors!.isNotEmpty) {
+          vendors.addAll(response.vendors!);
+          currentPage++;
+        } else {
+          isMoreDataAvailable.value = false;
+        }
       }
     } finally {
       isLoading.value = false;

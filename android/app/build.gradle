@@ -7,13 +7,13 @@ plugins {
 
 android {
     namespace = "com.quickcabpune.quickcab"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     defaultConfig {
         applicationId = "com.quickcabpune.quickcab"
         minSdk = 23
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -31,7 +31,7 @@ android {
     buildTypes {
         release {
             // For now, using debug signing for testing release build
-            signingConfig = signingConfigs.debug
+//            signingConfig = signingConfigs.debug
             // Recommended: enable minification and proguard if needed
             minifyEnabled false
             shrinkResources false

@@ -26,9 +26,9 @@ class SubscriptionStatusModel {
 }
 
 class Subscription {
-  Null? plan;
-  Null? lastRechargedDate;
-  Null? endDate;
+  String? plan;
+  String? lastRechargedDate;
+  String? endDate;
   bool? isActive;
 
   Subscription({this.plan, this.lastRechargedDate, this.endDate, this.isActive});

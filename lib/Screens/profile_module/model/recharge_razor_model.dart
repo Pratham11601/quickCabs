@@ -4,19 +4,13 @@ class RechargeRazorModel {
   bool? isSubscribtionActive;
   Subscription? subscription;
 
-  RechargeRazorModel(
-      {this.status,
-        this.message,
-        this.isSubscribtionActive,
-        this.subscription});
+  RechargeRazorModel({this.status, this.message, this.isSubscribtionActive, this.subscription});
 
   RechargeRazorModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
     isSubscribtionActive = json['isSubscribtionActive'];
-    subscription = json['subscription'] != null
-        ? new Subscription.fromJson(json['subscription'])
-        : null;
+    subscription = json['subscription'] != null ? new Subscription.fromJson(json['subscription']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -32,17 +26,16 @@ class RechargeRazorModel {
 }
 
 class Subscription {
-  Null? plan;
-  Null? lastRechargedDate;
-  Null? endDate;
+  String? plan;
+  String? startDate;
+  String? endDate;
   bool? isActive;
 
-  Subscription(
-      {this.plan, this.lastRechargedDate, this.endDate, this.isActive});
+  Subscription({this.plan, this.startDate, this.endDate, this.isActive});
 
   Subscription.fromJson(Map<String, dynamic> json) {
     plan = json['plan'];
-    lastRechargedDate = json['LastRechargedDate'];
+    startDate = json['startDate'];
     endDate = json['endDate'];
     isActive = json['isActive'];
   }
@@ -50,7 +43,7 @@ class Subscription {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['plan'] = plan;
-    data['LastRechargedDate'] = lastRechargedDate;
+    data['startDate'] = startDate;
     data['endDate'] = endDate;
     data['isActive'] = isActive;
     return data;

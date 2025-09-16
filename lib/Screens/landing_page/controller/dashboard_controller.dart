@@ -9,6 +9,7 @@ class DashboardController extends GetxController {
 
   var currentIndex = 0.obs;
   final isLoading = false.obs; // True when API call is in progress
+  DateTime? lastCheckedTime;
 
   void changeTab(int index) {
     currentIndex.value = index;
@@ -30,15 +31,17 @@ class DashboardController extends GetxController {
       subscriptionStatusModel.value = response;
 
       if (response.status == 1) {
-        isLoading.value = false;
-        isSubscribed.value = response.isSubscribtionActive ?? false;
+        // check both top-level and nested subscription.isActive
+        bool active = response.isSubscribtionActive == true || (response.subscription?.isActive == true);
+
+        isSubscribed.value = active;
       } else {
         isSubscribed.value = false;
-        isLoading.value = false;
       }
     } catch (e) {
-      isLoading.value = false;
       isSubscribed.value = false;
+    } finally {
+      isLoading.value = false;
     }
   }
 }

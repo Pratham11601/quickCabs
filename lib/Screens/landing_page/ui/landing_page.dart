@@ -116,9 +116,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     // Post Lead (restricted)
                     GestureDetector(
                       onTap: () async {
-                        // Check result
+                        await controller.checkSubscriptionStatus();
+
                         if (controller.isSubscribed.value) {
-                          controller.currentIndex.value = 2;
+                          controller.currentIndex.value = 2; // ✅ navigate to Post Lead
                         } else {
                           showSubscriptionAlertDialog(
                             Get.context!,
@@ -130,18 +131,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           );
                         }
                       },
-                      child: LoadingOverlay(
-                        isLoading: controller.isLoading.value,
-                        child: buildNavItem(
-                          icon: Icons.add_circle_outline,
-                          label: "Post Lead",
-                          index: 2,
-                          controller: controller,
-                        ),
+                      child: buildNavItem(
+                        icon: Icons.add_circle_outline,
+                        label: "Post Lead",
+                        index: 2,
+                        controller: controller,
                       ),
-                    ),
-
-                    // Profile
+                    ), // Profile
                     GestureDetector(
                       onTap: () => controller.currentIndex.value = 3,
                       child: buildNavItem(

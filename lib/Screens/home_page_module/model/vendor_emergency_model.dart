@@ -1,5 +1,5 @@
 class VendorResponse {
-  bool? status;
+  int? status;
   String? message;
   int? total;
   int? totalPages;

@@ -1,4 +1,5 @@
 import 'package:QuickCab/Screens/home_page_module/model/banner_model.dart';
+import 'package:QuickCab/Screens/home_page_module/model/live_lead_model.dart';
 
 import '../../../api/api_manager.dart';
 import '../model/active_lead_model.dart';
@@ -27,5 +28,14 @@ class ActiveLeadRepository {
     } else {
       return [];
     }
+  }
+
+  //Live Lead api call
+  Future<LiveLeadModel> liveLeadApiCall(dynamic pageNumber) async {
+    var jsonData = await apiManager.getAPICall(
+      url: '/driver-availability/my-avability?page=$pageNumber&pageSize=10',
+    );
+    var response = LiveLeadModel.fromJson(jsonData);
+    return response;
   }
 }

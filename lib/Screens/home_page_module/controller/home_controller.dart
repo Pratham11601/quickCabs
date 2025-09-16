@@ -1,10 +1,15 @@
 import 'package:QuickCab/Screens/home_page_module/model/check_profile_completion_model.dart';
+import 'package:QuickCab/Screens/home_page_module/model/driver_availability_model.dart';
+import 'package:QuickCab/Screens/home_page_module/model/live_lead_model.dart';
 import 'package:QuickCab/Screens/home_page_module/repository/home_repository.dart';
-import 'package:flutter/widgets.dart';
+import 'package:QuickCab/widgets/snackbar.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../api/api_manager.dart';
+import '../../../utils/date_time_picker.dart';
 import '../home_widgets/accept_lead_popup.dart';
 import '../model/active_lead_model.dart';
 import '../model/banner_model.dart';
@@ -12,12 +17,12 @@ import '../repository/active_lead_repository.dart';
 
 class HomeController extends GetxController {
   HomeRepository authRepository = HomeRepository(APIManager());
-  ActiveLeadRepository activeLeadRepository =
-      ActiveLeadRepository(APIManager());
+  ActiveLeadRepository activeLeadRepository = ActiveLeadRepository(APIManager());
 
   @override
   void onInit() {
     super.onInit();
+    fetchActiveLeads(1);
     fetchBanners();
   }
 
@@ -29,13 +34,12 @@ class HomeController extends GetxController {
     {'title': 'Cab', 'icon': '🚕'},
   ].obs;
 
-  final liveLeads = <Map<String, dynamic>>[].obs;
+  // final liveLeads = <Map<String, dynamic>>[].obs;
 
   RxBool isKycCompleted = false.obs;
   Future<bool> checkProfileCompletion() async {
     try {
-      CheckProfileCompletionModel checkProfileCompletionModel =
-          await authRepository.checkProfileCompletionApiCall();
+      CheckProfileCompletionModel checkProfileCompletionModel = await authRepository.checkProfileCompletionApiCall();
       if (checkProfileCompletionModel.status == true) {
         isKycCompleted.value = checkProfileCompletionModel.isComplete ?? false;
         return true;
@@ -49,6 +53,7 @@ class HomeController extends GetxController {
 
   ///cards logic and variable
   final isLoading = false.obs;
+
   // Loading states
   var isLoadingActiveLeads = false.obs;
   var isLoadingLiveLeads = false.obs;
@@ -117,16 +122,16 @@ class HomeController extends GetxController {
     if (index >= 0 && index < liveLeads.length) liveLeads.removeAt(index);
   }
 
-  // void acceptLiveLead(int index) {
-  //   if (index >= 0 && index < liveLeads.length) {
-  //     final lead = liveLeads[index];
-  //     // TODO: call accept API / navigate with `lead`
-  //   }
-  // }
+  void acceptLiveLead(int index) {
+    if (index >= 0 && index < liveLeads.length) {
+      final lead = liveLeads[index];
+      // TODO: call accept API / navigate with `lead`
+    }
+  }
 
   RxList<String> emergencyServiceList = <String>[].obs;
 
-  ///active api logic method and veriavble
+  ///active api logic method and variables
   RxList<Post> activeLeads = <Post>[].obs;
 
   Future<ActiveLeadModel> fetchActiveLeads(dynamic pageNumber) async {
@@ -176,14 +181,8 @@ class HomeController extends GetxController {
 
   void applyFilter() {
     filteredActiveLeads.assignAll(activeLeads.where((lead) {
-      final matchesFrom = fromLocation.value.isEmpty ||
-          (lead.locationFrom ?? "")
-              .toLowerCase()
-              .contains(fromLocation.value.toLowerCase());
-      final matchesTo = toLocation.value.isEmpty ||
-          (lead.toLocation ?? "")
-              .toLowerCase()
-              .contains(toLocation.value.toLowerCase());
+      final matchesFrom = fromLocation.value.isEmpty || (lead.locationFrom ?? "").toLowerCase().contains(fromLocation.value.toLowerCase());
+      final matchesTo = toLocation.value.isEmpty || (lead.toLocation ?? "").toLowerCase().contains(toLocation.value.toLowerCase());
       return matchesFrom && matchesTo;
     }).toList());
 
@@ -250,5 +249,121 @@ class HomeController extends GetxController {
     } finally {
       isBannerLoading(false);
     }
+  }
+
+  /// Driver Availability Module ///
+  // Controllers for text inputs
+  final carController = TextEditingController();
+  final locationController = TextEditingController();
+
+  // Date & Time fields (observable)
+  var fromDate = DateTime.now().obs;
+  var toDate = DateTime.now().obs;
+  var fromTime = TimeOfDay(hour: 9, minute: 0).obs;
+  var toTime = TimeOfDay(hour: 18, minute: 0).obs;
+
+  // Pick date using reusable AppDateTimePicker
+  Future<void> pickDate(BuildContext context, bool isFrom) async {
+    final picked = await AppDateTimePicker.pickDate(
+      context,
+      initialDate: isFrom ? fromDate.value : toDate.value,
+    );
+
+    if (picked != null) {
+      if (isFrom) {
+        fromDate.value = picked;
+      } else {
+        toDate.value = picked;
+      }
+    }
+  }
+
+  // Pick time using reusable AppDateTimePicker
+  Future<void> pickTime(BuildContext context, bool isFrom) async {
+    final picked = await AppDateTimePicker.pickTime(
+      context,
+      initialTime: isFrom ? fromTime.value : toTime.value,
+    );
+
+    if (picked != null) {
+      if (isFrom) {
+        fromTime.value = picked;
+      } else {
+        toTime.value = picked;
+      }
+    }
+  }
+
+  // Driver availability post api
+  Rx<DriverAvailabilityModel> driverAvailabilityModel = DriverAvailabilityModel().obs;
+
+  Future<bool> postDriverAvailability(BuildContext context, {bool isLoaderShow = true}) async {
+    final params = {
+      "car": carController.text.trim(),
+      "location": locationController.text.trim(),
+      "from_date": DateFormat('yyyy-MM-dd').format(fromDate.value),
+      "from_time": AppDateTimePicker.formatTimeOfDay(fromTime.value),
+      "to_date": DateFormat('yyyy-MM-dd').format(toDate.value),
+      "to_time": AppDateTimePicker.formatTimeOfDay(toTime.value),
+    };
+
+    try {
+      isLoading.value = true;
+
+      final response = await authRepository.postDriverAvailabilityApiCall(
+        isLoaderShow: isLoaderShow,
+        params: params,
+      );
+
+      driverAvailabilityModel.value = response;
+
+      if (driverAvailabilityModel.value.status == 1) {
+        return true;
+      } else {
+        ShowSnackBar.error(
+          title: 'Error',
+          message: driverAvailabilityModel.value.message ?? 'Failed to share availability',
+        );
+        return false;
+      }
+    } catch (e) {
+      ShowSnackBar.error(
+        title: 'Error',
+        message: 'Something went wrong. Please try again.',
+      );
+      return false;
+    } finally {
+      isLoading.value = false; // ✅ only reset loading, no return here
+    }
+  }
+
+  // Fetch Live Lead api
+
+  ///live api logic method and variables
+  RxList<LiveLeadData> liveLeads = <LiveLeadData>[].obs;
+
+  Future<LiveLeadModel> fetchLiveLeads(dynamic pageNumber) async {
+    try {
+      isLoadingLiveLeads.value = true;
+      final response = await activeLeadRepository.liveLeadApiCall(pageNumber);
+      debugPrint('Fetched leads count: ${response.data!.length}');
+      liveLeads.assignAll(response.data!);
+      return response;
+    } catch (e) {
+      errorMsg.value = 'Failed to load active leads';
+      debugPrint('Error fetching leads: $e');
+      return LiveLeadModel(data: []);
+    } finally {
+      isLoadingLiveLeads.value = false;
+    }
+  }
+
+  void clearDriverAvailability() {
+    carController.clear();
+    locationController.clear();
+    fromDate.value = DateTime.now();
+    toDate.value = DateTime.now();
+    fromTime.value = const TimeOfDay(hour: 9, minute: 0);
+    toTime.value = const TimeOfDay(hour: 18, minute: 0);
   }
 }

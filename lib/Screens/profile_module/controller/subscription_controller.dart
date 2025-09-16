@@ -1,8 +1,10 @@
 import 'package:QuickCab/Screens/profile_module/controller/profile_controller.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../../../api/api_manager.dart';
+import '../../../widgets/common_widgets.dart';
 import '../../../widgets/snackbar.dart';
 import '../model/create_order_model.dart';
 import '../model/packages_model.dart';
@@ -16,18 +18,15 @@ import '../repository/profile_repository.dart';
 /// - Open Razorpay checkout
 /// - Verify payment with backend
 class SubscriptionController extends GetxController {
-  
   late Razorpay _razorpay;
-  final profileController =
-      Get.put(ProfileController()); // ✅ access existing instance
+  final profileController = Get.put(ProfileController()); // ✅ access existing instance
   final ProfileRepository profileRepository = ProfileRepository(APIManager());
   var isActive = false.obs;
 
   // Observables
   Rx<PackagesModel> packagesModelResponse = PackagesModel().obs;
   Rx<CreateOrderModel> createOrderModelResponse = CreateOrderModel().obs;
-  Rx<SubscriptionStatusModel> subscriptionStatusResponse =
-      SubscriptionStatusModel().obs;
+  Rx<SubscriptionStatusModel> subscriptionStatusResponse = SubscriptionStatusModel().obs;
 
   Rx<RechargeRazorModel> rechargeRazorModelResponse = RechargeRazorModel().obs;
   RxString selectedPlanId = ''.obs;
@@ -102,9 +101,19 @@ class SubscriptionController extends GetxController {
           "payment_id": paymentId,
         },
       );
-      if (response.status != null && response.status != 0) {
+
+      if (response.status != null && response.status == 1) {
         rechargeRazorModelResponse.value = response;
-        ShowSnackBar.success(message: "Payment Verified!");
+        showAppDialog(
+          title: rechargeRazorModelResponse.value.message.toString(),
+          message:
+              'Subscription Plan - ${rechargeRazorModelResponse.value.subscription!.plan}\nStart Date - ${rechargeRazorModelResponse.value.subscription!.startDate}\nEnd Date - ${rechargeRazorModelResponse.value.subscription!.endDate}',
+          icon: Icons.check_circle_rounded,
+          buttonText: 'OK',
+          onConfirm: () {
+            Get.back();
+          },
+        );
       } else {
         ShowSnackBar.info(message: response.message ?? "Recharge failed");
       }
@@ -124,17 +133,15 @@ class SubscriptionController extends GetxController {
     required String email,
   }) {
     var options = {
-      'key': 'rzp_live_RECNVaxXQHFOa1', // Replace with your real test/live key
-      'order_id': createOrderModelResponse.value.order?.id ?? "",
-      'amount': 1 ?? 0, // from backend
-      'name': profileController.userDetails.value!.fullname ??
-          "Unknown", // Or "${user.name}'s Subscription"
+      'key': 'rzp_live_RECNVaxXQHFOa1', // 🔹 use your test/live key here
+      'order_id': orderId, // 🔹 use parameter, not from controller again
+      'amount': amount * 100, // 🔹 Razorpay expects amount in paise
+      'name': name, // 🔹 from parameter
       'prefill': {
-        'contact': profileController.userDetails.value!.phone ??
-            "-", // from user profile
-        'email': profileController.userDetails.value!.email ??
-            "-", // from user profile
+        'contact': contact,
+        'email': email,
       },
+      'description': 'Quick Cabs Subscription',
     };
 
     try {
@@ -147,20 +154,37 @@ class SubscriptionController extends GetxController {
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     ShowSnackBar.success(message: "Payment Successful");
+
+    final paymentId = response.paymentId ?? "";
+    final orderId = response.orderId ?? createOrderModelResponse.value.order?.id ?? "";
+
+    if (paymentId.isEmpty || orderId.isEmpty) {
+      ShowSnackBar.error(message: "Payment data missing. Please contact support.");
+      return;
+    }
+
     rechargeRazorAPI(
       planId: selectedPlanId.value,
-      orderId: response.orderId ?? "",
-      paymentId: response.paymentId ?? "",
+      orderId: orderId,
+      paymentId: paymentId,
     );
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
+    final errorCode = response.code ?? "Unknown Code";
+    final errorMessage = response.message ?? "Something went wrong. Please try again.";
+
     ShowSnackBar.error(
-        message: "Payment failed: ${response.code} - ${response.message}");
+      message: "Payment failed ($errorCode): $errorMessage",
+    );
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
-    ShowSnackBar.info(message: "External Wallet: ${response.walletName}");
+    final walletName = response.walletName ?? "Unknown Wallet";
+
+    ShowSnackBar.info(
+      message: "External Wallet selected: $walletName",
+    );
   }
 
   @override

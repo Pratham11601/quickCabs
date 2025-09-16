@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../../api/api_manager.dart';
 import '../../../routes/routes.dart';
+import '../../../utils/date_time_picker.dart';
 import '../repository/post_lead_repository.dart';
 
 class PostController extends GetxController {
@@ -72,45 +73,26 @@ class PostController extends GetxController {
 
   void selectSeatConfig(int seats) => selectedSeatConfig.value = seats;
 
-  Future<void> pickDate(BuildContext context) async {
-    final DateTime now = DateTime.now();
-    final DateTime? date = await showDatePicker(
-      context: context,
-      firstDate: DateTime(now.year, now.month, now.day),
-      lastDate: DateTime(now.year + 5),
-      initialDate: selectedDate.value ?? now,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            textTheme: Theme.of(context).textTheme.apply(
-                  fontSizeFactor: 1.2, // increase size by 20%
-                ),
-          ),
-          child: child!,
-        );
-      },
+  Future<void> selectFromDate(BuildContext context) async {
+    final picked = await AppDateTimePicker.pickDate(
+      context,
+      initialDate: DateTime.now(),
     );
-    if (date != null) selectedDate.value = date;
+
+    if (picked != null) {
+      selectedDate.value = picked;
+    }
   }
 
-  Future<void> pickTime(BuildContext context) async {
-    final TimeOfDay initial = selectedTime.value ?? TimeOfDay.now();
-    final TimeOfDay? time = await showTimePicker(
-      context: context,
-      initialTime: initial,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            timePickerTheme: TimePickerThemeData(
-              hourMinuteTextStyle: const TextStyle(fontSize: 24),
-              helpTextStyle: const TextStyle(fontSize: 18),
-            ),
-          ),
-          child: child!,
-        );
-      },
+  Future<void> selectFromTime(BuildContext context) async {
+    final picked = await AppDateTimePicker.pickTime(
+      context,
+      initialTime: TimeOfDay.now(),
     );
-    if (time != null) selectedTime.value = time;
+
+    if (picked != null) {
+      selectedTime.value = picked;
+    }
   }
 
   var currentStep = 0.obs;
