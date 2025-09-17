@@ -730,7 +730,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   Text(
                     title,
-                    style: TextHelper.h5.copyWith(
+                    style: TextHelper.h6.copyWith(
                       color: Colors.white,
                       fontFamily: semiBoldFont,
                     ),

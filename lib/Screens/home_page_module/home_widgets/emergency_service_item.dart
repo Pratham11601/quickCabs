@@ -17,7 +17,7 @@ class EmergencyServicesSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("emergency_services".tr, style: TextHelper.h6.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
+            Text("emergency_services".tr, style: TextHelper.h7.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(

@@ -23,6 +23,7 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     fetchActiveLeads(1);
+    fetchLiveLeads(1);
     fetchBanners();
   }
 

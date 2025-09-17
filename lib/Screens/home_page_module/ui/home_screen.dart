@@ -61,11 +61,11 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }
 
-      // Refresh both lists
-      await Future.wait([
-        homeController.fetchLiveLeads(1),
-        homeController.fetchActiveLeads(1),
-      ]);
+      // // Refresh both lists
+      // await Future.wait([
+      //   homeController.fetchLiveLeads(1),
+      //   homeController.fetchActiveLeads(1),
+      // ]);
     } catch (e) {
       debugPrint("Error in callAsyncAPI: $e");
     }
@@ -75,8 +75,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
-        // await homeController.fetchActiveLeads(1);
         await callAsyncAPI();
+        await homeController.fetchActiveLeads(1);
+        await homeController.fetchLiveLeads(1);
         // 🔹 This will refresh both APIs
       },
       child: SingleChildScrollView(

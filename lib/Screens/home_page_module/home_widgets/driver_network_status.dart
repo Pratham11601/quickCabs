@@ -43,7 +43,7 @@ class DriverNetworkStatusCard extends StatelessWidget {
             child: Icon(
               Icons.people_alt_outlined,
               color: ColorsForApp.colorBlue.withValues(alpha: 0.8),
-              size: 28,
+              size: 25,
             ),
           ),
           const SizedBox(width: 12),
@@ -58,7 +58,7 @@ class DriverNetworkStatusCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text("driver_network_status".tr,
-                        style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                        style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
 
                     /// Active / Inactive badge
                     Container(
