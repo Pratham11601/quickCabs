@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:QuickCab/utils/text_styles.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../routes/routes.dart';
 import '../../../widgets/common_widgets.dart';
@@ -16,6 +18,13 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _requestPermissions();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Quick Cabs Driver',
@@ -23,6 +32,35 @@ class _LoginScreenState extends State<LoginScreen> {
       theme: buildTheme(),
       home: const DriverLoginPage(),
     );
+  }
+
+  Future<void> _requestPermissions() async {
+    // ✅ Location
+    final locationStatus = await Permission.location.request();
+    if (locationStatus.isGranted) {
+      debugPrint("✅ Location granted");
+    } else if (locationStatus.isDenied) {
+      debugPrint("❌ Location denied");
+    } else if (locationStatus.isPermanentlyDenied) {
+      openAppSettings();
+    }
+
+    // ✅ Notifications
+    if (GetPlatform.isAndroid) {
+      final notifStatus = await Permission.notification.request();
+      if (notifStatus.isGranted) {
+        debugPrint("✅ Notifications granted (Android)");
+      } else {
+        debugPrint("❌ Notifications denied (Android)");
+      }
+    } else if (GetPlatform.isIOS) {
+      final settings = await FirebaseMessaging.instance.requestPermission();
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        debugPrint("✅ Notifications granted (iOS)");
+      } else {
+        debugPrint("❌ Notifications denied (iOS)");
+      }
+    }
   }
 }
 

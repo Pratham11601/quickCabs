@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       // Profile check
       bool result = await homeController.checkProfileCompletion();
-      if (result && !homeController.isKycCompleted.value) {
+      if (!homeController.isKycCompleted.value) {
         showCommonMessageDialog(
           Get.context!,
           'KYC Submitted',

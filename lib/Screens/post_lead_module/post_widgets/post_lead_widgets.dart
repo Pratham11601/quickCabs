@@ -33,7 +33,7 @@ Widget buildInputField(
     children: [
       Text(title, style: TextHelper.size18.copyWith(fontFamily: semiBoldFont)),
       const SizedBox(height: 6),
-      TextField(
+      TextFormField(
         focusNode: focusNode,
         keyboardType: isNumeric ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
         controller: controller,
@@ -46,6 +46,14 @@ Widget buildInputField(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           contentPadding: const EdgeInsets.symmetric(vertical: 12),
         ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter your fare amount';
+          } else if (int.parse(value) <= 0) {
+            return 'Fare amount should be greater than 0';
+          }
+          return null;
+        },
       )
     ],
   );

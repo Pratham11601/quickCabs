@@ -68,7 +68,7 @@ class SubscriptionController extends GetxController {
   /// Create order with backend
   Future<bool> createOrderAPI(String planId) async {
     try {
-      isLoading.value = false;
+      isLoading.value = true;
       final response = await profileRepository.createOrderApiCall(
         params: {"planId": planId},
       );

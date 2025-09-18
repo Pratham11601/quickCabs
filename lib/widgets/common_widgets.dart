@@ -1,7 +1,9 @@
 import 'package:QuickCab/Screens/login_signup_module/controller/user_registration_controller.dart';
+import 'package:QuickCab/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../Screens/landing_page/controller/dashboard_controller.dart';
@@ -619,6 +621,36 @@ class AppDialog extends StatelessWidget {
   }
 }
 
+void showPermissionDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Permission Required"),
+        content: const Text("This app needs storage access to continue."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), // dismiss
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context); // close dialog
+              PermissionStatus status = await Permission.storage.request();
+              if (status.isGranted) {
+                ShowSnackBar.success(title: 'Notification', message: 'Permission Granted ✅');
+              } else {
+                ShowSnackBar.error(title: 'Notification', message: 'Permission Denied ❌');
+              }
+            },
+            child: const Text("Allow"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 /// ✅ Helper method to show the dialog anywhere in your app.
 /// Just call this method with the required parameters.
 void showAppDialog({
@@ -794,5 +826,61 @@ class LoadingOverlay extends StatelessWidget {
           ),
       ],
     );
+  }
+}
+
+// Open WhatsApp chat
+Future<void> openWhatsApp(String number) async {
+  // Remove + if present
+  String formattedNumber = number.replaceAll("+", "");
+  final whatsappUrl = Uri.parse("https://wa.me/$formattedNumber");
+  if (await canLaunchUrl(whatsappUrl)) {
+    await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
+  } else {
+    Get.snackbar("Error", "Could not open WhatsApp");
+  }
+}
+
+// Call a number
+Future<void> makeCall(String number) async {
+  final callUrl = Uri.parse("tel:$number");
+  if (await canLaunchUrl(callUrl)) {
+    await launchUrl(callUrl);
+  } else {
+    Get.snackbar("Error", "Could not make a call");
+  }
+}
+
+/**
+ * Opens Google Maps with the provided address as destination.
+ * This function constructs a Google Maps URL with the destination parameter
+ * encoded, then attempts to launch it in an external application.
+ *
+ * @param address The destination address to be used in Google Maps
+ * @return A Future that completes when the URL is launched or throws an error
+ * @throws Exception if the URL cannot be launched
+ */
+Future<void> openGoogleMap(String address) async {
+  // Create a Google Maps URL with the encoded destination address
+  final Uri googleUrl = Uri.parse(
+    "https://www.google.com/maps/dir/?api=1&destination=${Uri.encodeComponent(address)}",
+  );
+
+  // Check if the URL can be launched and then launch it
+  if (await canLaunchUrl(googleUrl)) {
+    await launchUrl(googleUrl, mode: LaunchMode.externalApplication);
+  } else {
+    // Throw an error if the URL cannot be launched
+    throw 'Could not open the map.';
+  }
+}
+
+// Send email
+Future<void> sendEmail(String email) async {
+  final emailUrl = Uri.parse("mailto:$email");
+  if (await canLaunchUrl(emailUrl)) {
+    await launchUrl(emailUrl);
+  } else {
+    Get.snackbar("Error", "Could not open Email");
   }
 }

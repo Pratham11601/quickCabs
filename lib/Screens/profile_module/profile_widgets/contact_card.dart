@@ -5,6 +5,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
+import '../../../widgets/common_widgets.dart';
 import '../controller/help_support_controller.dart';
 import '../model/help_support_model.dart';
 
@@ -73,7 +74,7 @@ class ContactCard extends StatelessWidget {
                     _handleContactAction(
                       context,
                       contact.phoneNumbers ?? [],
-                      (selectedNumber) => controller.openWhatsApp(selectedNumber),
+                      (selectedNumber) => openWhatsApp(selectedNumber),
                     );
                   },
                 ),
@@ -104,7 +105,7 @@ class ContactCard extends StatelessWidget {
                     _handleContactAction(
                       context,
                       contact.phoneNumbers ?? [],
-                      (selectedNumber) => controller.makeCall(selectedNumber),
+                      (selectedNumber) => makeCall(selectedNumber),
                     );
                   },
                 ),

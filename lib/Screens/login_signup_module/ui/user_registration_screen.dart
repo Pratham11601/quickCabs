@@ -10,16 +10,25 @@ import '../controller/user_registration_controller.dart';
 
 class UserRegistrationScreen extends StatelessWidget {
   UserRegistrationScreen({super.key});
-  final UserRegistrationController controller =
-      Get.put(UserRegistrationController());
+  final UserRegistrationController controller = Get.put(UserRegistrationController());
   final GlobalKey<FormState> userDetailsFormKey = GlobalKey<FormState>();
-  @override  Widget build(BuildContext context) {
+  final ScrollController scrollController = ScrollController();
+  // 🔑 Keys for each field
+  final GlobalKey<FormFieldState> aadhaarKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> carNumberKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> emailKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> pinCodeKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> nameKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> businessNameKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> cityNameKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> currentAddressKey = GlobalKey<FormFieldState>();
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("User Registration",
-            style: TextHelper.size20.copyWith(
-                fontFamily: boldFont, color: ColorsForApp.whiteColor)),
+        title: Text("User Registration", style: TextHelper.size20.copyWith(fontFamily: boldFont, color: ColorsForApp.whiteColor)),
         centerTitle: true,
         backgroundColor: ColorsForApp.gradientTop,
         flexibleSpace: Container(
@@ -33,56 +42,6 @@ class UserRegistrationScreen extends StatelessWidget {
         ),
         elevation: 0,
         leading: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
-        actions: [
-          // Padding(
-          //   padding: EdgeInsets.only(right: 3.w),
-          //   child: Obx(() => Stack(
-          //         children: [
-          //           TextButton.icon(
-          //             onPressed: () => controller.toggleLanguageDropdown(),
-          //             icon: Icon(Icons.language, color: Colors.white),
-          //             label: Text(controller.selectedLanguage.value,
-          //                 style: TextStyle(
-          //                     fontSize: 14.sp,
-          //                     color: Colors.white,
-          //                     fontWeight: FontWeight.w600)),
-          //             style: TextButton.styleFrom(
-          //               backgroundColor: Colors.red[400]!,
-          //               shape: RoundedRectangleBorder(
-          //                   borderRadius: BorderRadius.circular(5)),
-          //             ),
-          //           ),
-          //           if (controller.isLanguageDropdownVisible.value)
-          //             Positioned(
-          //               right: 0,
-          //               top: 40,
-          //               child: Material(
-          //                 color: Colors.white,
-          //                 elevation: 6,
-          //                 borderRadius: BorderRadius.circular(5),
-          //                 child: Container(
-          //                   width: 32.w,
-          //                   child: ListView(
-          //                     shrinkWrap: true,
-          //                     children: controller.languages
-          //                         .map((lang) => ListTile(
-          //                               title: Text(lang),
-          //                               selected:
-          //                                   controller.selectedLanguage.value ==
-          //                                       lang,
-          //                               selectedTileColor: Colors.red.shade50,
-          //                               onTap: () =>
-          //                                   controller.setLanguage(lang),
-          //                             ))
-          //                         .toList(),
-          //                   ),
-          //                 ),
-          //               ),
-          //             ),
-          //         ],
-          //       )),
-          // ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -104,6 +63,7 @@ class UserRegistrationScreen extends StatelessWidget {
                     )),
                 SizedBox(height: 1.h),
                 TextFormField(
+                  key: nameKey,
                   controller: controller.fullNameController,
                   style: TextHelper.size18.copyWith(
                     fontFamily: regularFont,
@@ -118,8 +78,7 @@ class UserRegistrationScreen extends StatelessWidget {
                       fontFamily: regularFont,
                     ),
                     errorStyle: TextStyle(fontSize: 13.sp),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(9)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -136,11 +95,8 @@ class UserRegistrationScreen extends StatelessWidget {
                 SizedBox(height: 1.h),
                 Obx(() => DropdownButtonFormField<String>(
                       decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(9)),
-                        errorText: controller.genderError.value
-                            ? "Please select Gender"
-                            : null,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
+                        errorText: controller.genderError.value ? "Please select Gender" : null,
                       ),
                       hint: Text(
                         "Select Gender",
@@ -148,9 +104,7 @@ class UserRegistrationScreen extends StatelessWidget {
                           fontFamily: regularFont,
                         ),
                       ),
-                      value: controller.selectedGender.value.isEmpty
-                          ? null
-                          : controller.selectedGender.value,
+                      value: controller.selectedGender.value.isEmpty ? null : controller.selectedGender.value,
                       items: controller.genders
                           .map((gender) => DropdownMenuItem(
                                 value: gender,
@@ -167,13 +121,14 @@ class UserRegistrationScreen extends StatelessWidget {
                       },
                     )),
                 SizedBox(height: 2.h),
-                Text("Aadhar Number",
+                Text("Aadhaar Number",
                     style: TextHelper.size19.copyWith(
                       fontFamily: semiBoldFont,
                     )),
                 SizedBox(height: 1.h),
                 TextFormField(
-                  controller: controller.aadharNumberController,
+                  key: aadhaarKey,
+                  controller: controller.aadhaarNumberController,
                   maxLength: 12,
                   keyboardType: TextInputType.number,
                   style: TextHelper.size18.copyWith(
@@ -184,21 +139,57 @@ class UserRegistrationScreen extends StatelessWidget {
                       Icons.credit_card,
                       color: ColorsForApp.primaryDarkColor,
                     ),
-                    hintText: "Enter your aadhar number",
+                    hintText: "Enter your aadhaar number",
                     errorStyle: TextHelper.size16.copyWith(
                       fontFamily: regularFont,
                     ),
                     hintStyle: TextHelper.size18.copyWith(
                       fontFamily: regularFont,
                     ),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(9)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your aadhar number';
+                      return 'Please enter your aadhaar number';
                     } else if (value.length < 12) {
-                      return 'Please enter correct aadhar number';
+                      return 'Please enter correct aadhaar number';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 2.h),
+                Text("Car Number",
+                    style: TextHelper.size19.copyWith(
+                      fontFamily: semiBoldFont,
+                    )),
+                SizedBox(height: 1.h),
+                TextFormField(
+                  key: carNumberKey,
+                  controller: controller.carNumberController,
+                  style: TextHelper.size18.copyWith(
+                    fontFamily: regularFont,
+                  ),
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(
+                      Icons.credit_card,
+                      color: ColorsForApp.primaryDarkColor,
+                    ),
+                    hintText: "Enter your car number",
+                    errorStyle: TextHelper.size16.copyWith(
+                      fontFamily: regularFont,
+                    ),
+                    hintStyle: TextHelper.size18.copyWith(
+                      fontFamily: regularFont,
+                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
+                  ),
+                  validator: (value) {
+                    final vehicleRegExp = RegExp(r'^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$');
+
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your car number';
+                    } else if (!vehicleRegExp.hasMatch(value.toUpperCase())) {
+                      return 'Please enter a valid car number';
                     }
                     return null;
                   },
@@ -210,6 +201,7 @@ class UserRegistrationScreen extends StatelessWidget {
                     )),
                 SizedBox(height: 1.h),
                 TextFormField(
+                  key: businessNameKey,
                   controller: controller.businessNameController,
                   style: TextHelper.size18.copyWith(
                     fontFamily: regularFont,
@@ -226,8 +218,7 @@ class UserRegistrationScreen extends StatelessWidget {
                     hintStyle: TextHelper.size18.copyWith(
                       fontFamily: regularFont,
                     ),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(9)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -243,6 +234,7 @@ class UserRegistrationScreen extends StatelessWidget {
                     )),
                 SizedBox(height: 1.h),
                 TextFormField(
+                  key: cityNameKey,
                   controller: controller.cityNameController,
                   style: TextHelper.size18.copyWith(
                     fontFamily: regularFont,
@@ -259,8 +251,7 @@ class UserRegistrationScreen extends StatelessWidget {
                     hintStyle: TextHelper.size18.copyWith(
                       fontFamily: regularFont,
                     ),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(9)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -276,6 +267,7 @@ class UserRegistrationScreen extends StatelessWidget {
                     )),
                 SizedBox(height: 1.h),
                 TextFormField(
+                  key: pinCodeKey,
                   controller: controller.pinCodeController,
                   maxLength: 6,
                   keyboardType: TextInputType.number,
@@ -294,8 +286,7 @@ class UserRegistrationScreen extends StatelessWidget {
                     hintStyle: TextHelper.size18.copyWith(
                       fontFamily: regularFont,
                     ),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(9)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -311,6 +302,7 @@ class UserRegistrationScreen extends StatelessWidget {
                     )),
                 SizedBox(height: 1.h),
                 TextFormField(
+                  key: currentAddressKey,
                   controller: controller.currentAddressController,
                   style: TextHelper.size18.copyWith(
                     fontFamily: regularFont,
@@ -327,8 +319,7 @@ class UserRegistrationScreen extends StatelessWidget {
                     hintStyle: TextHelper.size18.copyWith(
                       fontFamily: regularFont,
                     ),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(9)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
                   ),
                   inputFormatters: [
                     // Limit input to 100 characters
@@ -347,6 +338,7 @@ class UserRegistrationScreen extends StatelessWidget {
                     )),
                 SizedBox(height: 1.h),
                 TextFormField(
+                  key: emailKey,
                   controller: controller.emailController,
                   style: TextHelper.size18.copyWith(
                     fontFamily: regularFont,
@@ -363,16 +355,14 @@ class UserRegistrationScreen extends StatelessWidget {
                     hintStyle: TextHelper.size18.copyWith(
                       fontFamily: regularFont,
                     ),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(9)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
                   ),
                   validator: (value) {
                     if (controller.emailController.text.isEmpty) {
                       return 'Please enter your email address';
                     }
                     // Simple email regex
-                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                        .hasMatch(controller.emailController.text)) {
+                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(controller.emailController.text)) {
                       return 'Please enter a valid email address';
                     }
                     return null;
@@ -398,8 +388,7 @@ class UserRegistrationScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final type = controller.serviceTypes[index];
                         return Obx(() {
-                          final isSelected =
-                              controller.selectedService.value == type;
+                          final isSelected = controller.selectedService.value == type;
                           return Padding(
                             padding: EdgeInsets.only(bottom: 1.5.h),
                             child: GestureDetector(
@@ -407,13 +396,9 @@ class UserRegistrationScreen extends StatelessWidget {
                               child: Container(
                                 key: ValueKey(type),
                                 decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? Colors.orange.shade100.withOpacity(0.32)
-                                      : Colors.white,
+                                  color: isSelected ? Colors.orange.shade100.withOpacity(0.32) : Colors.white,
                                   border: Border.all(
-                                    color: isSelected
-                                        ? Colors.orange
-                                        : Colors.grey.shade300,
+                                    color: isSelected ? Colors.orange : Colors.grey.shade300,
                                     width: isSelected ? 2 : 1,
                                   ),
                                   borderRadius: BorderRadius.circular(9),
@@ -421,14 +406,9 @@ class UserRegistrationScreen extends StatelessWidget {
                                 child: ListTile(
                                   title: Text(type,
                                       style: TextHelper.size18.copyWith(
-                                          fontFamily: regularFont,
-                                          color: isSelected && type == 'None'
-                                              ? Colors.orange
-                                              : Colors.black)),
-                                  trailing: Icon(Icons.chevron_right,
-                                      color: Colors.grey),
-                                  contentPadding:
-                                      EdgeInsets.symmetric(horizontal: 2.w),
+                                          fontFamily: regularFont, color: isSelected && type == 'None' ? Colors.orange : Colors.black)),
+                                  trailing: Icon(Icons.chevron_right, color: Colors.grey),
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 2.w),
                                 ),
                               ),
                             ),
@@ -449,8 +429,7 @@ class UserRegistrationScreen extends StatelessWidget {
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorsForApp.gradientTop,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               padding: EdgeInsets.symmetric(vertical: 1.8.h),
             ),
             onPressed: () {
@@ -462,16 +441,46 @@ class UserRegistrationScreen extends StatelessWidget {
                 } else {
                   Get.toNamed(Routes.DOCUMENT_VERIFICATION_PAGE);
                 }
+              } else {
+                // find which field failed
+                final fieldKeys = [
+                  nameKey,
+                  emailKey,
+                  aadhaarKey,
+                  carNumberKey,
+                  businessNameKey,
+                  cityNameKey,
+                  pinCodeKey,
+                  currentAddressKey,
+                ];
+
+                for (final key in fieldKeys) {
+                  final currentState = key.currentState;
+                  if (currentState != null && !currentState.isValid) {
+                    _scrollToError(key);
+                    break; // stop after first error
+                  }
+                }
+                // add more checks as needed
               }
             },
             child: Center(
-              child: Text("Complete Registration",
-                  style: TextHelper.size20.copyWith(
-                      color: ColorsForApp.whiteColor, fontFamily: boldFont)),
+              child: Text("Complete Registration", style: TextHelper.size20.copyWith(color: ColorsForApp.whiteColor, fontFamily: boldFont)),
             ),
           ),
         ),
       ),
     );
+  }
+
+  void _scrollToError(GlobalKey<FormFieldState> fieldKey) {
+    final context = fieldKey.currentContext;
+    if (context != null) {
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 }

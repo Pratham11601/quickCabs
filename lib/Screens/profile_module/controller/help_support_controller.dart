@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../model/help_support_model.dart';
 
@@ -29,38 +28,6 @@ class HelpSupportController extends GetxController {
   //     email: "support.mumbai@example.com",
   //   ),
   // ].obs;
-
-  // Open WhatsApp chat
-  Future<void> openWhatsApp(String number) async {
-    // Remove + if present
-    String formattedNumber = number.replaceAll("+", "");
-    final whatsappUrl = Uri.parse("https://wa.me/$formattedNumber");
-    if (await canLaunchUrl(whatsappUrl)) {
-      await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
-    } else {
-      Get.snackbar("Error", "Could not open WhatsApp");
-    }
-  }
-
-  // Call a number
-  Future<void> makeCall(String number) async {
-    final callUrl = Uri.parse("tel:$number");
-    if (await canLaunchUrl(callUrl)) {
-      await launchUrl(callUrl);
-    } else {
-      Get.snackbar("Error", "Could not make a call");
-    }
-  }
-
-  // Send email
-  Future<void> sendEmail(String email) async {
-    final emailUrl = Uri.parse("mailto:$email");
-    if (await canLaunchUrl(emailUrl)) {
-      await launchUrl(emailUrl);
-    } else {
-      Get.snackbar("Error", "Could not open Email");
-    }
-  }
 
 // Mock data function
   void loadMockData() {

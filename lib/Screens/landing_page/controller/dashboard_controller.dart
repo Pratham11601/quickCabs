@@ -18,7 +18,6 @@ class DashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    checkSubscriptionStatus();
   }
 
   RxBool isSubscribed = false.obs;

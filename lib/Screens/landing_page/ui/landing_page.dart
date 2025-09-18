@@ -62,12 +62,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: const CustomHeader(),
           ),
         ),
-        body: Obx(
-          () => IndexedStack(
-            index: controller.currentIndex.value,
-            children: pages,
-          ),
-        ),
+        body: Obx(() {
+          return LoadingOverlay(
+            isLoading: controller.isLoading.value,
+            child: IndexedStack(
+              index: controller.currentIndex.value,
+              children: pages,
+            ),
+          );
+        }),
         bottomNavigationBar: Obx(
           () => Container(
             decoration: BoxDecoration(

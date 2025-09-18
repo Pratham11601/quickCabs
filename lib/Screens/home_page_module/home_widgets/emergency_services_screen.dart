@@ -41,9 +41,12 @@ class EmergencyServicesScreen extends StatelessWidget {
               if (index < controller.vendors.length) {
                 final vendor = controller.vendors[index];
                 return EmergencyServiceCard(
-                  title: vendor.businessName ?? vendor.fullname ?? "Unknown",
-                  location: vendor.city ?? "Unknown",
-                  serviceType: vendor.vendorCat ?? "Unknown",
+                  title: vendor.businessName ?? vendor.fullname ?? "-",
+                  location: "${vendor.currentAddress ?? '-'}, ${vendor.city ?? '-'}, ${vendor.pinCode ?? '-'}",
+                  serviceType: vendor.vendorCat ?? "-",
+                  profileImage: "https://quickcabpune.com/app/${vendor.profileImgUrl}",
+                  carNumber: vendor.carnumber ?? "-",
+                  phone: vendor.phone ?? "-",
                 );
               } else {
                 return Center(

@@ -10,6 +10,8 @@ import '../post_widgets/post_lead_widgets.dart'; // <- your stepCircle & buildIn
 
 class PostScreen extends StatelessWidget {
   PostScreen({Key? key}) : super(key: key);
+  final GlobalKey<FormState> priceFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> dateTimeFormKey = GlobalKey<FormState>();
 
   final PostController controller = Get.put(PostController());
 
@@ -145,8 +147,15 @@ class PostScreen extends StatelessWidget {
                             onPressed: controller.isFormValid.value
                                 ? () async {
                                     if (controller.currentStep.value == 2) {
-                                      await controller.submitRideLead();
+                                      if (priceFormKey.currentState!.validate()) {
+                                        await controller.submitRideLead();
+                                      }
                                     } else {
+                                      if (controller.currentStep.value == 1) {
+                                        if (dateTimeFormKey.currentState!.validate()) {
+                                          controller.nextStep();
+                                        }
+                                      }
                                       controller.nextStep();
                                     }
                                   }
@@ -440,7 +449,11 @@ class PostScreen extends StatelessWidget {
                     child: Column(mainAxisSize: MainAxisSize.min, children: [
                       Icon(Icons.directions_car, color: color),
                       const SizedBox(height: 6),
-                      Text(name, style: TextHelper.size18.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
+                      Flexible(
+                        child: Text(name,
+                            textAlign: TextAlign.center,
+                            style: TextHelper.size16.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
+                      ),
                       if (seats.isNotEmpty)
                         Text(seats, style: TextHelper.size17.copyWith(color: ColorsForApp.subTitleColor, fontFamily: regularFont)),
                     ]),
@@ -590,8 +603,8 @@ class PostScreen extends StatelessWidget {
 
   // ─────────────────────────────────── Step 3: Price Confirmation ────────────────────────────────
   Widget buildPriceConfirmation() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+    return Form(
+      key: priceFormKey,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text("pricing_distance".tr, style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont)),
         const SizedBox(height: 6),
