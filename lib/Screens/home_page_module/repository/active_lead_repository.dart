@@ -3,6 +3,7 @@ import 'package:QuickCab/Screens/home_page_module/model/live_lead_model.dart';
 
 import '../../../api/api_manager.dart';
 import '../model/active_lead_model.dart';
+import '../model/all_live_lead_model.dart';
 
 class ActiveLeadRepository {
   final APIManager apiManager;
@@ -36,6 +37,14 @@ class ActiveLeadRepository {
       url: '/driver-availability/my-avability?page=$pageNumber&pageSize=10',
     );
     var response = LiveLeadModel.fromJson(jsonData);
+    return response;
+  }
+
+  Future<AllLiveLeadModel> allLiveLeadApiCall(dynamic pageNumber) async {
+    var jsonData = await apiManager.getAPICall(
+      url: '/driver-availability/get-all-active?page=$pageNumber&pageSize=10',
+    );
+    var response = AllLiveLeadModel.fromJson(jsonData);
     return response;
   }
 }

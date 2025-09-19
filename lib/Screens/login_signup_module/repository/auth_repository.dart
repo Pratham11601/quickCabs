@@ -5,6 +5,7 @@ import 'package:QuickCab/Screens/login_signup_module/model/forgot_otp_model.dart
 import '../../../api/api_manager.dart';
 import '../model/lead_by_model.dart';
 import '../model/login_model.dart';
+import '../model/reset_password_model.dart';
 import '../model/sign_in_otp_model.dart';
 import '../model/user_registration_model.dart';
 import '../model/verify_sign_in_otp_model.dart';
@@ -92,14 +93,14 @@ class AuthRepository {
     return response;
   }
 
-  Future<ForgotOtpModel> resetPasswordApiCall({
+  Future<ResetPasswordModel> resetPasswordApiCall({
     required Map<String, dynamic> params,
   }) async {
-    var jsonData = await apiManager.postAPICall(
+    var jsonData = await apiManager.putAPICall(
       url: '/vendorDetails/resetpassword',
       params: params,
     );
-    var response = ForgotOtpModel.fromJson(jsonData);
+    var response = ResetPasswordModel.fromJson(jsonData);
     return response;
   }
 }

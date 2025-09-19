@@ -84,13 +84,28 @@ class DocumentCard extends StatelessWidget {
                     documentImageUrl ?? "",
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) {
-                      return CircleAvatar(
-                        radius: 40,
-                        backgroundColor: ColorsForApp.blackColor.withValues(alpha: 0.9),
-                        child: Image.asset(
-                          height: 40,
-                          Assets.iconsLogo,
-                          fit: BoxFit.fill,
+                      return Container(
+                        width: 80, // radius 40 * 2
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [
+                              ColorsForApp.blackColor,
+                              ColorsForApp.subTitleColor,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                        child: CircleAvatar(
+                          radius: 40,
+                          backgroundColor: Colors.transparent, // make avatar background transparent
+                          child: Image.asset(
+                            Assets.iconsLogo,
+                            height: 40,
+                            fit: BoxFit.fill,
+                          ),
                         ),
                       );
                     },

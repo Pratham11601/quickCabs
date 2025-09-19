@@ -34,19 +34,22 @@ class ForgotPasswordScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: Obx(() {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 10),
+          return LoadingOverlay(
+            isLoading: controller.isLoading.value,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 10),
 
-                /// ---------- Step UI ----------
-                if (controller.currentStep.value == 0) _forgotPasswordUI(),
-                if (controller.currentStep.value == 1)
-                  OtpVerifyContainer(phoneNumber: controller.mobileController.text, onChangeNumber: controller.changeMobileNumber),
-                if (controller.currentStep.value == 2) _changePasswordUI(),
-              ],
+                  /// ---------- Step UI ----------
+                  if (controller.currentStep.value == 0) _forgotPasswordUI(),
+                  if (controller.currentStep.value == 1)
+                    OtpVerifyContainer(phoneNumber: controller.mobileController.text, onChangeNumber: controller.changeMobileNumber),
+                  if (controller.currentStep.value == 2) _changePasswordUI(),
+                ],
+              ),
             ),
           );
         }),

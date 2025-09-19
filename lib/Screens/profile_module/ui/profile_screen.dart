@@ -1,6 +1,5 @@
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 import '../../../routes/routes.dart';
@@ -59,7 +58,8 @@ class ProfileScreen extends StatelessWidget {
                     await UrlLauncherHelper.openUrl("https://quickcabpune.com/privacy-policy.html");
                   },
                 ),
-                SettingItem(icon: FontAwesomeIcons.chessKing, title: "subscription_pro".tr, onTap: () => Get.toNamed(Routes.SUBSCRIPTION)),
+                //For now as per client requirement it is hide, later on it will be uncomment
+                //SettingItem(icon: FontAwesomeIcons.chessKing, title: "subscription_pro".tr, onTap: () => Get.toNamed(Routes.SUBSCRIPTION)),
               ],
             ),
 

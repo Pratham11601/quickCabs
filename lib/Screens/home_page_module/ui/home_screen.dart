@@ -14,7 +14,7 @@ import '../../../widgets/shimmer_widget.dart';
 import '../../../widgets/snackbar.dart';
 import '../../landing_page/controller/dashboard_controller.dart';
 import '../controller/home_controller.dart';
-import '../home_widgets/driver_network_status.dart';
+import '../home_widgets/blinking_text_widget.dart';
 import '../home_widgets/emergency_service_item.dart';
 import '../home_widgets/lead_card.dart';
 import '../home_widgets/ride_request_card.dart';
@@ -72,562 +72,612 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        await callAsyncAPI();
-        await homeController.fetchActiveLeads(1);
-        await homeController.fetchLiveLeads(1);
-        // 🔹 This will refresh both APIs
-      },
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.only(left: 15, top: 25, right: 15, bottom: 15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            //booking and available
-            Container(
-              width: 100.w, // 60% of screen width
-              padding: EdgeInsets.symmetric(horizontal: 0.5.w, vertical: 0.6.h),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(12),
+    return Scaffold(
+      floatingActionButton: Obx(() {
+        return homeController.selectedIndex.value == 1
+            ? GestureDetector(
+                onTap: () {
+                  showBottomSheetForPostAvailability(context);
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: ColorsForApp.primaryDarkColor,
+                    borderRadius: BorderRadius.circular(16), // rounded rectangle
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.add_circle_outline, color: Colors.white, size: 28),
+                      const SizedBox(height: 3),
+                      Text(
+                        "POST",
+                        style: TextHelper.size18.copyWith(
+                          fontFamily: boldFont,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : const SizedBox.shrink();
+      }),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await callAsyncAPI();
+          await homeController.fetchActiveLeads(1);
+          await homeController.fetchLiveLeads(1);
+          await homeController.fetchAllLiveLeads(1);
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(left: 15, top: 25, right: 15, bottom: 15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // booking / available tabs
+              Container(
+                width: 100.w,
+                padding: EdgeInsets.all(2.w),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Obx(() {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Equal spacing
+                    children: [
+                      _buildTab(
+                        title: "Booking",
+                        index: 0,
+                        controller: homeController,
+                      ),
+                      _buildTab(
+                        title: "Available",
+                        index: 1,
+                        controller: homeController,
+                      ),
+                    ],
+                  );
+                }),
               ),
-              child: Obx(
-                () => Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
+              SizedBox(height: 14.5.sp),
+
+              Obx(() {
+                if (homeController.selectedIndex.value == 0) {
+                  // 👉 Booking Content
+                  return _buildBookingContent();
+                } else {
+                  // 👉 Available Content
+                  return _buildAvailableContent();
+                }
+              }),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBookingContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        EmergencyServicesSection(),
+        const SizedBox(height: 16),
+        // your banner carousel + leads list here...
+        // Banner Carousel
+        Obx(() {
+          if (homeController.isBannerLoading.value) {
+            // 🔥 Shimmer while loading
+            return Shimmer.fromColors(
+              baseColor: Colors.grey.shade300,
+              highlightColor: Colors.grey.shade100,
+              child: Container(
+                height: 20.h,
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            );
+          } else {
+            // 🔥 Actual Carousel once banners load
+            return CarouselSlider(
+              options: CarouselOptions(
+                height: 20.h,
+                autoPlay: true,
+                enlargeCenterPage: true,
+                viewportFraction: 0.9,
+                aspectRatio: 16 / 9,
+                autoPlayInterval: Duration(seconds: 3),
+              ),
+              items: homeController.banners.map((banner) {
+                final imageUrl = banner.image!.trim().isNotEmpty
+                    ? "https://quickcabpune.com/app/${banner.image}"
+                    : "https://via.placeholder.com/400x200.png?text=No+Image";
+
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey.shade200, width: 2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          imageUrl,
+                          fit: BoxFit.contain, // fills width, keeps aspect ratio
+                          width: MediaQuery.of(context).size.width,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Colors.grey.shade200,
+                              child: Center(
+                                child: Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }).toList(),
+            );
+          }
+        }),
+
+        SizedBox(height: 20),
+
+        // Leads
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Shared Leads",
+              style: TextHelper.h6.copyWith(
+                fontFamily: semiBoldFont,
+                color: ColorsForApp.blackColor,
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Get.bottomSheet(
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text("Filter Leads", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
+                        const SizedBox(height: 16),
+                        TextField(
+                          style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                          decoration: InputDecoration(
+                            labelText: "From Location",
+                            labelStyle: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) => homeController.fromLocation.value = value,
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                          decoration: InputDecoration(
+                            labelText: "To Location",
+                            labelStyle: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) => homeController.toLocation.value = value,
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  homeController.clearFilter();
+                                  Get.back();
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                ),
+                                child: Text("Clear", style: TextHelper.size18.copyWith(fontFamily: boldFont)),
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: FilledButton(
+                                onPressed: () async {
+                                  homeController.applyFilter();
+                                  Get.back();
+                                },
+                                style: FilledButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                ),
+                                child: Text("Apply", style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: boldFont)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.redAccent,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
                   children: [
-                    _buildTab(
-                      title: "Booking",
-                      index: 0,
-                      controller: homeController,
-                    ),
-                    SizedBox(width: 8.w),
-                    _buildTab(
-                      title: "Available",
-                      index: 1,
-                      controller: homeController,
-                    ),
+                    Icon(Icons.filter_alt_outlined, color: ColorsForApp.whiteColor, size: 16),
+                    SizedBox(width: 4),
+                    Text("Filter", style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.whiteColor)),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 14.5.sp),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Obx(() {
+          final leads = homeController.isFilterApplied.value ? homeController.filteredActiveLeads : homeController.activeLeads;
 
-            Obx(() {
-              // if booking is selectd →original content
-              // if available is selected → card content
-              if (homeController.selectedIndex.value == 0) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Emergency services
-                    EmergencyServicesSection(),
-                    const SizedBox(height: 16),
-                    // Banner Carousel
-                    Obx(() {
-                      if (homeController.isBannerLoading.value) {
-                        // 🔥 Shimmer while loading
-                        return Shimmer.fromColors(
-                          baseColor: Colors.grey.shade300,
-                          highlightColor: Colors.grey.shade100,
-                          child: Container(
-                            height: 20.h,
-                            width: double.infinity,
-                            margin: const EdgeInsets.symmetric(horizontal: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        );
-                      } else {
-                        // 🔥 Actual Carousel once banners load
-                        return CarouselSlider(
-                          options: CarouselOptions(
-                            height: 20.h,
-                            autoPlay: true,
-                            enlargeCenterPage: true,
-                            viewportFraction: 0.9,
-                            aspectRatio: 16 / 9,
-                            autoPlayInterval: Duration(seconds: 3),
-                          ),
-                          items: homeController.banners.map((banner) {
-                            final imageUrl = banner.image!.trim().isNotEmpty
-                                ? "https://quickcabpune.com/app/${banner.image}"
-                                : "https://via.placeholder.com/400x200.png?text=No+Image";
+          if (homeController.isLoadingActiveLeads.value) {
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: 4,
+              itemBuilder: (_, __) => leadCardShimmer(),
+            );
+          }
 
-                            return Builder(
-                              builder: (BuildContext context) {
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border.all(color: Colors.grey.shade200, width: 2),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.network(
-                                      imageUrl,
-                                      fit: BoxFit.contain, // fills width, keeps aspect ratio
-                                      width: MediaQuery.of(context).size.width,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return Container(
-                                          color: Colors.grey.shade200,
-                                          child: Center(
-                                            child: Icon(Icons.broken_image, size: 40, color: Colors.grey),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          }).toList(),
-                        );
-                      }
-                    }),
+          if (leads.isEmpty) {
+            return Center(
+              child: NoDataFoundScreen(
+                title: "NO LEADS FOUND",
+                subTitle: "",
+              ),
+            );
+          }
 
-                    SizedBox(height: 20),
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: leads.length,
+            itemBuilder: (_, index) {
+              final lead = leads[index];
+              return LeadCard(
+                lead: {
+                  'name': lead.vendorFullname,
+                  'from': lead.locationFrom,
+                  'to': lead.toLocation,
+                  'price': lead.fare,
+                  'car': lead.carModel,
+                  'distance': lead.toLocationArea,
+                  'date': lead.date,
+                  'time': lead.time,
+                  'phone': lead.vendorContact,
+                  'note': lead.addOn,
+                  'acceptedById': lead.acceptedById,
+                },
+                onAccept: () {
+                  homeController.acceptLead(index);
+                  //For now as per client requirement it is hide, later on it will be uncomment
+                  /*if (dashboardController.isSubscribed.value) {
+                    homeController.acceptLead(index);
+                  } else {
+                    showSubscriptionAlertDialog(
+                      Get.context!,
+                      'Subscription Required',
+                      'Your subscription is not active. Please subscribe to post a lead.',
+                      () {
+                        Get.toNamed(Routes.SUBSCRIPTION);
+                      },
+                    );
+                  }*/
+                },
+                onWhatsApp: (phone) {
+                  homeController.openWhatsApp(phone);
+                  //For now as per client requirement it is hide, later on it will be uncomment
+                  /*if (dashboardController.isSubscribed.value) {
+                    homeController.openWhatsApp(phone);
+                  } else {
+                    showSubscriptionAlertDialog(
+                      Get.context!,
+                      'Subscription Required',
+                      'Your subscription is not active. Please subscribe to post a lead.',
+                      () {
+                        Get.toNamed(Routes.SUBSCRIPTION);
+                      },
+                    );
+                  }*/
+                },
+                onCall: (phone) {
+                  homeController.makeCall(phone);
+                  //For now as per client requirement it is hide, later on it will be uncomment
+                  /*if (dashboardController.isSubscribed.value) {
+                    homeController.makeCall(phone);
+                  } else {
+                    showSubscriptionAlertDialog(
+                      Get.context!,
+                      'Subscription Required',
+                      'Your subscription is not active. Please subscribe to post a lead.',
+                      () {
+                        Get.toNamed(Routes.SUBSCRIPTION);
+                      },
+                    );
+                  }*/
+                },
+              );
+            },
+          );
+        }),
 
-                    // Leads
+        const SizedBox(height: 5),
+      ],
+    );
+  }
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Shared Leads",
-                          style: TextHelper.h6.copyWith(
-                            fontFamily: semiBoldFont,
-                            color: ColorsForApp.blackColor,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Get.bottomSheet(
-                              Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(20),
-                                    topRight: Radius.circular(20),
-                                  ),
-                                ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text("Filter Leads", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
-                                    const SizedBox(height: 16),
-                                    TextField(
-                                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                                      decoration: InputDecoration(
-                                        labelText: "From Location",
-                                        labelStyle: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                                        border: OutlineInputBorder(),
-                                      ),
-                                      onChanged: (value) => homeController.fromLocation.value = value,
-                                    ),
-                                    const SizedBox(height: 12),
-                                    TextField(
-                                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                                      decoration: InputDecoration(
-                                        labelText: "To Location",
-                                        labelStyle: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                                        border: OutlineInputBorder(),
-                                      ),
-                                      onChanged: (value) => homeController.toLocation.value = value,
-                                    ),
-                                    const SizedBox(height: 20),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: OutlinedButton(
-                                            onPressed: () {
-                                              homeController.clearFilter();
-                                              Get.back();
-                                            },
-                                            style: OutlinedButton.styleFrom(
-                                              padding: EdgeInsets.symmetric(vertical: 14),
-                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                            ),
-                                            child: Text("Clear", style: TextHelper.size18.copyWith(fontFamily: boldFont)),
-                                          ),
-                                        ),
-                                        SizedBox(width: 12),
-                                        Expanded(
-                                          child: FilledButton(
-                                            onPressed: () async {
-                                              homeController.applyFilter();
-                                              Get.back();
-                                            },
-                                            style: FilledButton.styleFrom(
-                                              padding: EdgeInsets.symmetric(vertical: 14),
-                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                            ),
-                                            child:
-                                                Text("Apply", style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: boldFont)),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.redAccent,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.filter_alt_outlined, color: ColorsForApp.whiteColor, size: 16),
-                                SizedBox(width: 4),
-                                Text("Filter", style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.whiteColor)),
-                              ],
-                            ),
-                          ),
+  Widget _buildAvailableContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 5),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.2.h),
+          child: Obx(() {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // All Drivers Button
+                InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () {
+                    homeController.showMyAvailability.value = false;
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 4.5.w, vertical: 0.8.h),
+                    decoration: BoxDecoration(
+                      color: homeController.showMyAvailability.value
+                          ? ColorsForApp.subTitleColor // unselected
+                          : ColorsForApp.green, // selected
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: const [
+                        BoxShadow(
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                          color: Color(0x14000000),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    Obx(() {
-                      final leads = homeController.isFilterApplied.value ? homeController.filteredActiveLeads : homeController.activeLeads;
+                    child: Obx(() {
+                      final count = homeController.driversCount.value;
 
-                      if (homeController.isLoadingActiveLeads.value) {
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: 4,
-                          itemBuilder: (_, __) => leadCardShimmer(),
-                        );
-                      }
-
-                      if (leads.isEmpty) {
-                        return Center(
-                          child: NoDataFoundScreen(
-                            title: "NO LEADS FOUND",
-                            subTitle: "",
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            count > 0 ? "All Drivers - " : "All Drivers",
+                            style: TextHelper.size18.copyWith(
+                              fontFamily: boldFont,
+                              color: Colors.white,
+                            ),
                           ),
-                        );
-                      }
-
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: leads.length,
-                        itemBuilder: (_, index) {
-                          final lead = leads[index];
-                          return LeadCard(
-                            lead: {
-                              'name': lead.vendorFullname,
-                              'from': lead.locationFrom,
-                              'to': lead.toLocation,
-                              'price': lead.fare,
-                              'car': lead.carModel,
-                              'distance': lead.toLocationArea,
-                              'date': lead.date,
-                              'time': lead.time,
-                              'phone': lead.vendorContact,
-                              'note': lead.addOn,
-                              'acceptedById': lead.acceptedById,
-                            },
-                            onAccept: () {
-                              if (dashboardController.isSubscribed.value) {
-                                homeController.acceptLead(index);
-                              } else {
-                                showSubscriptionAlertDialog(
-                                  Get.context!,
-                                  'Subscription Required',
-                                  'Your subscription is not active. Please subscribe to post a lead.',
-                                  () {
-                                    Get.toNamed(Routes.SUBSCRIPTION);
-                                  },
-                                );
-                              }
-                            },
-                            onWhatsApp: (phone) {
-                              if (dashboardController.isSubscribed.value) {
-                                homeController.openWhatsApp(phone);
-                              } else {
-                                showSubscriptionAlertDialog(
-                                  Get.context!,
-                                  'Subscription Required',
-                                  'Your subscription is not active. Please subscribe to post a lead.',
-                                  () {
-                                    Get.toNamed(Routes.SUBSCRIPTION);
-                                  },
-                                );
-                              }
-                            },
-                            onCall: (phone) {
-                              if (dashboardController.isSubscribed.value) {
-                                homeController.makeCall(phone);
-                              } else {
-                                showSubscriptionAlertDialog(
-                                  Get.context!,
-                                  'Subscription Required',
-                                  'Your subscription is not active. Please subscribe to post a lead.',
-                                  () {
-                                    Get.toNamed(Routes.SUBSCRIPTION);
-                                  },
-                                );
-                              }
-                            },
-                          );
-                        },
+                          if (count > 0) ...[
+                            const SizedBox(width: 6),
+                            BlinkingText(
+                              "$count Online",
+                              style: TextHelper.size18.copyWith(fontFamily: boldFont),
+                              color: Colors.yellowAccent, // optional
+                              duration: Duration(milliseconds: 800), // optional
+                            )
+                          ],
+                        ],
                       );
                     }),
+                  ),
+                ),
 
-                    const SizedBox(height: 12),
-
-                    Center(
-                      child: DriverNetworkStatusCard(
-                        onlineDrivers: 156,
-                        isActive: true,
-                        isHighDemand: true,
-                      ),
+                // My Availability Button
+                InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () {
+                    homeController.showMyAvailability.value = true;
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 4.5.w, vertical: 0.8.h),
+                    decoration: BoxDecoration(
+                      color: homeController.showMyAvailability.value
+                          ? ColorsForApp.primaryDarkColor // selected
+                          : ColorsForApp.subTitleColor, // unselected
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: const [
+                        BoxShadow(
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                          color: Color(0x14000000),
+                        ),
+                      ],
                     ),
-                  ],
-                );
-              } else {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Driver Status Card
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.2.h),
-                      padding: EdgeInsets.all(2.w),
-                      decoration: BoxDecoration(
+                    child: Text(
+                      'My Availability',
+                      style: TextHelper.size18.copyWith(
+                        fontFamily: boldFont,
                         color: Colors.white,
-                        border: Border.all(color: const Color(0xffD9F1E4), width: 0.4.w),
-                        borderRadius: BorderRadius.circular(3.w),
-                        boxShadow: const [
-                          BoxShadow(
-                            offset: Offset(0, 2),
-                            blurRadius: 6,
-                            color: Color(0x14000000),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // Left Icon Circle
-                          Container(
-                            height: 6.5.h,
-                            width: 6.5.h,
-                            decoration: BoxDecoration(
-                              color: ColorsForApp.green,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(Icons.smartphone, color: Colors.white, size: 3.2.h),
-                          ),
-                          SizedBox(width: 3.5.w),
-
-                          // Text Section
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Driver Status',
-                                  style: TextHelper.size20.copyWith(
-                                    fontFamily: boldFont,
-                                    color: ColorsForApp.blackColor,
-                                  ),
-                                ),
-                                SizedBox(height: 0.4.h),
-                                Text(
-                                  'You are online and accepting rides',
-                                  style: TextHelper.size17.copyWith(
-                                    fontFamily: regularFont,
-                                    color: ColorsForApp.subTitleColor,
-                                    height: 1.3,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Right Action Button
-                          SizedBox(
-                            height: 5.h,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // Toggle online/offline
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xffFF6A3D),
-                                foregroundColor: Colors.white,
-                                elevation: 1,
-                                padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.2.h),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(2.5.w),
-                                ),
-                              ),
-                              child: Text(
-                                'Go Offline',
-                                style: TextHelper.size18.copyWith(
-                                  fontFamily: boldFont,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
                     ),
-
-                    // Live Ride Requests
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.2.h),
-                      child: Row(
-                        children: [
-                          Container(
-                            height: 5.2.h,
-                            width: 5.2.h,
-                            decoration: BoxDecoration(
-                              color: ColorsForApp.primaryDarkColor.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(2.5.w),
-                            ),
-                            child: Icon(Icons.monitor_heart, color: ColorsForApp.primaryColor, size: 2.6.h),
-                          ),
-                          SizedBox(width: 3.w),
-
-                          Expanded(
-                            child: Text(
-                              'Live Ride Requests',
-                              style: TextHelper.size20.copyWith(
-                                fontFamily: semiBoldFont,
-                                color: ColorsForApp.blackColor,
-                              ),
-                            ),
-                          ),
-
-                          // "New" pill
-                          GestureDetector(
-                            onTap: () {
-                              showBottomSheetForPostAvailability(context);
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 4.5.w, vertical: 0.6.h),
-                              decoration: BoxDecoration(
-                                color: ColorsForApp.primaryDarkColor,
-                                borderRadius: BorderRadius.circular(50),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
-                                    color: Color(0x14000000),
-                                  ),
-                                ],
-                              ),
-                              child: Text(
-                                'Post Availability',
-                                style: TextHelper.size18.copyWith(
-                                  fontFamily: boldFont,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Ride Request card
-
-                    Obx(() {
-                      final leads = homeController.liveLeads;
-
-                      if (homeController.isLoadingLiveLeads.value) {
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: 4,
-                          itemBuilder: (_, __) => rideRequestCardShimmer(),
-                        );
-                      }
-
-                      if (leads.isEmpty) {
-                        return Center(
-                          child: NoDataFoundScreen(
-                            title: "NO LEADS FOUND",
-                            subTitle: "",
-                          ),
-                        );
-                      }
-
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: leads.length,
-                        itemBuilder: (_, index) {
-                          final lead = leads[index];
-
-                          // return RideRequestCard(
-                          //   lead: lead, // pass whole model if RideRequestCard accepts model
-                          // );
-
-                          // OR if RideRequestCard still expects Map, map it properly:
-
-                          return RideRequestCard(
-                            lead: {
-                              'name': lead.name,
-                              'car': lead.car,
-                              'location': lead.location,
-                              'from_date': lead.fromDate,
-                              'from_time': lead.fromTime,
-                              'to_date': lead.toDate,
-                              'to_time': lead.toTime,
-                              'phone': lead.phone,
-                              'status': lead.status,
-                            },
-                            onWhatsApp: (phone) {
-                              if (dashboardController.isSubscribed.value) {
-                                homeController.openWhatsApp(phone);
-                              } else {
-                                showSubscriptionAlertDialog(
-                                  Get.context!,
-                                  'Subscription Required',
-                                  'Your subscription is not active. Please subscribe to post a lead.',
-                                  () {
-                                    Get.toNamed(Routes.SUBSCRIPTION);
-                                  },
-                                );
-                              }
-                            },
-                            onCall: (phone) {
-                              if (dashboardController.isSubscribed.value) {
-                                homeController.makeCall(phone);
-                              } else {
-                                showSubscriptionAlertDialog(
-                                  Get.context!,
-                                  'Subscription Required',
-                                  'Your subscription is not active. Please subscribe to post a lead.',
-                                  () {
-                                    Get.toNamed(Routes.SUBSCRIPTION);
-                                  },
-                                );
-                              }
-                            },
-                          );
-                        },
-                      );
-                    })
-                  ],
-                );
-              }
-            }),
-          ],
+                  ),
+                ),
+              ],
+            );
+          }),
         ),
-      ),
+
+        // ride request card list
+        Obx(() {
+          if (homeController.showMyAvailability.value) {
+            // 👇 My Availability list
+            final myLeads = homeController.liveLeads;
+
+            if (myLeads.isEmpty) {
+              return Center(child: NoDataFoundScreen(title: "NO AVAILABILITY FOUND", subTitle: ""));
+            }
+
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: myLeads.length,
+              itemBuilder: (_, index) {
+                final lead = myLeads[index];
+                return RideRequestCard(
+                  lead: {
+                    'name': lead.name,
+                    'car': lead.car,
+                    'location': lead.location,
+                    'from_date': lead.fromDate,
+                    'from_time': lead.fromTime,
+                    'to_date': lead.toDate,
+                    'to_time': lead.toTime,
+                    'phone': lead.phone,
+                    'status': lead.status,
+                  },
+                  showToggle: homeController.showMyAvailability.value,
+                  onWhatsApp: (phone) => dashboardController.isSubscribed.value
+                      ? homeController.openWhatsApp(phone)
+                      : showSubscriptionAlertDialog(
+                          Get.context!,
+                          'Subscription Required',
+                          'Your subscription is not active. Please subscribe to post a lead.',
+                          () => Get.toNamed(Routes.SUBSCRIPTION),
+                        ),
+                  onCall: (phone) => dashboardController.isSubscribed.value
+                      ? homeController.makeCall(phone)
+                      : showSubscriptionAlertDialog(
+                          Get.context!,
+                          'Subscription Required',
+                          'Your subscription is not active. Please subscribe to post a lead.',
+                          () => Get.toNamed(Routes.SUBSCRIPTION),
+                        ),
+                  onToggle: (newStatus) async {
+                    if (newStatus == 0) {
+                      homeController.liveLeads.removeWhere((l) => l.id == lead.id);
+                    }
+                    try {
+                      if (lead.id == null || lead.fromDate == null || lead.fromTime == null || lead.toDate == null || lead.toTime == null) {
+                        Get.snackbar("Error", "Lead data is incomplete");
+                        return;
+                      }
+
+                      bool success = await homeController.updatetDriverAvailability(
+                        status: newStatus,
+                        leadId: lead.id!,
+                        car: lead.car ?? "",
+                        location: lead.location ?? "",
+                        fromDate: DateTime.parse(lead.fromDate!),
+                        fromTime: homeController.parseTimeOfDay(lead.fromTime!),
+                        toDate: DateTime.parse(lead.toDate!),
+                        toTime: homeController.parseTimeOfDay(lead.toTime!),
+                      );
+
+                      if (!success) {
+                        Get.snackbar("Error", "Failed to update status");
+                      }
+
+                      await homeController.fetchLiveLeads(1);
+                    } catch (e) {
+                      Get.snackbar("Error", "Something went wrong");
+                      await homeController.fetchLiveLeads(1);
+                    }
+                  },
+                );
+              },
+            );
+          } else {
+            // 👇 All Drivers list (your existing liveLeads code)
+            final leads = homeController.allLiveLeads;
+
+            if (homeController.isLoadingLiveLeads.value) {
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: 4,
+                itemBuilder: (_, __) => rideRequestCardShimmer(),
+              );
+            }
+            if (leads.isEmpty) {
+              return Center(child: NoDataFoundScreen(title: "NO LEADS FOUND", subTitle: ""));
+            }
+
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: leads.length,
+              itemBuilder: (_, index) {
+                final lead = leads[index];
+                return RideRequestCard(
+                  lead: {
+                    'name': lead.name,
+                    'car': lead.car,
+                    'location': lead.location,
+                    'from_date': lead.fromDate,
+                    'from_time': lead.fromTime,
+                    'to_date': lead.toDate,
+                    'to_time': lead.toTime,
+                    'phone': lead.phone,
+                    'status': lead.status,
+                  },
+                  showToggle: homeController.showMyAvailability.value,
+                  onWhatsApp: (phone) => dashboardController.isSubscribed.value
+                      ? homeController.openWhatsApp(phone)
+                      : showSubscriptionAlertDialog(
+                          Get.context!,
+                          'Subscription Required',
+                          'Your subscription is not active. Please subscribe to post a lead.',
+                          () => Get.toNamed(Routes.SUBSCRIPTION),
+                        ),
+                  onCall: (phone) => dashboardController.isSubscribed.value
+                      ? homeController.makeCall(phone)
+                      : showSubscriptionAlertDialog(
+                          Get.context!,
+                          'Subscription Required',
+                          'Your subscription is not active. Please subscribe to post a lead.',
+                          () => Get.toNamed(Routes.SUBSCRIPTION),
+                        ),
+                  onToggle: (newStatus) {
+                    // update driver availability API
+                  },
+                );
+              },
+            );
+          }
+        }),
+      ],
     );
   }
 
@@ -733,6 +783,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       title: 'Success',
                                       message: homeController.driverAvailabilityModel.value.message ?? 'Availability posted successfully',
                                     );
+                                    homeController.showMyAvailability.value = true;
                                     homeController.fetchLiveLeads(1);
 
                                     // clear inputs
@@ -773,26 +824,24 @@ Widget _buildTab({
   required int index,
   required HomeController controller,
 }) {
-  final isSelected = controller.selectedIndex.value == index;
-  return InkWell(
-    highlightColor: ColorsForApp.primaryColor,
+  final bool isSelected = controller.selectedIndex.value == index;
+
+  return GestureDetector(
     onTap: () => controller.selectedIndex.value = index,
-    child: Container(
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
       padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 1.2.h),
       decoration: BoxDecoration(
-        color: isSelected ? Colors.white : Colors.transparent,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: isSelected
-            ? [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 5,
-                  offset: const Offset(0, 2),
-                ),
-              ]
-            : [],
+        color: isSelected ? ColorsForApp.primaryDarkColor : Colors.transparent,
+        borderRadius: BorderRadius.circular(50),
       ),
-      child: Text(title, style: TextHelper.size18.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
+      child: Text(
+        title,
+        style: TextHelper.size18.copyWith(
+          color: isSelected ? Colors.white : Colors.black87,
+          fontFamily: boldFont,
+        ),
+      ),
     ),
   );
 }

@@ -58,4 +58,17 @@ class HomeRepository {
     );
     return DriverAvailabilityModel.fromJson(jsonData);
   }
+
+  // update driver availability
+  Future<DriverAvailabilityModel> updateDriverAvailabilityApiCall({
+    required Map<String, dynamic> params,
+    bool isLoaderShow = true,
+    required int? leadId,
+  }) async {
+    var jsonData = await apiManager.putAPICall(
+      url: '/driver-availability/update/$leadId',
+      params: params,
+    );
+    return DriverAvailabilityModel.fromJson(jsonData);
+  }
 }

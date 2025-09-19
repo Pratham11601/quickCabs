@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import '../../../api/api_manager.dart';
 import '../../../routes/routes.dart';
 import '../../../widgets/snackbar.dart';
+import '../model/reset_password_model.dart';
 import '../model/verify_sign_in_otp_model.dart';
 import '../repository/auth_repository.dart';
 
@@ -161,11 +162,11 @@ class ForgotPasswordController extends GetxController {
   Future<bool> resetPassword({bool isLoaderShow = true}) async {
     isLoading.value = true;
     try {
-      ForgotOtpModel model = await authRepository.resetPasswordApiCall(params: {
+      ResetPasswordModel model = await authRepository.resetPasswordApiCall(params: {
         "phone": mobileController.text.trim(),
         "newPassword": newPasswordController.text.trim(),
       });
-      if (model.status == 1) {
+      if (model.status == true) {
         ShowSnackBar.success(message: model.message!);
         isLoading.value = false;
         Get.toNamed(Routes.LOGIN_SCREEN);
