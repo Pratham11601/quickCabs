@@ -127,17 +127,37 @@ class PhoneNumberContainer extends StatelessWidget {
 
             /// Remember Me Checkbox (uses Obx to react to changes)
             Obx(() => Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Checkbox(
-                      value: loginController.rememberMe.value,
-                      onChanged: (val) {
-                        loginController.rememberMe.value = val ?? false;
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: loginController.rememberMe.value,
+                          onChanged: (val) {
+                            loginController.rememberMe.value = val ?? false;
+                          },
+                        ),
+                        Text(
+                          "Remember Me",
+                          style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                        ),
+                      ],
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Get.toNamed(Routes.FORGOT_PASSWORD_SCREEN);
                       },
-                    ),
-                    Text(
-                      "Remember Me",
-                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                    ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.lock_outline, color: ColorsForApp.primaryColor),
+                          SizedBox(width: 5),
+                          Text(
+                            "Forgot Password",
+                            style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 )),
             const SizedBox(height: 12),

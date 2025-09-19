@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../../../utils/app_colors.dart';
 import '../../../widgets/common_widgets.dart';
+import '../../../widgets/no_data_found.dart';
 import '../../../widgets/shimmer_widget.dart';
 import '../../post_lead_module/controller/post_controller.dart';
 import '../controller/my_lead_controller.dart';
@@ -56,11 +57,11 @@ class MyLeadsPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.filter_alt_outlined),
-                  )
+                  // const SizedBox(width: 8),
+                  // IconButton(
+                  //   onPressed: () {},
+                  //   icon: const Icon(Icons.filter_alt_outlined),
+                  // )
                 ],
               ),
             ),
@@ -87,38 +88,69 @@ class MyLeadsPage extends StatelessWidget {
                       child: TabBarView(
                         children: [
                           // Active Leads Tab
-                          Obx(() => RefreshIndicator(
-                                onRefresh: () async {
-                                  await controller.fetchLeads(forceRefresh: true);
-                                },
-                                child: ListView.builder(
-                                  physics: const AlwaysScrollableScrollPhysics(),
-                                  itemCount: controller.filteredActiveLeads.length,
-                                  itemBuilder: (_, index) => LeadCard(
-                                    lead: controller.filteredActiveLeads[index],
-                                    onShare: () => print("Share"),
-                                    onEdit: () {
-                                      controller.setLeadData(controller.filteredActiveLeads[index]);
-                                      controller.selectedId.value = controller.filteredActiveLeads[index].id!;
-                                      showEditLeadBottomSheet(context, controller);
-                                    },
-                                    onDelete: () => print("Delete"),
-                                  ),
-                                ),
-                              )),
-
+                          Obx(
+                            () => RefreshIndicator(
+                              onRefresh: () async {
+                                await controller.fetchLeads(forceRefresh: true);
+                              },
+                              child: controller.filteredActiveLeads.isEmpty
+                                  ? ListView(
+                                      physics: const AlwaysScrollableScrollPhysics(),
+                                      children: const [
+                                        SizedBox(
+                                          height: 500, // or use MediaQuery
+                                          child: Center(
+                                            child: NoDataFoundScreen(
+                                              title: "NO LEADS FOUND",
+                                              subTitle: "",
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : ListView.builder(
+                                      physics: const AlwaysScrollableScrollPhysics(),
+                                      itemCount: controller.filteredActiveLeads.length,
+                                      itemBuilder: (_, index) => LeadCard(
+                                        lead: controller.filteredActiveLeads[index],
+                                        onShare: () => print("Share"),
+                                        onEdit: () {
+                                          controller.setLeadData(controller.filteredActiveLeads[index]);
+                                          controller.selectedId.value = controller.filteredActiveLeads[index].id!;
+                                          showEditLeadBottomSheet(context, controller);
+                                        },
+                                        onDelete: () => print("Delete"),
+                                      ),
+                                    ),
+                            ),
+                          ),
                           // Completed Leads Tab
                           Obx(() => RefreshIndicator(
                                 onRefresh: () async {
                                   await controller.fetchLeads(forceRefresh: true);
                                 },
-                                child: ListView.builder(
-                                  physics: const AlwaysScrollableScrollPhysics(),
-                                  itemCount: controller.filteredCompletedLeads.length,
-                                  itemBuilder: (_, index) => CompletedLeadCard(
-                                    lead: controller.filteredCompletedLeads[index],
-                                  ),
-                                ),
+                                child: controller.filteredCompletedLeads.isEmpty
+                                    ? ListView(
+                                        physics: const AlwaysScrollableScrollPhysics(),
+                                        children: const [
+                                          SizedBox(
+                                            height: 500, // or use MediaQuery
+                                            child: Center(
+                                              child: NoDataFoundScreen(
+                                                title: "NO LEADS FOUND",
+                                                subTitle: "",
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : ListView.builder(
+                                        physics: const AlwaysScrollableScrollPhysics(),
+                                        itemCount: controller.filteredCompletedLeads.length,
+                                        itemBuilder: (_, index) => CompletedLeadCard(
+                                          lead: controller.filteredCompletedLeads[index],
+                                        ),
+                                      ),
                               )),
                         ],
                       ),

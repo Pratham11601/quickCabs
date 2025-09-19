@@ -1,5 +1,6 @@
 import 'package:QuickCab/Screens/document_verification_module/ui/document_verification_screen.dart';
 import 'package:QuickCab/Screens/home_page_module/ui/home_screen.dart';
+import 'package:QuickCab/Screens/login_signup_module/ui/forgot_password_screen.dart';
 import 'package:QuickCab/Screens/login_signup_module/ui/signup_screen.dart';
 import 'package:QuickCab/Screens/profile_module/ui/help_support_screen.dart';
 import 'package:QuickCab/Screens/profile_module/ui/my_documents_screen.dart';
@@ -36,6 +37,11 @@ class AppPages {
     GetPage(
       name: Routes.LOGIN_SCREEN,
       page: () => LoginScreen(),
+      binding: AuthBinding(),
+    ),
+    GetPage(
+      name: Routes.FORGOT_PASSWORD_SCREEN,
+      page: () => ForgotPasswordScreen(),
       binding: AuthBinding(),
     ),
     GetPage(

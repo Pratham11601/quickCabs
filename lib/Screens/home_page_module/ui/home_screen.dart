@@ -312,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return Center(
                           child: NoDataFoundScreen(
                             title: "NO LEADS FOUND",
-                            subTitle: "MEANWHILE, YOU CAN CHECK BACK OR REFRESH.",
+                            subTitle: "",
                           ),
                         );
                       }
@@ -559,7 +559,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return Center(
                           child: NoDataFoundScreen(
                             title: "NO LEADS FOUND",
-                            subTitle: "MEANWHILE, YOU CAN CHECK BACK OR REFRESH.",
+                            subTitle: "",
                           ),
                         );
                       }
@@ -733,6 +733,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       title: 'Success',
                                       message: homeController.driverAvailabilityModel.value.message ?? 'Availability posted successfully',
                                     );
+                                    homeController.fetchLiveLeads(1);
 
                                     // clear inputs
                                     homeController.clearDriverAvailability();

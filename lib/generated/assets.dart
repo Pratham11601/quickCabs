@@ -2,6 +2,8 @@
 class Assets {
   Assets._();
 
+  static const String animationNoDataFound = 'assets/animation/no_data_found.json';
+  static const String animationNoInternet = 'assets/animation/no_internet.json';
   static const String iconsCab = 'assets/icons/cab.png';
   static const String iconsCamera = 'assets/icons/camera.png';
   static const String iconsCarSell = 'assets/icons/car_sell.png';
@@ -26,6 +28,7 @@ class Assets {
   static const String iconsSourceMarker = 'assets/icons/sourceMarker.png';
   static const String iconsTowing = 'assets/icons/towing.png';
   static const String imagesAppBarBg = 'assets/images/appBarBg.svg';
+  static const String imagesForgetPasswordImage = 'assets/images/forgetPasswordImage.svg';
   static const String imagesSelect = 'assets/images/select.png';
   static const String imagesWalletBalanceImage = 'assets/images/walletBalanceImage.jpeg';
 }
