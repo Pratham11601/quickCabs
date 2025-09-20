@@ -6,6 +6,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/api_manager.dart';
+import '../../../notificaton/notifications_services.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/storage_config.dart';
 import '../repository/profile_repository.dart';
@@ -20,19 +21,26 @@ class ProfileController extends GetxController {
   /// Support Section
   var selectedLanguage = "English".obs;
 
-  /// Toggle Notification
-  void toggleNotifications(bool value) {
-    isNotificationEnabled.value = value;
-  }
-
   var userDetails = Rxn<Vendor>(); // vendor model from response
   var isLoading = false.obs;
+
+  RxBool isNotificationSound = true.obs;
 
   /// Change language
   void changeLanguage(String lang) {
     selectedLanguage.value = lang;
     // Optional: persist in storage
     GetStorage().write("selectedLanguage", lang);
+  }
+
+  Future<void> loadNotificationPreference() async {
+    isNotificationEnabled.value =
+        await NotificationService.areNotificationsEnabled();
+  }
+
+  Future<void> toggleNotifications(bool value) async {
+    isNotificationEnabled.value = value;
+    await NotificationService.setNotificationEnabled(value);
   }
 
   /// Logout function
@@ -77,12 +85,14 @@ class ProfileController extends GetxController {
     if (savedLang != null) {
       selectedLanguage.value = savedLang;
     }
+    loadNotificationPreference();
   }
 
   Future<void> getProfileDetails() async {
     try {
       isLoading.value = true;
-      ProfileDetailsModel model = await profileRepository.getProfileDetailsApiCall();
+      ProfileDetailsModel model =
+          await profileRepository.getProfileDetailsApiCall();
 
       if (model.status == true && model.vendor != null) {
         userDetails.value = model.vendor; // ✅ assign to the reactive variable

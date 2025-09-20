@@ -5,36 +5,54 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:sizer/sizer.dart';
 
 import 'api/api_manager.dart';
+import 'notificaton/firebase_messeges.dart'
+    hide flutterLocalNotificationsPlugin;
+import 'notificaton/notification_helper.dart';
+import 'notificaton/notifications_services.dart';
 import 'binding/app_binding.dart';
 import 'controller/app_controller.dart';
 import 'controller/network_controller.dart';
+import 'firebase_options.dart';
 import 'languages/languages.dart';
 import 'utils/notifications.dart' as notification;
 
-Future<void> handleFirebaseNotification(RemoteMessage message) async {
-  debugPrint("Foreground message: ${message.toMap()}");
-  notification.Notification.showLocalNotification(message);
-}
+Future<void> inittNotifications() async {
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
 
-Future<void> handleFirebaseBackgroundNotification(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  debugPrint("Background message: ${message.toMap()}");
-  notification.Notification.showLocalNotification(message);
+  final InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  // ✅ Create channel explicitly for Android 8+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(defaultChannel);
 }
 
 Future<void> main() async {
+  await dotenv.load(fileName: ".env");
+
   WidgetsFlutterBinding.ensureInitialized();
   Get.put(NetworkController()); // inject globally
 
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // await NotificationService.initialize();
+  await inittNotifications();
 
-  FirebaseMessaging.onBackgroundMessage(handleFirebaseBackgroundNotification);
+  await GetServerKey().getServerKeyToken();
+  await FirebaseNotification.initialize();
+  await NotificationService.initialize();
 
   await GetStorage.init();
   // Register AppController with GetX
@@ -51,8 +69,6 @@ Future<void> main() async {
   );
 
   runApp(const App());
-
-  FirebaseMessaging.onMessage.listen(handleFirebaseNotification);
 
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
     debugPrint("App opened from notification: ${message.toMap()}");

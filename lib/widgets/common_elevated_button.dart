@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 
 import '../utils/app_colors.dart';
 import '../utils/text_styles.dart';
@@ -22,7 +23,7 @@ class CommonElevatedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
+      width: 100.w,
       height: 52,
       child: ElevatedButton(
         onPressed: enabled && !isLoading ? onPressed : null,
@@ -57,7 +58,7 @@ class CommonElevatedButton extends StatelessWidget {
                     const SizedBox(width: 8),
                     Icon(
                       icon,
-                      size: 35,
+                      size: 3.h,
                       color: ColorsForApp.whiteColor,
                     ),
                   ],

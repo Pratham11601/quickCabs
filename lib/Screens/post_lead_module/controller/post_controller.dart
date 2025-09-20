@@ -1,10 +1,12 @@
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:QuickCab/utils/text_styles.dart';
+import 'package:QuickCab/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../api/api_manager.dart';
+import '../../../notificaton/send_notification.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/date_time_picker.dart';
 import '../repository/post_lead_repository.dart';
@@ -49,9 +51,12 @@ class PostController extends GetxController {
   final Rxn<DateTime> selectedDate = Rxn<DateTime>();
   final Rxn<TimeOfDay> selectedTime = Rxn<TimeOfDay>();
 
-  String get formattedDate => selectedDate.value == null ? "dd/mm/yyyy" : DateFormat("dd/MM/yyyy").format(selectedDate.value!);
+  String get formattedDate => selectedDate.value == null
+      ? "dd/mm/yyyy"
+      : DateFormat("dd/MM/yyyy").format(selectedDate.value!);
 
-  String formattedTime(BuildContext ctx) => selectedTime.value == null ? "--:--" : selectedTime.value!.format(ctx);
+  String formattedTime(BuildContext ctx) =>
+      selectedTime.value == null ? "--:--" : selectedTime.value!.format(ctx);
 
   double get progress => currentStep.value / 3.0;
   String get progressPercentLabel => "${(progress * 100).round()}% Complete";
@@ -63,7 +68,9 @@ class PostController extends GetxController {
   }
 
   void validateForm() {
-    isFormValid.value = pickupController.text.isNotEmpty && dropController.text.isNotEmpty && tripType.value.isNotEmpty;
+    isFormValid.value = pickupController.text.isNotEmpty &&
+        dropController.text.isNotEmpty &&
+        tripType.value.isNotEmpty;
   }
 
   void selectVehicle(int index) {
@@ -96,7 +103,36 @@ class PostController extends GetxController {
   }
 
   var currentStep = 0.obs;
-  var isFormValid = false.obs; // this will control the Next button enabled/disabled
+  var isFormValid =
+      false.obs; // this will control the Next button enabled/disabled
+
+  bool validateTripInformation() {
+    // Validate Date
+    if (selectedDate.value == null) {
+      ShowSnackBar.info(title: 'Date', message: "Please select a date");
+      return false;
+    }
+
+    // Validate Time
+    if (selectedTime.value == null) {
+      ShowSnackBar.info(title: 'Time', message: "Please select a time");
+      return false;
+    }
+
+    // Validate Seat Selection (if seatConfig true)
+    final int? idx = selectedVehicleIndex.value;
+    if (idx != null && vehicles[idx]["seatConfig"] == true) {
+      if (selectedSeatConfig.value == null) {
+        ShowSnackBar.info(
+            title: 'Select Seat',
+            message: "Please select a Seat Configuration");
+
+        return false;
+      }
+    }
+
+    return true;
+  }
 
   void nextStep() {
     if (isFormValid.value) {
@@ -254,7 +290,8 @@ class PostController extends GetxController {
       } else {
         isLoadingDrop.value = true;
       }
-      final response = await postLeadRepository.fetchLocationForPost(location: query);
+      final response =
+          await postLeadRepository.fetchLocationForPost(location: query);
       final results = response.results ?? [];
 
       final suggestions = results.map<Map<String, String>>((item) {
@@ -297,18 +334,24 @@ class PostController extends GetxController {
     }
   }
 
-  final PostLeadRepository postLeadRepository = PostLeadRepository(APIManager());
+  final PostLeadRepository postLeadRepository =
+      PostLeadRepository(APIManager());
 
   Future<void> submitRideLead({bool isLoaderShow = true}) async {
     final params = {
-      "date": selectedDate.value == null ? "" : DateFormat('yyyy-MM-dd').format(selectedDate.value!),
-      "time": selectedTime.value == null ? "" : selectedTime.value!.format(Get.context!),
+      "date": selectedDate.value == null
+          ? ""
+          : DateFormat('yyyy-MM-dd').format(selectedDate.value!),
+      "time": selectedTime.value == null
+          ? ""
+          : selectedTime.value!.format(Get.context!),
       "location_from": pickupController.text.trim(),
       "location_from_area": "",
       "to_location": dropController.text.trim(),
       "to_location_area": "",
-      "car_model":
-          selectedVehicleIndex.value != null ? "${vehicles[selectedVehicleIndex.value!]["name"]} ${selectedSeatConfig.value} Seater" : "",
+      "car_model": selectedVehicleIndex.value != null
+          ? "${vehicles[selectedVehicleIndex.value!]["name"]} ${selectedSeatConfig.value} Seater"
+          : "",
       "add_on": "",
       "fare": int.tryParse(fareController.text.trim()) ?? 0,
       "cab_number": "",
@@ -317,11 +360,17 @@ class PostController extends GetxController {
 
     try {
       isLoading.value = true;
-      final response = await postLeadRepository.postLeadApiCall(isLoaderShow: isLoaderShow, params: params);
+      final response = await postLeadRepository.postLeadApiCall(
+          isLoaderShow: isLoaderShow, params: params);
       if (response.status == true) {
+        await SendNotificationService.sendNotificationUsingApi(
+            pickupController.text,
+            dropController.text,
+            "${int.tryParse(fareController.text) ?? 00}");
         showAppDialog(
           title: 'Lead Shared Successfully',
-          message: 'Your ride lead has been shared with the driver network. Other drivers can now see and contact you for this trip.',
+          message:
+              'Your ride lead has been shared with the driver network. Other drivers can now see and contact you for this trip.',
           icon: Icons.check_circle_rounded,
           buttonText: 'OK',
           onConfirm: () {
@@ -367,13 +416,15 @@ class PostController extends GetxController {
               const SizedBox(height: 20),
               Text(
                 title,
-                style: TextHelper.h7.copyWith(color: ColorsForApp.green, fontFamily: boldFont),
+                style: TextHelper.h7
+                    .copyWith(color: ColorsForApp.green, fontFamily: boldFont),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               Text(
                 message,
-                style: TextHelper.size17.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                style: TextHelper.size17.copyWith(
+                    color: ColorsForApp.blackColor, fontFamily: regularFont),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
@@ -392,7 +443,8 @@ class PostController extends GetxController {
                 onPressed: onConfirm,
                 child: Text(
                   buttonText,
-                  style: TextHelper.size18.copyWith(color: ColorsForApp.whiteColor, fontFamily: boldFont),
+                  style: TextHelper.size18.copyWith(
+                      color: ColorsForApp.whiteColor, fontFamily: boldFont),
                 ),
               ),
             ],

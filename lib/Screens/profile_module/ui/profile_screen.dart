@@ -27,10 +27,12 @@ class ProfileScreen extends StatelessWidget {
                   name: controller.userDetails.value?.fullname ?? "Unknown",
                   phone: controller.userDetails.value?.phone ?? "-",
                   email: controller.userDetails.value?.email ?? "-",
-                  profileImage:
-                      (controller.userDetails.value?.profileImgUrl != null && controller.userDetails.value!.profileImgUrl!.isNotEmpty)
-                          ? "https://quickcabpune.com/app/${controller.userDetails.value!.profileImgUrl}"
-                          : "",
+                  profileImage: (controller.userDetails.value?.profileImgUrl !=
+                              null &&
+                          controller
+                              .userDetails.value!.profileImgUrl!.isNotEmpty)
+                      ? "https://quickcabpune.com/app/${controller.userDetails.value!.profileImgUrl}"
+                      : "",
                 )),
 
             /// Account Section
@@ -47,19 +49,27 @@ class ProfileScreen extends StatelessWidget {
                 SettingItem(
                   icon: Icons.notifications_outlined,
                   title: "notifications".tr,
-                  toggleValue: controller.isNotificationEnabled,
                   hasSwitch: true,
-                  switchValue: true,
+                  switchValue: controller.isNotificationSound.value,
+                  toggleValue: controller.isNotificationEnabled,
+                  onToggle: (val) async {
+                    await controller.toggleNotifications(val);
+                    print("✅ Notifications toggled to $val");
+                  },
                 ),
                 SettingItem(
                   icon: Icons.security_outlined,
                   title: "privacy_security".tr,
                   onTap: () async {
                     // For Privacy Policy
-                    await UrlLauncherHelper.openUrl("https://quickcabpune.com/privacy-policy.html");
+                    await UrlLauncherHelper.openUrl(
+                        "https://quickcabpune.com/privacy-policy.html");
                   },
                 ),
-                SettingItem(icon: FontAwesomeIcons.chessKing, title: "subscription_pro".tr, onTap: () => Get.toNamed(Routes.SUBSCRIPTION)),
+                SettingItem(
+                    icon: FontAwesomeIcons.chessKing,
+                    title: "subscription_pro".tr,
+                    onTap: () => Get.toNamed(Routes.SUBSCRIPTION)),
               ],
             ),
 
@@ -89,35 +99,46 @@ class ProfileScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(16),
                         decoration: const BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(20)),
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text("choose_language".tr,
-                                style: TextHelper.h5.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
+                                style: TextHelper.h5.copyWith(
+                                    fontFamily: semiBoldFont,
+                                    color: ColorsForApp.blackColor)),
                             const SizedBox(height: 16),
                             ListTile(
                               title: Text("English",
-                                  style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
+                                  style: TextHelper.size19.copyWith(
+                                      fontFamily: semiBoldFont,
+                                      color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("English");
-                                Get.updateLocale(Locale('en', 'US')); // Switch to Hindi
+                                Get.updateLocale(
+                                    Locale('en', 'US')); // Switch to Hindi
                                 Get.back();
                               },
                             ),
                             ListTile(
                               title: Text("हिंदी",
-                                  style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
+                                  style: TextHelper.size19.copyWith(
+                                      fontFamily: semiBoldFont,
+                                      color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("हिंदी");
-                                Get.updateLocale(Locale('hi', 'IN')); // Switch to Hindi
+                                Get.updateLocale(
+                                    Locale('hi', 'IN')); // Switch to Hindi
                                 Get.back();
                               },
                             ),
                             ListTile(
                               title: Text("मराठी",
-                                  style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
+                                  style: TextHelper.size19.copyWith(
+                                      fontFamily: semiBoldFont,
+                                      color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("मराठी");
                                 Get.updateLocale(Locale('mr', 'IN'));
@@ -134,7 +155,8 @@ class ProfileScreen extends StatelessWidget {
                               ),
                               onTap: () {
                                 controller.changeLanguage("ಕನ್ನಡ");
-                                Get.updateLocale(Locale('kn', 'IN')); // Kannada locale code
+                                Get.updateLocale(
+                                    Locale('kn', 'IN')); // Kannada locale code
                                 Get.back();
                               },
                             ),
@@ -155,7 +177,9 @@ class ProfileScreen extends StatelessWidget {
             Center(
               child: Text("app_version_info".tr,
                   textAlign: TextAlign.center,
-                  style: TextHelper.size18.copyWith(color: ColorsForApp.subTitleColor, fontFamily: semiBoldFont)),
+                  style: TextHelper.size18.copyWith(
+                      color: ColorsForApp.subTitleColor,
+                      fontFamily: semiBoldFont)),
             ),
             const SizedBox(height: 20),
           ],

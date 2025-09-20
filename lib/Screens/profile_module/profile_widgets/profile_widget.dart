@@ -1,10 +1,12 @@
 import 'package:QuickCab/Screens/profile_module/controller/profile_controller.dart';
+import 'package:QuickCab/notificaton/notifications_services.dart';
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:QuickCab/utils/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 /// Profile Info Card
+
 class ProfileInfoCard extends StatelessWidget {
   final String name;
   final String phone;
@@ -101,13 +103,14 @@ class ProfileInfoCard extends StatelessWidget {
 class SettingItem {
   final IconData icon;
   final String title;
-  final String? label; // Optional (like "Incomplete")
+  final String? label;
   final bool hasSwitch;
   bool switchValue;
   final bool isLanguage;
   final VoidCallback? onTap;
-  final RxBool? toggleValue; // <-- optional reactive value
-  final Widget? trailing; // <-- custom trailing widget
+  final RxBool? toggleValue;
+  final Widget? trailing;
+  final Future<void> Function(bool)? onToggle; // ✅ NEW CALLBACK
 
   SettingItem({
     required this.icon,
@@ -118,7 +121,8 @@ class SettingItem {
     this.onTap,
     this.toggleValue,
     this.trailing,
-    this.isLanguage = false, // default false
+    this.onToggle,
+    this.isLanguage = false,
   });
 }
 
@@ -126,8 +130,10 @@ class SettingItem {
 class SettingsCard extends StatelessWidget {
   final String sectionTitle;
   final List<SettingItem> items;
-  // Initialize controller
-  final ProfileController controller = Get.put(ProfileController());
+
+  // Use Get.find() here (don't create controller every rebuild)
+  final ProfileController controller = Get.find<ProfileController>();
+
   SettingsCard({
     super.key,
     required this.sectionTitle,
@@ -148,9 +154,13 @@ class SettingsCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// Section Title
-            Text(sectionTitle,
-                style: TextHelper.size20.copyWith(
-                    color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+            Text(
+              sectionTitle,
+              style: TextHelper.size20.copyWith(
+                color: ColorsForApp.blackColor,
+                fontFamily: semiBoldFont,
+              ),
+            ),
             const SizedBox(height: 12),
 
             /// Items List
@@ -160,8 +170,8 @@ class SettingsCard extends StatelessWidget {
                 return Column(
                   children: [
                     InkWell(
-                      splashColor: ColorsForApp.subTitleColor
-                          .withValues(alpha: 0.1), // custom ripple color
+                      splashColor:
+                          ColorsForApp.subTitleColor.withValues(alpha: 0.1),
                       onTap: item.hasSwitch ? null : item.onTap,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -170,6 +180,8 @@ class SettingsCard extends StatelessWidget {
                             Icon(item.icon,
                                 size: 23, color: ColorsForApp.primaryDarkColor),
                             const SizedBox(width: 16),
+
+                            /// Title
                             Expanded(
                               child: Text(
                                 item.title,
@@ -198,48 +210,59 @@ class SettingsCard extends StatelessWidget {
                                 ),
                               ),
 
-                            /// Switch , Language Selaction OR Arrow
-                            item.hasSwitch
-                                ? (item.toggleValue != null
-                                    ? Obx(() => Switch(
-                                          value: item.toggleValue!.value,
-                                          onChanged: (val) =>
-                                              item.toggleValue!.value = val,
-                                          activeColor: Colors.white,
-                                          activeTrackColor: Colors.redAccent,
-                                        ))
-                                    : StatefulBuilder(
-                                        builder: (context, setState) => Switch(
-                                          value: item.switchValue,
-                                          onChanged: (val) {
-                                            setState(() {
-                                              item.switchValue = val;
-                                            });
-                                          },
-                                          activeColor: Colors.white,
-                                          activeTrackColor: Colors.redAccent,
-                                        ),
+                            /// Trailing Widget or Switch
+                            if (item.hasSwitch)
+                              item.toggleValue != null
+                                  ? Obx(() => Switch(
+                                        value: item.toggleValue!.value,
+                                        onChanged: (val) async {
+                                          print("Switch ${item.title} to $val");
+                                          item.toggleValue!.value = val;
+                                          if (item.onToggle != null) {
+                                            await item.onToggle!(val);
+                                          }
+                                        },
+                                        activeColor: Colors.white,
+                                        activeTrackColor: Colors.redAccent,
                                       ))
-                                : item.isLanguage
-                                    ? Obx(
-                                        () => Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              controller.selectedLanguage.value,
-                                              style: TextHelper.size18.copyWith(
-                                                color: ColorsForApp.blackColor,
-                                                fontFamily: semiBoldFont,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            const Icon(Icons.chevron_right,
-                                                color: Colors.black45),
-                                          ],
-                                        ),
-                                      )
-                                    : const Icon(Icons.chevron_right,
+                                  : StatefulBuilder(
+                                      builder: (context, setState) => Switch(
+                                        value: item.switchValue,
+                                        onChanged: (val) async {
+                                          setState(() {
+                                            item.switchValue = val;
+                                          });
+                                          if (item.onToggle != null) {
+                                            await item.onToggle!(val);
+                                          }
+                                          print("Switch ${item.title} to $val");
+                                        },
+                                        activeColor: Colors.white,
+                                        activeTrackColor: Colors.redAccent,
+                                      ),
+                                    )
+                            else if (item.isLanguage)
+                              Obx(
+                                () => Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      controller.selectedLanguage.value,
+                                      style: TextHelper.size18.copyWith(
+                                        color: ColorsForApp.blackColor,
+                                        fontFamily: semiBoldFont,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Icon(Icons.chevron_right,
                                         color: Colors.black45),
+                                  ],
+                                ),
+                              )
+                            else
+                              item.trailing ??
+                                  const Icon(Icons.chevron_right,
+                                      color: Colors.black45),
                           ],
                         ),
                       ),
@@ -248,7 +271,10 @@ class SettingsCard extends StatelessWidget {
                     /// Divider except last item
                     if (index != items.length - 1)
                       const Divider(
-                          height: 1, thickness: 0.6, color: Colors.black12),
+                        height: 1,
+                        thickness: 0.6,
+                        color: Colors.black12,
+                      ),
                   ],
                 );
               }),

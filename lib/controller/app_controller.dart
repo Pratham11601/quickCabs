@@ -56,23 +56,22 @@ class AppController extends GetxController {
     JwtConfig.storeUserToken(token);
   }
 
-
-
-
-
   Future<void> initializeNotificationServices() async {
-    NotificationStatus notificationStatus = await notification.isNotificationEnabled();
+    NotificationStatus notificationStatus =
+        await notification.isNotificationEnabled();
     if (notificationStatus == NotificationStatus.granted) {
       String? fcmToken = await notification.initNotificationService();
       if (userToken != null) {
         updateFcmToken(fcmToken!);
       }
       notificationTokenSubscription?.cancel();
-      notificationTokenSubscription = notification.onTokenRefresh.listen(updateFcmToken);
-      FirebaseMessaging.onMessage.listen(handleFirebaseNotification);
-      FirebaseMessaging.onBackgroundMessage(handleFirebaseBackgroundNotification);
+      notificationTokenSubscription =
+          notification.onTokenRefresh.listen(updateFcmToken);
+      // FirebaseMessaging.onMessage.listen(handleFirebaseNotification);
+      // FirebaseMessaging.onBackgroundMessage(handleFirebaseBackgroundNotification);
     } else {
-      NotificationStatus status = await askNotificationPermission(notificationStatus);
+      NotificationStatus status =
+          await askNotificationPermission(notificationStatus);
       if (status == NotificationStatus.granted) {
         await initializeNotificationServices();
       } else {
@@ -81,11 +80,11 @@ class AppController extends GetxController {
     }
   }
 
-
   Future<RefreshFcmModel?> updateFcmToken(String fcmToken) async {
     try {
       if (userToken != null) {
-        RefreshFcmModel updateFcmModel = await AppRepository.refreshFCMToken(params: {'newToken': fcmToken});
+        RefreshFcmModel updateFcmModel =
+            await AppRepository.refreshFCMToken(params: {'newToken': fcmToken});
         debugPrint('fcmToken send to Backend is  ==>>>>>>>>>>> $fcmToken');
 
         if (updateFcmModel.status == 1) {
@@ -98,13 +97,14 @@ class AppController extends GetxController {
     return null;
   }
 
-
-  Future<NotificationStatus> askNotificationPermission([NotificationStatus? status]) async {
+  Future<NotificationStatus> askNotificationPermission(
+      [NotificationStatus? status]) async {
     switch (status ?? await notification.isNotificationEnabled()) {
       case NotificationStatus.granted:
         return NotificationStatus.granted;
       case NotificationStatus.denied:
-        NotificationStatus status = await notification.askNotificationPermission();
+        NotificationStatus status =
+            await notification.askNotificationPermission();
         if (status == NotificationStatus.granted) {
           return status;
         } else {
@@ -130,8 +130,6 @@ class AppController extends GetxController {
         false;
     if (dialogResult) {}
   }
-
-
 
   /// Connection
   Future<void> initializeConnectionServices() async {

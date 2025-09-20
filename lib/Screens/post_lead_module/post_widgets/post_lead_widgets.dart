@@ -12,7 +12,9 @@ Widget stepCircle(String label, bool active) {
         backgroundColor: active ? Colors.white : Colors.white38,
       ),
       const SizedBox(height: 4),
-      Text(label, style: TextHelper.size17.copyWith(color: Colors.white, fontFamily: regularFont)),
+      Text(label,
+          style: TextHelper.size17
+              .copyWith(color: Colors.white, fontFamily: regularFont)),
     ],
   );
 }
@@ -35,13 +37,19 @@ Widget buildInputField(
       const SizedBox(height: 6),
       TextFormField(
         focusNode: focusNode,
-        keyboardType: isNumeric ? const TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
+        keyboardType: isNumeric
+            ? const TextInputType.numberWithOptions(decimal: true)
+            : TextInputType.text,
         controller: controller,
         onChanged: onChanged,
-        style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor),
+        style: TextHelper.size19
+            .copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.subTitleColor),
+          errorStyle: TextHelper.size17
+              .copyWith(fontFamily: regularFont, color: ColorsForApp.red),
+          hintStyle: TextHelper.size19.copyWith(
+              fontFamily: semiBoldFont, color: ColorsForApp.subTitleColor),
           prefixIcon: Icon(icon, color: iconColor),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           contentPadding: const EdgeInsets.symmetric(vertical: 12),
