@@ -12,6 +12,7 @@ import '../../../api/api_manager.dart';
 import '../../../utils/date_time_picker.dart';
 import '../home_widgets/accept_lead_popup.dart';
 import '../model/active_lead_model.dart';
+import '../model/all_live_lead_model.dart';
 import '../model/banner_model.dart';
 import '../repository/active_lead_repository.dart';
 
@@ -24,6 +25,7 @@ class HomeController extends GetxController {
     super.onInit();
     fetchActiveLeads(1);
     fetchLiveLeads(1);
+    fetchAllLiveLeads(1);
     fetchBanners();
   }
 
@@ -342,6 +344,9 @@ class HomeController extends GetxController {
 
   ///live api logic method and variables
   RxList<LiveLeadData> liveLeads = <LiveLeadData>[].obs;
+  RxList<AllLiveLeadData> allLiveLeads = <AllLiveLeadData>[].obs;
+  var showMyAvailability = false.obs;
+  RxInt driversCount = 0.obs;
 
   Future<LiveLeadModel> fetchLiveLeads(dynamic pageNumber) async {
     try {
@@ -357,6 +362,82 @@ class HomeController extends GetxController {
     } finally {
       isLoadingLiveLeads.value = false;
     }
+  }
+
+  Future<AllLiveLeadModel> fetchAllLiveLeads(dynamic pageNumber) async {
+    try {
+      isLoadingLiveLeads.value = true;
+      final response = await activeLeadRepository.allLiveLeadApiCall(pageNumber);
+      debugPrint('Fetched leads count: ${response.data!.length}');
+      allLiveLeads.assignAll(response.data!);
+      driversCount.value = response.pagination!.totalCount!;
+      return response;
+    } catch (e) {
+      errorMsg.value = 'Failed to load active leads';
+      debugPrint('Error fetching leads: $e');
+      return AllLiveLeadModel(data: []);
+    } finally {
+      isLoadingLiveLeads.value = false;
+    }
+  }
+
+// Update driver availability
+  Rx<DriverAvailabilityModel> updateDriverAvailabilityModel = DriverAvailabilityModel().obs;
+
+  Future<bool> updatetDriverAvailability({
+    bool isLoaderShow = true,
+    required int status,
+    required int leadId,
+    required String car,
+    required String location,
+    required DateTime fromDate,
+    required TimeOfDay fromTime,
+    required DateTime toDate,
+    required TimeOfDay toTime,
+  }) async {
+    final params = {
+      "car": car,
+      "location": location,
+      "from_date": DateFormat('yyyy-MM-dd').format(fromDate),
+      "from_time": AppDateTimePicker.formatTimeOfDay(fromTime),
+      "to_date": DateFormat('yyyy-MM-dd').format(toDate),
+      "to_time": AppDateTimePicker.formatTimeOfDay(toTime),
+      "status": status
+    };
+
+    try {
+      isLoading.value = true;
+
+      final response = await authRepository.updateDriverAvailabilityApiCall(isLoaderShow: isLoaderShow, params: params, leadId: leadId);
+
+      updateDriverAvailabilityModel.value = response;
+
+      if (updateDriverAvailabilityModel.value.status == 1) {
+        return true;
+      } else {
+        ShowSnackBar.error(
+          title: 'Error',
+          message: updateDriverAvailabilityModel.value.message ?? 'Failed to share availability',
+        );
+        return false;
+      }
+    } catch (e) {
+      ShowSnackBar.error(
+        title: 'Error',
+        message: 'Something went wrong. Please try again.',
+      );
+      return false;
+    } finally {
+      isLoading.value = false; // ✅ only reset loading, no return here
+    }
+  }
+
+  TimeOfDay parseTimeOfDay(String timeString) {
+    // Expecting format "HH:mm:ss"
+    final parts = timeString.split(":");
+    final hour = int.parse(parts[0]);
+    final minute = int.parse(parts[1]);
+    return TimeOfDay(hour: hour, minute: minute);
   }
 
   void clearDriverAvailability() {

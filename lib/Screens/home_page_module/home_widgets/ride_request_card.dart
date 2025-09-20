@@ -2,31 +2,49 @@ import 'package:QuickCab/utils/app_colors.dart';
 import 'package:QuickCab/utils/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
-class RideRequestCard extends StatelessWidget {
+class RideRequestCard extends StatefulWidget {
   final Map<String, dynamic> lead;
   final void Function(String phone)? onWhatsApp; // WhatsApp button callback
-  final void Function(String phone)? onCall; //
+  final void Function(String phone)? onCall; // Call button callback
+  final void Function(int status)? onToggle; // Toggle status callback
+  final bool showToggle; // Toggle button visibility
 
   const RideRequestCard({
     super.key,
     required this.lead,
     this.onWhatsApp,
     this.onCall,
+    this.onToggle,
+    this.showToggle = true, // default true
   });
 
   @override
+  State<RideRequestCard> createState() => _RideRequestCardState();
+}
+
+class _RideRequestCardState extends State<RideRequestCard> {
+  late RxInt status;
+
+  @override
+  void initState() {
+    super.initState();
+    status = (widget.lead['status'] as int).obs; // convert int -> RxInt
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final car = (lead['car'] ?? '').toString();
-    final name = (lead['name'] ?? '').toString();
-    final phone = (lead['phone'] ?? '').toString();
-    final location = (lead['location'] ?? '').toString();
-    final fromDate = (lead['from_date'] ?? '').toString();
-    final fromTime = (lead['from_time'] ?? '').toString();
-    final toDate = (lead['to_date'] ?? '').toString();
-    final toTime = (lead['to_time'] ?? '').toString();
-    final status = lead['status'] ?? 0;
+    // Use widget.lead safely here
+    final car = (widget.lead['car'] ?? '').toString();
+    final name = (widget.lead['name'] ?? '').toString();
+    final phone = (widget.lead['phone'] ?? '').toString();
+    final location = (widget.lead['location'] ?? '').toString();
+    final fromDate = (widget.lead['from_date'] ?? '').toString();
+    final fromTime = (widget.lead['from_time'] ?? '').toString();
+    final toDate = (widget.lead['to_date'] ?? '').toString();
+    final toTime = (widget.lead['to_time'] ?? '').toString();
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
@@ -49,7 +67,7 @@ class RideRequestCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Header row: Car + Status
+          // Header row: Name + Status
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -60,26 +78,49 @@ class RideRequestCard extends StatelessWidget {
                   fontFamily: semiBoldFont,
                 ),
               ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 0.5.h),
-                decoration: BoxDecoration(
-                  color: status == 1 ? ColorsForApp.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(2.w),
-                ),
-                child: Text(
-                  status == 1 ? "Active" : "Inactive",
-                  style: TextHelper.size18.copyWith(
-                    color: status == 1 ? ColorsForApp.green : Colors.red,
-                    fontFamily: boldFont,
+              Obx(
+                () => Container(
+                  padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
+                  decoration: BoxDecoration(
+                    color: status.value == 1 ? ColorsForApp.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(2.w),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        status.value == 1 ? "Active" : "Inactive",
+                        style: TextHelper.size18.copyWith(
+                          color: status.value == 1 ? ColorsForApp.green : Colors.red,
+                          fontFamily: boldFont,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(width: 3.w),
+                      if (widget.showToggle)
+                        SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: Switch(
+                            value: status.value == 1,
+                            activeColor: ColorsForApp.green,
+                            inactiveThumbColor: Colors.red,
+                            onChanged: (bool value) {
+                              final newStatus = value ? 1 : 0;
+                              status.value = newStatus;
+                              widget.onToggle?.call(newStatus);
+                            },
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(
-            height: 1.h,
-          ),
-          // Car + location
+          SizedBox(height: 1.h),
+
+          // Car + Location
           Row(
             children: [
               Expanded(
@@ -97,8 +138,6 @@ class RideRequestCard extends StatelessWidget {
                   ],
                 ),
               ),
-
-              // Location
               Expanded(
                 child: Row(
                   children: [
@@ -119,10 +158,9 @@ class RideRequestCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(
-            height: 1.h,
-          ),
-          // Dates
+          SizedBox(height: 1.h),
+
+          // From Date
           Row(
             children: [
               Icon(Icons.calendar_today, color: ColorsForApp.blackColor.withValues(alpha: 0.4), size: 2.h),
@@ -139,6 +177,8 @@ class RideRequestCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 1.h),
+
+          // To Date
           Row(
             children: [
               Icon(Icons.calendar_today, color: ColorsForApp.blackColor.withValues(alpha: 0.4), size: 2.h),
@@ -155,10 +195,10 @@ class RideRequestCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 2.h),
-          ///////////////// Phone ///////////////////
+
+          // WhatsApp + Call buttons
           Row(
             children: [
-              // WhatsApp
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorsForApp.green,
@@ -166,10 +206,7 @@ class RideRequestCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                icon: Icon(
-                  FontAwesomeIcons.whatsapp,
-                  color: ColorsForApp.whiteColor,
-                ),
+                icon: Icon(FontAwesomeIcons.whatsapp, color: ColorsForApp.whiteColor),
                 label: Text(
                   "WhatsApp",
                   style: TextHelper.size18.copyWith(
@@ -177,10 +214,9 @@ class RideRequestCard extends StatelessWidget {
                     fontFamily: semiBoldFont,
                   ),
                 ),
-                onPressed: () => onWhatsApp?.call(lead['phone']),
+                onPressed: () => widget.onWhatsApp?.call(phone),
               ),
               const SizedBox(width: 8),
-              // Call
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorsForApp.subTitleColor,
@@ -188,10 +224,7 @@ class RideRequestCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                icon: Icon(
-                  Icons.call_outlined,
-                  color: ColorsForApp.whiteColor,
-                ),
+                icon: Icon(Icons.call_outlined, color: ColorsForApp.whiteColor),
                 label: Text(
                   "Call",
                   style: TextHelper.size18.copyWith(
@@ -199,10 +232,10 @@ class RideRequestCard extends StatelessWidget {
                     fontFamily: semiBoldFont,
                   ),
                 ),
-                onPressed: () => onCall?.call(lead['phone']),
+                onPressed: () => widget.onCall?.call(phone),
               ),
             ],
-          )
+          ),
         ],
       ),
     );

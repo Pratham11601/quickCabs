@@ -11,8 +11,7 @@ class Notification {
   static final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   // Android notification settings
-  static final AndroidInitializationSettings _initializationSettingsAndroid =
-  AndroidInitializationSettings('@drawable/ic_launcher.png');
+  static final AndroidInitializationSettings _initializationSettingsAndroid = AndroidInitializationSettings('@drawable/ic_launcher.png');
 
   Future<String?> initNotificationService() async {
     fcmToken = await FirebaseMessaging.instance.getToken().onError((error, stackTrace) => null);
@@ -64,9 +63,9 @@ class Notification {
   }
 
   Stream<String> get onTokenRefresh => FirebaseMessaging.instance.onTokenRefresh.asyncMap((token) {
-    fcmToken = token;
-    return token;
-  });
+        fcmToken = token;
+        return token;
+      });
 
   static Future<void> showLocalNotification(RemoteMessage message) async {
     const AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(

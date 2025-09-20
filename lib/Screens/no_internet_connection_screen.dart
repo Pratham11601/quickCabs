@@ -1,10 +1,12 @@
 import 'package:QuickCab/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 
 import '../controller/network_controller.dart';
+import '../generated/assets.dart';
 import '../utils/app_colors.dart';
 import '../utils/text_styles.dart';
 import '../widgets/constant_widgets.dart';
@@ -28,17 +30,23 @@ class NoInternetConnectionScreen extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Lottie.asset(
-                    //   Assets.animationsNoInternetConnection,
-                    //   fit: BoxFit.cover,
-                    //   height: 30.h,
-                    // ),
+                    Lottie.asset(
+                      Assets.animationNoInternet,
+                      width: 200,
+                      height: 300,
+                      fit: BoxFit.contain,
+                      repeat: true, // loop animation
+                      animate: true, // auto-play
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
                     Text(
                       'Whoops!',
                       textAlign: TextAlign.center,
                       style: TextHelper.h2.copyWith(
                         fontFamily: boldFont,
-                        color: ColorsForApp.secondaryColor,
+                        color: ColorsForApp.red,
                       ),
                     ),
                     height(1.5.h),

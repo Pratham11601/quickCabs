@@ -90,14 +90,14 @@ class DriverNetworkStatusCard extends StatelessWidget {
                 const SizedBox(height: 6),
 
                 /// High demand zone indicator
-                if (isHighDemand)
-                  Row(
-                    children: [
-                      Icon(Icons.circle, size: 8, color: Colors.grey),
-                      SizedBox(width: 6),
-                      Text("high_demand_zone".tr, style: TextHelper.size18.copyWith(color: ColorsForApp.orange, fontFamily: semiBoldFont)),
-                    ],
-                  ),
+                // if (isHighDemand)
+                //   Row(
+                //     children: [
+                //       Icon(Icons.circle, size: 8, color: Colors.grey),
+                //       SizedBox(width: 6),
+                //       Text("high_demand_zone".tr, style: TextHelper.size18.copyWith(color: ColorsForApp.orange, fontFamily: semiBoldFont)),
+                //     ],
+                //   ),
               ],
             ),
           ),

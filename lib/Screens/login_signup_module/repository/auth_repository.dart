@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:QuickCab/Screens/login_signup_module/model/forgot_otp_model.dart';
+
 import '../../../api/api_manager.dart';
 import '../model/lead_by_model.dart';
 import '../model/login_model.dart';
+import '../model/reset_password_model.dart';
 import '../model/sign_in_otp_model.dart';
 import '../model/user_registration_model.dart';
 import '../model/verify_sign_in_otp_model.dart';
@@ -12,8 +15,7 @@ class AuthRepository {
   AuthRepository(this.apiManager);
 
   //Login api
-  Future<LoginModel> loginApiCall(
-      {required var params, bool isLoaderShow = true}) async {
+  Future<LoginModel> loginApiCall({required var params, bool isLoaderShow = true}) async {
     var jsonData = await apiManager.postAPICall(
       url: '/vendorDetails/login',
       params: params,
@@ -34,7 +36,7 @@ class AuthRepository {
     return response;
   }
 
-  // Verify  registration otp
+  // Verify  registration & Forgot otp
   Future<VerifySignInOtpModel> verifyRegistrationOtpApiCall({
     required Map<String, dynamic> params,
   }) async {
@@ -77,5 +79,28 @@ class AuthRepository {
     );
 
     return UserRegistrationModel.fromJson(jsonData);
+  }
+
+  // Generate forgot password otp
+  Future<ForgotOtpModel> generateForgotOtpApiCall({
+    required Map<String, dynamic> params,
+  }) async {
+    var jsonData = await apiManager.postAPICall(
+      url: '/vendorDetails/reset-password-otp',
+      params: params,
+    );
+    var response = ForgotOtpModel.fromJson(jsonData);
+    return response;
+  }
+
+  Future<ResetPasswordModel> resetPasswordApiCall({
+    required Map<String, dynamic> params,
+  }) async {
+    var jsonData = await apiManager.putAPICall(
+      url: '/vendorDetails/resetpassword',
+      params: params,
+    );
+    var response = ResetPasswordModel.fromJson(jsonData);
+    return response;
   }
 }

@@ -7,16 +7,16 @@ import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
 import '../../../widgets/common_widgets.dart';
 import '../profile_widgets/document_card.dart';
+import '../profile_widgets/my_document_card_shimmer.dart';
 
 class MyDocumentsPage extends StatelessWidget {
   const MyDocumentsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // GetX Controller instance
     final ProfileController controller = Get.find<ProfileController>();
 
-    // Fetch profile details when the screen opens
+    // Fetch profile details after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.getProfileDetails();
     });
@@ -27,18 +27,24 @@ class MyDocumentsPage extends StatelessWidget {
         subtitle: "My uploaded documents",
       ),
       body: Obx(() {
-        // Show loader while fetching data
+        // Show shimmer loader while fetching data
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: 4,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (_, __) => const DocumentCardShimmer(),
+          );
         }
 
-        // If no vendor data available
         final vendor = controller.userDetails.value;
+
+        // 🔹 No vendor/profile data
         if (vendor == null) {
           return const Center(child: Text("No documents found"));
         }
 
-        // ✅ Build documents list dynamically (only if URLs exist)
+        // 🔹 Build documents list dynamically
         final docs = <Map<String, dynamic>>[];
 
         if (vendor.documentImgUrl?.isNotEmpty ?? false) {
@@ -79,7 +85,7 @@ class MyDocumentsPage extends StatelessWidget {
 
         return Column(
           children: [
-            // 🔹 Documents list
+            // Documents list
             Expanded(
               child: docs.isEmpty
                   ? const Center(child: Text("No documents uploaded"))
@@ -93,7 +99,7 @@ class MyDocumentsPage extends StatelessWidget {
                           docName: doc["name"] as String,
                           docStatus: doc["status"] as String,
                           icon: doc["icon"] as IconData,
-                          documentImageUrl: doc["url"] as String, // Fetched from API
+                          documentImageUrl: doc["url"] as String,
                         );
                       },
                     ),
