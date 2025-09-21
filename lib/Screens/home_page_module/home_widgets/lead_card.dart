@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
+import '../../../widgets/constant_widgets.dart';
 
 /// LeadCard Widget
 /// ----------------
@@ -38,6 +40,21 @@ class LeadCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// ---------------- Header Row ----------------
+            ///
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "QuickCab${lead['id'] ?? ''}",
+                  style: TextHelper.size17.copyWith(
+                    color: ColorsForApp.colorBlackShade,
+                    fontWeight: FontWeight.w900,
+                    fontFamily: semiBoldFont,
+                  ),
+                ),
+              ],
+            ),
+            height(0.5.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -47,7 +64,8 @@ class LeadCard extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 16,
-                        backgroundColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
+                        backgroundColor:
+                            ColorsForApp.primaryColor.withValues(alpha: 0.1),
                         child: Icon(
                           Icons.handshake,
                           color: ColorsForApp.primaryColor,
@@ -72,9 +90,10 @@ class LeadCard extends StatelessWidget {
                 ),
 
                 /// Accept / Booked button
-                (lead['acceptedById'] != null)
+                (lead['lead_status'] == 'booked')
                     ? Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 18, vertical: 10),
                         decoration: BoxDecoration(
                           color: Colors.green,
                           borderRadius: BorderRadius.circular(8),
@@ -92,8 +111,10 @@ class LeadCard extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorsForApp.primaryColor,
                           foregroundColor: ColorsForApp.whiteColor,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 10),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
                         ),
                         child: Text(
                           "Accept",
@@ -105,39 +126,38 @@ class LeadCard extends StatelessWidget {
                       ),
               ],
             ),
+            height(1.h),
 
-            const SizedBox(height: 8),
+            Divider(
+              color: ColorsForApp.grey,
+            ),
+            height(1.h),
 
             /// ---------------- Route Info ----------------
             Row(
               children: [
+                Icon(Icons.navigation_outlined, color: ColorsForApp.green),
+                width(0.5.w),
+
                 /// From
                 Expanded(
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.navigation_outlined, color: ColorsForApp.green),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          lead['from'],
-                          style: TextHelper.size18.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: ColorsForApp.blackColor,
-                            fontFamily: semiBoldFont,
-                          ),
-                          overflow: TextOverflow.ellipsis,
+                      Text(
+                        lead['from'],
+                        style: TextHelper.size18.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: ColorsForApp.blackColor,
+                          fontFamily: semiBoldFont,
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
-                ),
-
-                /// To
-                Expanded(
-                  child: Row(
-                    children: [
+                      width(1.w),
                       const Icon(Icons.arrow_right_alt, color: Colors.black),
-                      const SizedBox(width: 6),
+                      width(1.w),
+
+                      /// To
                       Expanded(
                         child: Text(
                           lead['to'],
@@ -152,16 +172,6 @@ class LeadCard extends StatelessWidget {
                     ],
                   ),
                 ),
-
-                /// Price
-                Text(
-                  "₹${lead['price']}",
-                  style: TextHelper.size20.copyWith(
-                    color: ColorsForApp.green,
-                    fontFamily: semiBoldFont,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
               ],
             ),
 
@@ -174,15 +184,28 @@ class LeadCard extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      const Icon(Icons.directions_car_outlined, color: Colors.red),
-                      const SizedBox(width: 6),
+                      const Icon(Icons.directions_car_outlined,
+                          color: Colors.red),
+                      width(1.w),
+
                       Expanded(
                         child: Text(
                           lead['car'],
-                          style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                          style: TextHelper.size18
+                              .copyWith(color: ColorsForApp.blackColor),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           softWrap: false,
+                        ),
+                      ),
+
+                      /// Price
+                      Text(
+                        "₹${lead['price']}",
+                        style: TextHelper.size20.copyWith(
+                          color: ColorsForApp.green,
+                          fontFamily: semiBoldFont,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
@@ -190,16 +213,21 @@ class LeadCard extends StatelessWidget {
                 ),
 
                 /// Distance
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.location_on_outlined, color: Colors.red),
-                    const SizedBox(width: 6),
-                    Text(
-                      lead['distance'],
-                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
-                    ),
-                  ],
+              ],
+            ),
+            height(1.h),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.location_on_outlined, color: Colors.red),
+                width(1.w),
+                Expanded(
+                  child: Text(
+                    lead['distance'],
+                    style: TextHelper.size18
+                        .copyWith(color: ColorsForApp.blackColor),
+                  ),
                 ),
               ],
             ),
@@ -213,11 +241,13 @@ class LeadCard extends StatelessWidget {
                 /// Date
                 Row(
                   children: [
-                    Icon(Icons.calendar_today, size: 16, color: ColorsForApp.blackColor),
-                    const SizedBox(width: 6),
+                    Icon(Icons.calendar_today,
+                        size: 16, color: ColorsForApp.blackColor),
+                    width(1.w),
                     Text(
                       lead['date'],
-                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                      style: TextHelper.size18
+                          .copyWith(color: ColorsForApp.blackColor),
                     ),
                   ],
                 ),
@@ -225,11 +255,13 @@ class LeadCard extends StatelessWidget {
                 /// Time
                 Row(
                   children: [
-                    Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
-                    const SizedBox(width: 6),
+                    Icon(Icons.access_time,
+                        size: 16, color: ColorsForApp.blackColor),
+                    width(1.w),
                     Text(
                       lead['time'],
-                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                      style: TextHelper.size18
+                          .copyWith(color: ColorsForApp.blackColor),
                     ),
                   ],
                 ),
@@ -249,52 +281,55 @@ class LeadCard extends StatelessWidget {
             //     ),
             //   ],
             // ),
-            Row(
-              children: [
-                // WhatsApp
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ColorsForApp.green,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+            Visibility(
+              visible: (lead['lead_status'] == 'booked') ? false : true,
+              child: Row(
+                children: [
+                  // WhatsApp
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ColorsForApp.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                  ),
-                  icon: Icon(
-                    FontAwesomeIcons.whatsapp,
-                    color: ColorsForApp.whiteColor,
-                  ),
-                  label: Text(
-                    "WhatsApp",
-                    style: TextHelper.size18.copyWith(
+                    icon: Icon(
+                      FontAwesomeIcons.whatsapp,
                       color: ColorsForApp.whiteColor,
-                      fontFamily: semiBoldFont,
                     ),
-                  ),
-                  onPressed: () => onWhatsApp?.call(lead['phone']),
-                ),
-                const SizedBox(width: 8),
-                // Call
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ColorsForApp.subTitleColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                    label: Text(
+                      "WhatsApp",
+                      style: TextHelper.size18.copyWith(
+                        color: ColorsForApp.whiteColor,
+                        fontFamily: semiBoldFont,
+                      ),
                     ),
+                    onPressed: () => onWhatsApp?.call(lead['phone']),
                   ),
-                  icon: Icon(
-                    Icons.call_outlined,
-                    color: ColorsForApp.whiteColor,
-                  ),
-                  label: Text(
-                    "Call",
-                    style: TextHelper.size18.copyWith(
+                  const SizedBox(width: 8),
+                  // Call
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ColorsForApp.subTitleColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    icon: Icon(
+                      Icons.call_outlined,
                       color: ColorsForApp.whiteColor,
-                      fontFamily: semiBoldFont,
                     ),
+                    label: Text(
+                      "Call",
+                      style: TextHelper.size18.copyWith(
+                        color: ColorsForApp.whiteColor,
+                        fontFamily: semiBoldFont,
+                      ),
+                    ),
+                    onPressed: () => onCall?.call(lead['phone']),
                   ),
-                  onPressed: () => onCall?.call(lead['phone']),
-                ),
-              ],
+                ],
+              ),
             )
           ],
         ),

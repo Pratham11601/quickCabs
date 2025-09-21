@@ -33,7 +33,8 @@ class AcceptLeadOtpPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Inject controller with the leadId
-    final AcceptLeadOtpPopupController controller = Get.put(AcceptLeadOtpPopupController(leadId: leadId));
+    final AcceptLeadOtpPopupController controller =
+        Get.put(AcceptLeadOtpPopupController(leadId: leadId));
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.w)),
@@ -49,15 +50,21 @@ class AcceptLeadOtpPopup extends StatelessWidget {
                   CircleAvatar(
                     radius: 5.5.w,
                     backgroundColor: ColorsForApp.green,
-                    child: Icon(Icons.check, color: ColorsForApp.whiteColor, size: 8.w),
+                    child: Icon(Icons.check,
+                        color: ColorsForApp.whiteColor, size: 8.w),
                   ),
                   SizedBox(width: 4.w),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Accept Lead", style: TextHelper.h7.copyWith(fontFamily: boldFont, color: ColorsForApp.blackColor)),
+                      Text("Accept Lead",
+                          style: TextHelper.h7.copyWith(
+                              fontFamily: boldFont,
+                              color: ColorsForApp.blackColor)),
                       Text("Enter OTP to confirm",
-                          style: TextHelper.size17.copyWith(fontFamily: regularFont, color: ColorsForApp.subtitle)),
+                          style: TextHelper.size17.copyWith(
+                              fontFamily: regularFont,
+                              color: ColorsForApp.subtitle)),
                     ],
                   ),
                 ],
@@ -74,9 +81,10 @@ class AcceptLeadOtpPopup extends StatelessWidget {
                 child: Column(
                   children: [
                     _detailRow("Shared by:", sharedBy),
-                    _detailRow("Route:", route),
                     _detailRow("Fare:", "₹ ${fare.toStringAsFixed(0)}",
-                        valueStyle: TextHelper.size18.copyWith(color: ColorsForApp.green, fontFamily: semiBoldFont)),
+                        valueStyle: TextHelper.size18.copyWith(
+                            color: ColorsForApp.green,
+                            fontFamily: semiBoldFont)),
                   ],
                 ),
               ),
@@ -85,19 +93,22 @@ class AcceptLeadOtpPopup extends StatelessWidget {
               /// ---------------- OTP Section ----------------
               Text(
                 "Enter 4-digit OTP",
-                style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+                style: TextHelper.size18.copyWith(
+                    color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
               ),
               SizedBox(height: 0.5.h),
               Text(
                 "OTP sent to your registered mobile number",
-                style: TextHelper.size16.copyWith(color: ColorsForApp.subtitle, fontFamily: regularFont),
+                style: TextHelper.size16.copyWith(
+                    color: ColorsForApp.subtitle, fontFamily: regularFont),
               ),
               SizedBox(height: 2.h),
 
               /// OTP Input Field
               Obx(
                 () => SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.85, // Responsive width (85% of screen)
+                  width: MediaQuery.of(context).size.width *
+                      0.85, // Responsive width (85% of screen)
                   child: OTPTextField(
                     length: 4,
                     fieldWidth: 12.w,
@@ -133,13 +144,17 @@ class AcceptLeadOtpPopup extends StatelessWidget {
               Obx(() {
                 if (controller.isCountdownActive.value) {
                   return Text("Resend OTP in ${controller.timerSeconds.value}s",
-                      style: TextHelper.size18.copyWith(color: ColorsForApp.primaryDarkColor, fontFamily: semiBoldFont));
+                      style: TextHelper.size18.copyWith(
+                          color: ColorsForApp.primaryDarkColor,
+                          fontFamily: semiBoldFont));
                 } else {
                   return GestureDetector(
                     onTap: controller.resendOtp,
                     child: Text("Resend OTP",
                         style: TextHelper.size18.copyWith(
-                            color: ColorsForApp.primaryDarkColor, fontFamily: semiBoldFont, decoration: TextDecoration.underline)),
+                            color: ColorsForApp.primaryDarkColor,
+                            fontFamily: semiBoldFont,
+                            decoration: TextDecoration.underline)),
                   );
                 }
               }),
@@ -151,7 +166,8 @@ class AcceptLeadOtpPopup extends StatelessWidget {
                   return Padding(
                     padding: EdgeInsets.only(bottom: 1.h),
                     child: Text("Incorrect OTP. Please try again.",
-                        style: TextHelper.size17.copyWith(color: ColorsForApp.red, fontFamily: boldFont)),
+                        style: TextHelper.size17.copyWith(
+                            color: ColorsForApp.red, fontFamily: boldFont)),
                   );
                 } else if (controller.showSuccess.value) {
                   return Padding(
@@ -159,9 +175,13 @@ class AcceptLeadOtpPopup extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.check_circle, color: Colors.green, size: 8.w),
+                        Icon(Icons.check_circle,
+                            color: Colors.green, size: 8.w),
                         SizedBox(width: 2.w),
-                        Text("Lead Accepted!", style: TextHelper.size17.copyWith(color: ColorsForApp.green, fontFamily: boldFont))
+                        Text("Lead Accepted!",
+                            style: TextHelper.size17.copyWith(
+                                color: ColorsForApp.green,
+                                fontFamily: boldFont))
                       ],
                     ),
                   );
@@ -178,11 +198,14 @@ class AcceptLeadOtpPopup extends StatelessWidget {
                   Expanded(
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 2.h), // matched with Accept button
+                        padding: EdgeInsets.symmetric(
+                            vertical: 2.h), // matched with Accept button
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(3.w),
                         ),
-                        side: BorderSide(color: Colors.grey.shade400, width: 1), // proper border
+                        side: BorderSide(
+                            color: Colors.grey.shade400,
+                            width: 1), // proper border
                       ),
                       onPressed: () => Get.back(),
                       child: Text(
@@ -208,7 +231,9 @@ class AcceptLeadOtpPopup extends StatelessWidget {
                             borderRadius: BorderRadius.circular(3.w),
                           ),
                         ),
-                        onPressed: controller.otpText.value.length == 4 ? () => controller.handleAcceptLead(context) : null,
+                        onPressed: controller.otpText.value.length == 4
+                            ? () => controller.handleAcceptLead(context)
+                            : null,
                         child: Text(
                           "Accept Lead",
                           style: TextHelper.size18.copyWith(
@@ -233,10 +258,17 @@ class AcceptLeadOtpPopup extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 0.3.h),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text(label, style: TextHelper.size18.copyWith(color: ColorsForApp.subtitle, fontFamily: semiBoldFont)),
+          Text(label,
+              style: TextHelper.size18.copyWith(
+                  color: ColorsForApp.subtitle, fontFamily: semiBoldFont)),
           const Spacer(),
-          Text(value, style: valueStyle ?? TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+          Text(value,
+              style: valueStyle ??
+                  TextHelper.size18.copyWith(
+                      color: ColorsForApp.blackColor,
+                      fontFamily: semiBoldFont)),
         ],
       ),
     );

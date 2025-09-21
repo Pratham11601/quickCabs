@@ -11,7 +11,7 @@ class BlinkingText extends StatefulWidget {
     this.text, {
     super.key,
     this.style,
-    this.color = Colors.red, // default color
+    this.color = Colors.yellow, // default color
     this.duration = const Duration(seconds: 1),
     this.minOpacity = 0.2,
   });
@@ -20,7 +20,8 @@ class BlinkingText extends StatefulWidget {
   State<BlinkingText> createState() => _BlinkingTextState();
 }
 
-class _BlinkingTextState extends State<BlinkingText> with SingleTickerProviderStateMixin {
+class _BlinkingTextState extends State<BlinkingText>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _opacity;
 
@@ -32,7 +33,8 @@ class _BlinkingTextState extends State<BlinkingText> with SingleTickerProviderSt
       duration: widget.duration,
     )..repeat(reverse: true);
 
-    _opacity = Tween<double>(begin: 1.0, end: widget.minOpacity).animate(_controller);
+    _opacity =
+        Tween<double>(begin: 1.0, end: widget.minOpacity).animate(_controller);
   }
 
   @override
@@ -47,7 +49,8 @@ class _BlinkingTextState extends State<BlinkingText> with SingleTickerProviderSt
       opacity: _opacity,
       child: Text(
         widget.text,
-        style: widget.style?.copyWith(color: widget.color) ?? TextStyle(color: widget.color),
+        style: widget.style?.copyWith(color: widget.color) ??
+            TextStyle(color: widget.color),
       ),
     );
   }

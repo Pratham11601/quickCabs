@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 class ColorsForApp {
   ColorsForApp._();
   // Theme Color
+  //shimmer
+  static Color shimmerBaseColor = Colors.grey[300]!;
+  static Color shimmerHighlightColor = Colors.white;
   static const Color primaryColor = Color(0xffee8819);
   static const Color primaryDarkColor = Color(0xFFfa6801);
   static const Color secondaryColor = Color(0xff0ae9f1);
@@ -30,6 +33,10 @@ class ColorsForApp {
   static const Color colorYellowShade = Colors.amber;
   static Color whiteColor = Colors.white;
   static Color blackColor = Colors.black;
+
+    //
+  static const Color grey = Color(0xFFAEB2B7);
+  static const Color lightGrey = Color(0xFFDADBDD);
 
   // gradient colors for login screen
   static const Color gradientTop = Color(0xFFFF3E2E); // deep orange-red

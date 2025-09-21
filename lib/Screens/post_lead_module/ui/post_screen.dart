@@ -335,7 +335,9 @@ class PostScreen extends StatelessWidget {
                               color: ColorsForApp.blackColor,
                               fontFamily: regularFont)),
                       onTap: () => locCtrl.selectSuggestion(
-                          isPickup: true, name: item['name'] ?? ''),
+                          isPickup: true,
+                          name: item['name'] ?? '',
+                          address: item['address'] ?? ''),
                     );
                   },
                 ),
@@ -393,7 +395,9 @@ class PostScreen extends StatelessWidget {
                               color: ColorsForApp.blackColor,
                               fontFamily: regularFont)),
                       onTap: () => locCtrl.selectSuggestion(
-                          isPickup: false, name: item['name'] ?? ''),
+                          isPickup: false,
+                          name: item['name'] ?? '',
+                          address: item['address'] ?? ''),
                     );
                   },
                 ),

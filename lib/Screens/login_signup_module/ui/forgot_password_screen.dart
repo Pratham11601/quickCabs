@@ -5,6 +5,7 @@ import 'package:QuickCab/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
@@ -20,7 +21,7 @@ class ForgotPasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
+        preferredSize: Size.fromHeight(20.h),
         child: Obx(
           () => CustomAppBar(
             title: "Forgot Password",
@@ -46,7 +47,9 @@ class ForgotPasswordScreen extends StatelessWidget {
                   /// ---------- Step UI ----------
                   if (controller.currentStep.value == 0) _forgotPasswordUI(),
                   if (controller.currentStep.value == 1)
-                    OtpVerifyContainer(phoneNumber: controller.mobileController.text, onChangeNumber: controller.changeMobileNumber),
+                    OtpVerifyContainer(
+                        phoneNumber: controller.mobileController.text,
+                        onChangeNumber: controller.changeMobileNumber),
                   if (controller.currentStep.value == 2) _changePasswordUI(),
                 ],
               ),
@@ -80,7 +83,9 @@ class ForgotPasswordScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     const SizedBox(width: 10),
-                    const Icon(Icons.call_outlined, color: ColorsForApp.primaryColor, size: 20), // smaller to match
+                    const Icon(Icons.call_outlined,
+                        color: ColorsForApp.primaryColor,
+                        size: 20), // smaller to match
                     const SizedBox(width: 10),
                     Text(
                       '+91',
@@ -90,7 +95,8 @@ class ForgotPasswordScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Container(width: 1, height: 24, color: Colors.grey.shade300),
+                    Container(
+                        width: 1, height: 24, color: Colors.grey.shade300),
                     const SizedBox(width: 10),
                     Expanded(
                       child: TextField(
@@ -143,7 +149,9 @@ class ForgotPasswordScreen extends StatelessWidget {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: controller.isValidNumber.value ? ColorsForApp.primaryColor : ColorsForApp.cta,
+                    backgroundColor: controller.isValidNumber.value
+                        ? ColorsForApp.primaryColor
+                        : ColorsForApp.cta,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -193,14 +201,17 @@ class ForgotPasswordScreen extends StatelessWidget {
             fit: BoxFit.contain,
           ),
           // Password
-          Text('Password', style: TextHelper.size19.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
+          Text('Password',
+              style: TextHelper.size19.copyWith(
+                  color: ColorsForApp.headline, fontFamily: semiBoldFont)),
           const SizedBox(height: 8),
           Obx(() => OutlinedField(
                 isFocused: controller.isPassFocused.value,
                 child: Row(
                   children: [
                     const SizedBox(width: 10),
-                    const Icon(Icons.lock_outline, color: ColorsForApp.primaryColor),
+                    const Icon(Icons.lock_outline,
+                        color: ColorsForApp.primaryColor),
                     const SizedBox(width: 10),
                     Expanded(
                       child: TextFormField(
@@ -211,16 +222,22 @@ class ForgotPasswordScreen extends StatelessWidget {
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
                           focusedBorder: InputBorder.none,
-                          errorStyle: TextHelper.size15.copyWith(color: ColorsForApp.red),
+                          errorStyle: TextHelper.size15
+                              .copyWith(color: ColorsForApp.red),
                           contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10, // keeps it comfortable, not too tall/short
+                            vertical:
+                                10, // keeps it comfortable, not too tall/short
                           ),
                           hintText: 'Enter password (min. 6 chars)',
-                          hintStyle: TextHelper.size19.copyWith(color: ColorsForApp.subtle),
+                          hintStyle: TextHelper.size19
+                              .copyWith(color: ColorsForApp.subtle),
                         ),
-                        style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor),
+                        style: TextHelper.size19
+                            .copyWith(color: ColorsForApp.blackColor),
                         validator: (value) {
-                          if (controller.newPasswordController.text.trim().isEmpty) {
+                          if (controller.newPasswordController.text
+                              .trim()
+                              .isEmpty) {
                             return 'Please enter password';
                           } else if (value!.length < 6) {
                             return 'Please enter at least 6 Characters password';
@@ -232,7 +249,9 @@ class ForgotPasswordScreen extends StatelessWidget {
                     IconButton(
                       onPressed: () => controller.isPassObscured.toggle(),
                       icon: Icon(
-                        controller.isPassObscured.value ? Icons.visibility_off : Icons.visibility,
+                        controller.isPassObscured.value
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                         color: ColorsForApp.subtle,
                       ),
                     ),
@@ -242,14 +261,17 @@ class ForgotPasswordScreen extends StatelessWidget {
           const SizedBox(height: 15),
 
           // Confirm
-          Text('Confirm Password', style: TextHelper.size19.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
+          Text('Confirm Password',
+              style: TextHelper.size19.copyWith(
+                  color: ColorsForApp.headline, fontFamily: semiBoldFont)),
           const SizedBox(height: 8),
           Obx(() => OutlinedField(
                 isFocused: controller.isConfirmFocused.value,
                 child: Row(
                   children: [
                     const SizedBox(width: 10),
-                    const Icon(Icons.lock_outline, color: ColorsForApp.primaryColor),
+                    const Icon(Icons.lock_outline,
+                        color: ColorsForApp.primaryColor),
                     const SizedBox(width: 10),
                     Expanded(
                       child: TextFormField(
@@ -258,20 +280,27 @@ class ForgotPasswordScreen extends StatelessWidget {
                         obscureText: controller.isConfirmObscured.value,
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10, // keeps it comfortable, not too tall/short
+                            vertical:
+                                10, // keeps it comfortable, not too tall/short
                           ),
                           border: InputBorder.none,
-                          errorStyle: TextHelper.size15.copyWith(color: ColorsForApp.red),
+                          errorStyle: TextHelper.size15
+                              .copyWith(color: ColorsForApp.red),
                           enabledBorder: InputBorder.none,
                           focusedBorder: InputBorder.none,
                           hintText: 'Confirm your password',
-                          hintStyle: TextHelper.size19.copyWith(color: ColorsForApp.subtle),
+                          hintStyle: TextHelper.size19
+                              .copyWith(color: ColorsForApp.subtle),
                         ),
-                        style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor),
+                        style: TextHelper.size19
+                            .copyWith(color: ColorsForApp.blackColor),
                         validator: (value) {
-                          if (controller.confirmPasswordController.text.trim().isEmpty) {
+                          if (controller.confirmPasswordController.text
+                              .trim()
+                              .isEmpty) {
                             return 'Please enter confirm password';
-                          } else if (controller.newPasswordController.text != value) {
+                          } else if (controller.newPasswordController.text !=
+                              value) {
                             return 'New password & confirm password must be same';
                           }
                           return null;
@@ -281,7 +310,9 @@ class ForgotPasswordScreen extends StatelessWidget {
                     IconButton(
                       onPressed: () => controller.isConfirmObscured.toggle(),
                       icon: Icon(
-                        controller.isConfirmObscured.value ? Icons.visibility_off : Icons.visibility,
+                        controller.isConfirmObscured.value
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                         color: ColorsForApp.subtle,
                       ),
                     ),

@@ -10,20 +10,20 @@ class AllLiveLeadModel {
     if (json['data'] != null) {
       data = <AllLiveLeadData>[];
       json['data'].forEach((v) {
-        data!.add(new AllLiveLeadData.fromJson(v));
+        data!.add(AllLiveLeadData.fromJson(v));
       });
     }
-    pagination = json['pagination'] != null ? new Pagination.fromJson(json['pagination']) : null;
+    pagination = json['pagination'] != null ? Pagination.fromJson(json['pagination']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
-    if (this.pagination != null) {
-      data['pagination'] = this.pagination!.toJson();
+    if (pagination != null) {
+      data['pagination'] = pagination!.toJson();
     }
     return data;
   }
@@ -76,20 +76,20 @@ class AllLiveLeadData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['userId'] = this.userId;
-    data['car'] = this.car;
-    data['location'] = this.location;
-    data['from_date'] = this.fromDate;
-    data['from_time'] = this.fromTime;
-    data['to_date'] = this.toDate;
-    data['to_time'] = this.toTime;
-    data['phone'] = this.phone;
-    data['status'] = this.status;
-    data['name'] = this.name;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = id;
+    data['userId'] = userId;
+    data['car'] = car;
+    data['location'] = location;
+    data['from_date'] = fromDate;
+    data['from_time'] = fromTime;
+    data['to_date'] = toDate;
+    data['to_time'] = toTime;
+    data['phone'] = phone;
+    data['status'] = status;
+    data['name'] = name;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
     return data;
   }
 }
@@ -114,13 +114,13 @@ class Pagination {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['totalCount'] = this.totalCount;
-    data['page'] = this.page;
-    data['limit'] = this.limit;
-    data['totalPages'] = this.totalPages;
-    data['hasNext'] = this.hasNext;
-    data['hasPrevious'] = this.hasPrevious;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['totalCount'] = totalCount;
+    data['page'] = page;
+    data['limit'] = limit;
+    data['totalPages'] = totalPages;
+    data['hasNext'] = hasNext;
+    data['hasPrevious'] = hasPrevious;
     return data;
   }
 }

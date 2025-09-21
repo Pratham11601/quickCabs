@@ -29,7 +29,8 @@ class CustomHeader extends StatelessWidget {
                     CircleAvatar(
                       radius: 30,
                       backgroundColor: Colors.black.withValues(alpha: 0.4),
-                      child: Image.asset(Assets.iconsLogo, width: 30, height: 30, fit: BoxFit.fill),
+                      child: Image.asset(Assets.iconsLogo,
+                          width: 30, height: 30, fit: BoxFit.fill),
                     ),
                     const SizedBox(width: 12),
                     Column(
@@ -46,14 +47,14 @@ class CustomHeader extends StatelessWidget {
                         Flexible(
                           child: Text(
                             "Driver Dashboard",
-                            style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: semiBoldFont),
+                            style: TextHelper.size18.copyWith(
+                                color: Colors.white, fontFamily: semiBoldFont),
                           ),
                         ),
                       ],
                     ),
                   ],
                 ),
-                const Icon(Icons.notifications_none, color: Colors.white, size: 28),
               ],
             ),
           ),
@@ -77,7 +78,8 @@ class CustomHeader extends StatelessWidget {
                 Flexible(
                   child: Text(
                     "Manage your shared leads",
-                    style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: semiBoldFont),
+                    style: TextHelper.size18.copyWith(
+                        color: Colors.white, fontFamily: semiBoldFont),
                   ),
                 ),
               ],
@@ -103,7 +105,8 @@ class CustomHeader extends StatelessWidget {
                 Flexible(
                   child: Text(
                     "Manage your account settings",
-                    style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: semiBoldFont),
+                    style: TextHelper.size18.copyWith(
+                        color: Colors.white, fontFamily: semiBoldFont),
                   ),
                 ),
               ],

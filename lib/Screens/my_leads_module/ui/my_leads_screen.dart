@@ -32,37 +32,14 @@ class MyLeadsPage extends StatelessWidget {
               child: StatsCard(
                 activeLeads: controller.filteredActiveLeads.length,
                 completed: controller.filteredCompletedLeads.length,
-                totalValue: controller.filteredActiveLeads
-                        .fold<double>(0.0, (sum, lead) => sum + (double.tryParse(lead.fare ?? '0') ?? 0.0)) +
-                    controller.filteredCompletedLeads.fold<double>(0.0, (sum, lead) => sum + (double.tryParse(lead.fare ?? '0') ?? 0.0)),
-              ),
-            ),
-
-            // Search + Filter
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      onChanged: (value) => controller.filterLeads(value),
-                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                      decoration: InputDecoration(
-                        hintText: "Search leads...",
-                        hintStyle: TextHelper.size18.copyWith(color: ColorsForApp.subTitleColor, fontFamily: regularFont),
-                        prefixIcon: const Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // const SizedBox(width: 8),
-                  // IconButton(
-                  //   onPressed: () {},
-                  //   icon: const Icon(Icons.filter_alt_outlined),
-                  // )
-                ],
+                totalValue: controller.filteredActiveLeads.fold<double>(
+                        0.0,
+                        (sum, lead) =>
+                            sum + (double.tryParse(lead.fare ?? '0') ?? 0.0)) +
+                    controller.filteredCompletedLeads.fold<double>(
+                        0.0,
+                        (sum, lead) =>
+                            sum + (double.tryParse(lead.fare ?? '0') ?? 0.0)),
               ),
             ),
 
@@ -73,13 +50,18 @@ class MyLeadsPage extends StatelessWidget {
                 child: Column(
                   children: [
                     TabBar(
-                      labelStyle: TextHelper.size18.copyWith(fontFamily: semiBoldFont),
+                      labelStyle:
+                          TextHelper.size18.copyWith(fontFamily: semiBoldFont),
                       labelColor: ColorsForApp.primaryDarkColor,
                       unselectedLabelColor: Colors.black54,
                       indicatorColor: ColorsForApp.primaryDarkColor,
                       tabs: [
-                        Tab(text: "Active (${controller.filteredActiveLeads.length})"),
-                        Tab(text: "Completed (${controller.filteredCompletedLeads.length})"),
+                        Tab(
+                            text:
+                                "Active (${controller.filteredActiveLeads.length})"),
+                        Tab(
+                            text:
+                                "Completed (${controller.filteredCompletedLeads.length})"),
                       ],
                     ),
 
@@ -91,11 +73,12 @@ class MyLeadsPage extends StatelessWidget {
                           Obx(
                             () => RefreshIndicator(
                               onRefresh: () async {
-                                await controller.fetchLeads(forceRefresh: true);
+                                await controller.fetchLeads();
                               },
                               child: controller.filteredActiveLeads.isEmpty
                                   ? ListView(
-                                      physics: const AlwaysScrollableScrollPhysics(),
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
                                       children: const [
                                         SizedBox(
                                           height: 500, // or use MediaQuery
@@ -109,15 +92,23 @@ class MyLeadsPage extends StatelessWidget {
                                       ],
                                     )
                                   : ListView.builder(
-                                      physics: const AlwaysScrollableScrollPhysics(),
-                                      itemCount: controller.filteredActiveLeads.length,
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
+                                      itemCount:
+                                          controller.filteredActiveLeads.length,
                                       itemBuilder: (_, index) => LeadCard(
-                                        lead: controller.filteredActiveLeads[index],
+                                        lead: controller
+                                            .filteredActiveLeads[index],
                                         onShare: () => print("Share"),
                                         onEdit: () {
-                                          controller.setLeadData(controller.filteredActiveLeads[index]);
-                                          controller.selectedId.value = controller.filteredActiveLeads[index].id!;
-                                          showEditLeadBottomSheet(context, controller);
+                                          controller.setLeadData(controller
+                                              .filteredActiveLeads[index]);
+                                          controller.selectedId.value =
+                                              controller
+                                                  .filteredActiveLeads[index]
+                                                  .id!;
+                                          showEditLeadBottomSheet(
+                                              context, controller);
                                         },
                                         onDelete: () => print("Delete"),
                                       ),
@@ -127,28 +118,42 @@ class MyLeadsPage extends StatelessWidget {
                           // Completed Leads Tab
                           Obx(() => RefreshIndicator(
                                 onRefresh: () async {
-                                  await controller.fetchLeads(forceRefresh: true);
+                                  await controller.fetchLeads();
                                 },
                                 child: controller.filteredCompletedLeads.isEmpty
                                     ? ListView(
-                                        physics: const AlwaysScrollableScrollPhysics(),
+                                        physics:
+                                            const AlwaysScrollableScrollPhysics(),
                                         children: const [
-                                          SizedBox(
-                                            height: 500, // or use MediaQuery
-                                            child: Center(
-                                              child: NoDataFoundScreen(
-                                                title: "NO LEADS FOUND",
-                                                subTitle: "",
-                                              ),
+                                          Center(
+                                            child: NoDataFoundScreen(
+                                              title: "NO LEADS FOUND",
+                                              subTitle: "",
                                             ),
                                           ),
                                         ],
                                       )
                                     : ListView.builder(
-                                        physics: const AlwaysScrollableScrollPhysics(),
-                                        itemCount: controller.filteredCompletedLeads.length,
-                                        itemBuilder: (_, index) => CompletedLeadCard(
-                                          lead: controller.filteredCompletedLeads[index],
+                                        physics:
+                                            const AlwaysScrollableScrollPhysics(),
+                                        itemCount: controller
+                                            .filteredCompletedLeads.length,
+                                        itemBuilder: (_, index) => LeadCard(
+                                          lead: controller
+                                              .filteredCompletedLeads[index],
+                                          onShare: () => print("Share"),
+                                          onEdit: () {
+                                            controller.setLeadData(controller
+                                                .filteredCompletedLeads[index]);
+                                            controller.selectedId.value =
+                                                controller
+                                                    .filteredCompletedLeads[
+                                                        index]
+                                                    .id!;
+                                            showEditLeadBottomSheet(
+                                                context, controller);
+                                          },
+                                          onDelete: () => print("Delete"),
                                         ),
                                       ),
                               )),
@@ -165,7 +170,8 @@ class MyLeadsPage extends StatelessWidget {
     );
   }
 
-  void showEditLeadBottomSheet(BuildContext context, MyLeadsController controller) {
+  void showEditLeadBottomSheet(
+      BuildContext context, MyLeadsController controller) {
     final locCtrl = Get.put(PostController(), permanent: true);
     showModalBottomSheet(
       context: context,
@@ -179,7 +185,8 @@ class MyLeadsPage extends StatelessWidget {
             left: 16,
             right: 16,
             top: 20,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 20, // handle keyboard
+            bottom: MediaQuery.of(context).viewInsets.bottom +
+                20, // handle keyboard
           ),
           child: SingleChildScrollView(
             child: Column(
@@ -239,12 +246,18 @@ class MyLeadsPage extends StatelessWidget {
                         text:
                             "${controller.selectedDate.value.day}/${controller.selectedDate.value.month}/${controller.selectedDate.value.year}",
                       ),
-                      style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                      style: TextHelper.size19.copyWith(
+                          color: ColorsForApp.blackColor,
+                          fontFamily: regularFont),
                       decoration: InputDecoration(
                         labelText: "Date",
-                        labelStyle: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                        prefixIcon: Icon(Icons.edit_calendar, color: ColorsForApp.primaryDarkColor),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        labelStyle: TextHelper.size19.copyWith(
+                            color: ColorsForApp.blackColor,
+                            fontFamily: regularFont),
+                        prefixIcon: Icon(Icons.edit_calendar,
+                            color: ColorsForApp.primaryDarkColor),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
                       ),
                       onTap: () async {
                         final picked = await showDatePicker(
@@ -253,7 +266,8 @@ class MyLeadsPage extends StatelessWidget {
                           firstDate: DateTime(2000),
                           lastDate: DateTime(2100),
                         );
-                        if (picked != null) controller.selectedDate.value = picked;
+                        if (picked != null)
+                          controller.selectedDate.value = picked;
                       },
                     )),
                 const SizedBox(height: 16),
@@ -262,21 +276,29 @@ class MyLeadsPage extends StatelessWidget {
                 Obx(() => TextFormField(
                       readOnly: true,
                       controller: TextEditingController(
-                        text: "${controller.selectedTime.value.hour}:${controller.selectedTime.value.minute.toString().padLeft(2, '0')}",
+                        text:
+                            "${controller.selectedTime.value.hour}:${controller.selectedTime.value.minute.toString().padLeft(2, '0')}",
                       ),
-                      style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                      style: TextHelper.size19.copyWith(
+                          color: ColorsForApp.blackColor,
+                          fontFamily: regularFont),
                       decoration: InputDecoration(
                         labelText: "Time",
-                        labelStyle: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                        prefixIcon: Icon(Icons.access_time, color: ColorsForApp.primaryDarkColor),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        labelStyle: TextHelper.size19.copyWith(
+                            color: ColorsForApp.blackColor,
+                            fontFamily: regularFont),
+                        prefixIcon: Icon(Icons.access_time,
+                            color: ColorsForApp.primaryDarkColor),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
                       ),
                       onTap: () async {
                         final picked = await showTimePicker(
                           context: context,
                           initialTime: controller.selectedTime.value,
                         );
-                        if (picked != null) controller.selectedTime.value = picked;
+                        if (picked != null)
+                          controller.selectedTime.value = picked;
                       },
                     )),
                 const SizedBox(height: 16),
@@ -286,12 +308,17 @@ class MyLeadsPage extends StatelessWidget {
                   controller: controller.fromLocationController,
                   onTap: () => controller.isEditing.value = true,
                   onChanged: (val) => controller.fromLocation.value = val,
-                  style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                  style: TextHelper.size19.copyWith(
+                      color: ColorsForApp.blackColor, fontFamily: regularFont),
                   decoration: InputDecoration(
                     labelText: "Location From",
-                    labelStyle: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                    prefixIcon: Icon(Icons.location_on_outlined, color: ColorsForApp.primaryDarkColor),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    labelStyle: TextHelper.size19.copyWith(
+                        color: ColorsForApp.blackColor,
+                        fontFamily: regularFont),
+                    prefixIcon: Icon(Icons.location_on_outlined,
+                        color: ColorsForApp.primaryDarkColor),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
                 // suggestions container
@@ -303,14 +330,16 @@ class MyLeadsPage extends StatelessWidget {
                     );
                   }
 
-                  if (!controller.showPickupSuggestions.value || controller.pickupSuggestions.isEmpty) {
+                  if (!controller.showPickupSuggestions.value ||
+                      controller.pickupSuggestions.isEmpty) {
                     return const SizedBox.shrink();
                   }
 
                   return Card(
                     margin: const EdgeInsets.only(bottom: 8),
                     elevation: 2,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxHeight: 220),
                       child: ListView.separated(
@@ -323,10 +352,15 @@ class MyLeadsPage extends StatelessWidget {
                           return ListTile(
                             leading: const Icon(Icons.location_on_outlined),
                             title: Text(item['name'] ?? '',
-                                style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                                style: TextHelper.size18.copyWith(
+                                    color: ColorsForApp.blackColor,
+                                    fontFamily: semiBoldFont)),
                             subtitle: Text(item['address'] ?? '',
-                                style: TextHelper.size16.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont)),
-                            onTap: () => controller.selectSuggestion(isPickup: true, name: item['name'] ?? ''),
+                                style: TextHelper.size16.copyWith(
+                                    color: ColorsForApp.blackColor,
+                                    fontFamily: regularFont)),
+                            onTap: () => controller.selectSuggestion(
+                                isPickup: true, name: item['name'] ?? ''),
                           );
                         },
                       ),
@@ -340,12 +374,17 @@ class MyLeadsPage extends StatelessWidget {
                   controller: controller.toLocationController,
                   onTap: () => controller.isEditing.value = true,
                   onChanged: (val) => controller.toLocation.value = val,
-                  style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                  style: TextHelper.size19.copyWith(
+                      color: ColorsForApp.blackColor, fontFamily: regularFont),
                   decoration: InputDecoration(
                     labelText: "To Location",
-                    labelStyle: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                    prefixIcon: Icon(Icons.location_on_outlined, color: ColorsForApp.primaryDarkColor),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    labelStyle: TextHelper.size19.copyWith(
+                        color: ColorsForApp.blackColor,
+                        fontFamily: regularFont),
+                    prefixIcon: Icon(Icons.location_on_outlined,
+                        color: ColorsForApp.primaryDarkColor),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
                 Obx(() {
@@ -356,14 +395,16 @@ class MyLeadsPage extends StatelessWidget {
                     );
                   }
 
-                  if (!controller.showDropSuggestions.value || controller.dropSuggestions.isEmpty) {
+                  if (!controller.showDropSuggestions.value ||
+                      controller.dropSuggestions.isEmpty) {
                     return const SizedBox.shrink();
                   }
 
                   return Card(
                     margin: const EdgeInsets.only(bottom: 8),
                     elevation: 2,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxHeight: 220),
                       child: ListView.separated(
@@ -374,14 +415,20 @@ class MyLeadsPage extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final item = controller.dropSuggestions[index];
                           return ListTile(
-                            leading: const Icon(Icons.location_on, color: Colors.red),
+                            leading: const Icon(Icons.location_on,
+                                color: Colors.red),
                             title: Text(
                               item['name'] ?? '',
-                              style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+                              style: TextHelper.size18.copyWith(
+                                  color: ColorsForApp.blackColor,
+                                  fontFamily: semiBoldFont),
                             ),
                             subtitle: Text(item['address'] ?? '',
-                                style: TextHelper.size16.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont)),
-                            onTap: () => controller.selectSuggestion(isPickup: false, name: item['name'] ?? ''),
+                                style: TextHelper.size16.copyWith(
+                                    color: ColorsForApp.blackColor,
+                                    fontFamily: regularFont)),
+                            onTap: () => controller.selectSuggestion(
+                                isPickup: false, name: item['name'] ?? ''),
                           );
                         },
                       ),
@@ -394,12 +441,17 @@ class MyLeadsPage extends StatelessWidget {
                 // Car Model
                 TextFormField(
                   controller: controller.carModelController,
-                  style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                  style: TextHelper.size19.copyWith(
+                      color: ColorsForApp.blackColor, fontFamily: regularFont),
                   decoration: InputDecoration(
                     labelText: "Car Model",
-                    labelStyle: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                    prefixIcon: Icon(Icons.directions_car, color: ColorsForApp.primaryDarkColor),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    labelStyle: TextHelper.size19.copyWith(
+                        color: ColorsForApp.blackColor,
+                        fontFamily: regularFont),
+                    prefixIcon: Icon(Icons.directions_car,
+                        color: ColorsForApp.primaryDarkColor),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -407,12 +459,17 @@ class MyLeadsPage extends StatelessWidget {
                 // Fare
                 TextFormField(
                   controller: controller.fareController,
-                  style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                  style: TextHelper.size19.copyWith(
+                      color: ColorsForApp.blackColor, fontFamily: regularFont),
                   decoration: InputDecoration(
                     labelText: "Fare",
-                    labelStyle: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
-                    prefixIcon: Icon(Icons.currency_rupee, color: ColorsForApp.primaryDarkColor),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    labelStyle: TextHelper.size19.copyWith(
+                        color: ColorsForApp.blackColor,
+                        fontFamily: regularFont),
+                    prefixIcon: Icon(Icons.currency_rupee,
+                        color: ColorsForApp.primaryDarkColor),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                   keyboardType: TextInputType.number,
                 ),
@@ -429,7 +486,9 @@ class MyLeadsPage extends StatelessWidget {
                           if (response == true) {
                             showAppDialog(
                               title: "Success",
-                              message: controller.editModelResponse.value.message.toString(),
+                              message: controller
+                                  .editModelResponse.value.message
+                                  .toString(),
                               icon: Icons.check_circle_rounded,
                               buttonText: 'OK',
                               onConfirm: () async {
@@ -441,10 +500,15 @@ class MyLeadsPage extends StatelessWidget {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorsForApp.primaryColor,
-                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 14, horizontal: 24),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
                         ),
-                        child: Text("Save", style: TextHelper.size20.copyWith(color: ColorsForApp.whiteColor, fontFamily: semiBoldFont)),
+                        child: Text("Save",
+                            style: TextHelper.size20.copyWith(
+                                color: ColorsForApp.whiteColor,
+                                fontFamily: semiBoldFont)),
                       ),
                     ),
                     // const SizedBox(width: 10),

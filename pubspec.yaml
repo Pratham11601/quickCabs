@@ -75,6 +75,8 @@ dependencies:
   in_app_update: ^4.2.5
   googleapis_auth: ^1.4.1
   flutter_dotenv: ^6.0.0
+  sliver_tools: ^0.2.12
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:

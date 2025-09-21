@@ -18,6 +18,8 @@ class PostController extends GetxController {
 
   // ── Route Details ────────────────────────────────────────────────────────────
   final TextEditingController pickupController = TextEditingController();
+  final TextEditingController pickupAreaController = TextEditingController();
+  final TextEditingController dropAreaController = TextEditingController();
   final TextEditingController dropController = TextEditingController();
   final TextEditingController fareController = TextEditingController();
   final TextEditingController distanceController = TextEditingController();
@@ -320,14 +322,17 @@ class PostController extends GetxController {
   }
 
   /// call this to set text and clear suggestions when user picks an item
-  void selectSuggestion({required bool isPickup, required String name}) {
+  void selectSuggestion(
+      {required bool isPickup, required String name, required String address}) {
     if (isPickup) {
       pickupController.text = name;
+      pickupAreaController.text = address;
       pickupSuggestions.clear();
       showPickupSuggestions.value = false;
       pickupFocus.unfocus();
     } else {
       dropController.text = name;
+      dropAreaController.text = address;
       dropSuggestions.clear();
       showDropSuggestions.value = false;
       dropFocus.unfocus();
@@ -346,12 +351,15 @@ class PostController extends GetxController {
           ? ""
           : selectedTime.value!.format(Get.context!),
       "location_from": pickupController.text.trim(),
-      "location_from_area": "",
+      "location_from_area": pickupAreaController.text,
       "to_location": dropController.text.trim(),
-      "to_location_area": "",
-      "car_model": selectedVehicleIndex.value != null
+      "to_location_area": dropAreaController.text,
+      "car_model": selectedVehicleIndex.value != null &&
+              selectedSeatConfig.value != null
           ? "${vehicles[selectedVehicleIndex.value!]["name"]} ${selectedSeatConfig.value} Seater"
-          : "",
+          : selectedVehicleIndex.value != null
+              ? "${vehicles[selectedVehicleIndex.value!]["name"]}"
+              : "",
       "add_on": "",
       "fare": int.tryParse(fareController.text.trim()) ?? 0,
       "cab_number": "",
@@ -364,8 +372,8 @@ class PostController extends GetxController {
           isLoaderShow: isLoaderShow, params: params);
       if (response.status == true) {
         await SendNotificationService.sendNotificationUsingApi(
-            pickupController.text,
-            dropController.text,
+            pickupAreaController.text,
+            dropAreaController.text,
             "${int.tryParse(fareController.text) ?? 00}");
         showAppDialog(
           title: 'Lead Shared Successfully',
@@ -379,11 +387,14 @@ class PostController extends GetxController {
         );
       } else {
         isLoading.value = false;
-        Get.snackbar('Error', response.message ?? 'Failed to share lead');
+        ShowSnackBar.error(
+            title: 'Error',
+            message: response.message ?? 'Failed to share lead');
       }
     } catch (e) {
       isLoading.value = false;
       Get.snackbar('Error', 'Something went wrong. Please try again.');
+      debugPrint('Error in submitRideLead: $e');
     }
   }
 

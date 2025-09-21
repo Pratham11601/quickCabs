@@ -68,6 +68,7 @@ class Post {
   String? fare;
   String? toLocation;
   String? toLocationArea;
+  String? leadStatus;
   String? time;
   int? isActive;
   String? vendorContact;
@@ -91,6 +92,7 @@ class Post {
     this.locationFromArea,
     this.carModel,
     this.addOn,
+    this.leadStatus,
     this.fare,
     this.toLocation,
     this.toLocationArea,
@@ -123,6 +125,7 @@ class Post {
     toLocationArea: json["to_location_area"],
     time: json["time"],
     isActive: json["is_active"],
+    leadStatus: json["lead_status"],
     vendorContact: json["vendor_contact"],
     vendorCat: vendorCatValues.map[json["vendor_cat"]],
     createdAt: DateTime.parse(json["createdAt"]),
@@ -150,6 +153,7 @@ class Post {
     "to_location_area": toLocationArea,
     "time": time,
     "is_active": isActive,
+    "lead_status": leadStatus,
     "vendor_contact": vendorContact,
     "vendor_cat": vendorCatValues.reverse[vendorCat],
     "createdAt": createdAt.toIso8601String(),

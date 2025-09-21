@@ -12,20 +12,19 @@ import '../../../api/api_manager.dart';
 import '../../../utils/date_time_picker.dart';
 import '../home_widgets/accept_lead_popup.dart';
 import '../model/active_lead_model.dart';
+
 import '../model/all_live_lead_model.dart';
 import '../model/banner_model.dart';
 import '../repository/active_lead_repository.dart';
 
 class HomeController extends GetxController {
   HomeRepository authRepository = HomeRepository(APIManager());
-  ActiveLeadRepository activeLeadRepository = ActiveLeadRepository(APIManager());
+  ActiveLeadRepository activeLeadRepository =
+      ActiveLeadRepository(APIManager());
 
   @override
   void onInit() {
     super.onInit();
-    fetchActiveLeads(1);
-    fetchLiveLeads(1);
-    fetchAllLiveLeads(1);
     fetchBanners();
   }
 
@@ -42,7 +41,8 @@ class HomeController extends GetxController {
   RxBool isKycCompleted = false.obs;
   Future<bool> checkProfileCompletion() async {
     try {
-      CheckProfileCompletionModel checkProfileCompletionModel = await authRepository.checkProfileCompletionApiCall();
+      CheckProfileCompletionModel checkProfileCompletionModel =
+          await authRepository.checkProfileCompletionApiCall();
       if (checkProfileCompletionModel.status == true) {
         isKycCompleted.value = checkProfileCompletionModel.isComplete ?? false;
         return true;
@@ -70,135 +70,46 @@ class HomeController extends GetxController {
   RxList<Post> filteredActiveLeads = <Post>[].obs;
   var fromLocation = "".obs;
   var toLocation = "".obs;
-  var isFilterApplied = false.obs;
+  final toLocationController = TextEditingController();
+  final fromLocationController = TextEditingController();
+  RxBool isFilterApplied = false.obs;
 
-  // Future<void> fetchLeads() async {
-  //   try {
-  //     isLoading.value = true;
-  //     errorMsg.value = '';
-  //
-  //     await Future.delayed(const Duration(milliseconds: 500)); // fake delay
-  //
-  //     leads.assignAll([
-  //       {
-  //         'name': 'Amit Singh',
-  //         'from': 'Connaught Place',
-  //         'to': 'IGI Airport',
-  //         'price': 850,
-  //         'distance': '24.5 km',
-  //         'time': '14:30',
-  //       },
-  //       {
-  //         'name': 'Priya Sharma',
-  //         'from': 'Gurgaon',
-  //         'to': 'Cyber Hub',
-  //         'price': 300,
-  //         'distance': '8.2 km',
-  //         'time': '15:00',
-  //       },
-  //       {
-  //         'name': 'Mohammed Ali',
-  //         'from': 'Noida',
-  //         'to': 'Greater Noida',
-  //         'price': 650,
-  //         'distance': '18.8 km',
-  //         'time': '16:15',
-  //       },
-  //       {
-  //         'name': 'Sopan',
-  //         'from': 'Pune',
-  //         'to': 'Mumbai',
-  //         'price': 690,
-  //         'distance': '11.1 km',
-  //         'time': '12:15',
-  //       },
-  //     ]);
-  //   } catch (e) {
-  //     errorMsg.value = 'Failed to load rides';
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
 
-  /// Button actions
-  void declineLiveLead(int index) {
-    if (index >= 0 && index < liveLeads.length) liveLeads.removeAt(index);
-  }
 
-  void acceptLiveLead(int index) {
-    if (index >= 0 && index < liveLeads.length) {
-      final lead = liveLeads[index];
-      // TODO: call accept API / navigate with `lead`
-    }
-  }
+
 
   RxList<String> emergencyServiceList = <String>[].obs;
 
-  ///active api logic method and variables
-  RxList<Post> activeLeads = <Post>[].obs;
-
-  Future<ActiveLeadModel> fetchActiveLeads(dynamic pageNumber) async {
-    try {
-      isLoadingActiveLeads.value = true;
-      errorMsg.value = '';
-      final response = await activeLeadRepository.activeLeadApiCall(pageNumber);
-      debugPrint('Fetched leads count: ${response.posts.length}');
-      activeLeads.assignAll(response.posts);
-      filteredActiveLeads.clear(); // 👈 reset filter results
-      isFilterApplied.value = false;
-
-      return response;
-    } catch (e) {
-      errorMsg.value = 'Failed to load active leads';
-      debugPrint('Error fetching leads: $e');
-      return ActiveLeadModel(posts: []);
-    } finally {
-      isLoadingActiveLeads.value = false;
-    }
-  }
-
-  //    RxList<Post> activeList = <Post>[].obs;
-
-  // Future<ActiveLeadModel?> fetchActiveLead(int pageNumber) async {
-  //   try {
-  //     isLoading.value = true;
-  //     final response = await activeLeadRepository.activeLeadApiCall(pageNumber);
-  //     if (response.status == true) {
-  //       final activeListModel = NewsModel.fromJson(response);
-  //       if (newsModel.result != null) {
-  //         newsList.addAll(newsModel.result!);
-  //       }
-  //       isLoading.value = false;
-  //       logger.i("News list retrieved successfully: $response");
-
-  //       return newsModel;
-  //     } else {
-  //       return null;
-  //     }
-  //   } catch (e) {
-  //     isLoading.value = false;
-  //     logger.e("News api failed. Please try again.");
-  //     return null;
-  //   }
-  // }
 
   void applyFilter() {
-    filteredActiveLeads.assignAll(activeLeads.where((lead) {
-      final matchesFrom = fromLocation.value.isEmpty || (lead.locationFrom ?? "").toLowerCase().contains(fromLocation.value.toLowerCase());
-      final matchesTo = toLocation.value.isEmpty || (lead.toLocation ?? "").toLowerCase().contains(toLocation.value.toLowerCase());
-      return matchesFrom && matchesTo;
-    }).toList());
-
     isFilterApplied.value = true; // 👈 show filtered list
   }
 
   void clearFilter() {
-    fromLocation.value = "";
-    toLocation.value = "";
-    filteredActiveLeads.clear();
-    isFilterApplied.value = false; // 👈 back to full list
+    isFilterApplied.value = false;
+    toLocationController.clear();
+    fromLocationController.clear();
   }
 
+  String formatDateTime(String dateTimeString) {
+    final DateTime dateTime = DateTime.parse(dateTimeString);
+    final DateFormat formatter = DateFormat('dd MMM, yyyy');
+    return formatter.format(dateTime);
+  }
+
+String formatTime(String time) {
+    try {
+      // Input format: HH:mm:ss (24-hour)
+      final inputFormat = DateFormat("HH:mm:ss");
+      final dateTime = inputFormat.parse(time);
+
+      // Output format: hh:mm a (12-hour with AM/PM)
+      final outputFormat = DateFormat("hh:mm a");
+      return outputFormat.format(dateTime);
+    } catch (e) {
+      return time; // fallback agar parse fail ho jaye
+    }
+  }
   ///accept or booked logic
   Future<void> acceptLead(int index) async {
     if (index < 0 || index >= activeLeads.length) return;
@@ -298,9 +209,11 @@ class HomeController extends GetxController {
   }
 
   // Driver availability post api
-  Rx<DriverAvailabilityModel> driverAvailabilityModel = DriverAvailabilityModel().obs;
+  Rx<DriverAvailabilityModel> driverAvailabilityModel =
+      DriverAvailabilityModel().obs;
 
-  Future<bool> postDriverAvailability(BuildContext context, {bool isLoaderShow = true}) async {
+  Future<bool> postDriverAvailability(BuildContext context,
+      {bool isLoaderShow = true}) async {
     final params = {
       "car": carController.text.trim(),
       "location": locationController.text.trim(),
@@ -325,7 +238,8 @@ class HomeController extends GetxController {
       } else {
         ShowSnackBar.error(
           title: 'Error',
-          message: driverAvailabilityModel.value.message ?? 'Failed to share availability',
+          message: driverAvailabilityModel.value.message ??
+              'Failed to share availability',
         );
         return false;
       }
@@ -348,10 +262,11 @@ class HomeController extends GetxController {
   var showMyAvailability = false.obs;
   RxInt driversCount = 0.obs;
 
-  Future<LiveLeadModel> fetchLiveLeads(dynamic pageNumber) async {
+  Future<LiveLeadModel> fetchMyAvailability(dynamic pageNumber) async {
     try {
       isLoadingLiveLeads.value = true;
-      final response = await activeLeadRepository.liveLeadApiCall(pageNumber);
+      final response =
+          await activeLeadRepository.myAvailabilityApiCall(pageNumber);
       debugPrint('Fetched leads count: ${response.data!.length}');
       liveLeads.assignAll(response.data!);
       return response;
@@ -364,10 +279,35 @@ class HomeController extends GetxController {
     }
   }
 
-  Future<AllLiveLeadModel> fetchAllLiveLeads(dynamic pageNumber) async {
+  ///active api logic method and variables
+  RxList<Post> activeLeads = <Post>[].obs;
+
+  Future<ActiveLeadModel> fetchActiveLeads(dynamic pageNumber) async {
+    try {
+      isLoadingActiveLeads.value = true;
+      errorMsg.value = '';
+      final response = await activeLeadRepository.activeLeadApiCall(
+          pageNumber, fromLocation.value, toLocation.value);
+      debugPrint('Fetched leads count: ${response.posts.length}');
+      activeLeads.assignAll(response.posts);
+      filteredActiveLeads.clear(); // 👈 reset filter results
+
+      return response;
+    } catch (e) {
+      errorMsg.value = 'Failed to load active leads';
+      debugPrint('Error fetching leads: $e');
+      return ActiveLeadModel(posts: []);
+    } finally {
+      isLoadingActiveLeads.value = false;
+    }
+  }
+
+  Future<AllLiveLeadModel> fetchAllDriversAvailability(
+      dynamic pageNumber) async {
     try {
       isLoadingLiveLeads.value = true;
-      final response = await activeLeadRepository.allLiveLeadApiCall(pageNumber);
+      final response =
+          await activeLeadRepository.allDriverAvailabilityApiCall(pageNumber);
       debugPrint('Fetched leads count: ${response.data!.length}');
       allLiveLeads.assignAll(response.data!);
       driversCount.value = response.pagination!.totalCount!;
@@ -382,7 +322,8 @@ class HomeController extends GetxController {
   }
 
 // Update driver availability
-  Rx<DriverAvailabilityModel> updateDriverAvailabilityModel = DriverAvailabilityModel().obs;
+  Rx<DriverAvailabilityModel> updateDriverAvailabilityModel =
+      DriverAvailabilityModel().obs;
 
   Future<bool> updatetDriverAvailability({
     bool isLoaderShow = true,
@@ -408,7 +349,8 @@ class HomeController extends GetxController {
     try {
       isLoading.value = true;
 
-      final response = await authRepository.updateDriverAvailabilityApiCall(isLoaderShow: isLoaderShow, params: params, leadId: leadId);
+      final response = await authRepository.updateDriverAvailabilityApiCall(
+          isLoaderShow: isLoaderShow, params: params, leadId: leadId);
 
       updateDriverAvailabilityModel.value = response;
 
@@ -417,14 +359,15 @@ class HomeController extends GetxController {
       } else {
         ShowSnackBar.error(
           title: 'Error',
-          message: updateDriverAvailabilityModel.value.message ?? 'Failed to share availability',
+          message: updateDriverAvailabilityModel.value.message ??
+              'Failed to update availability',
         );
         return false;
       }
     } catch (e) {
       ShowSnackBar.error(
         title: 'Error',
-        message: 'Something went wrong. Please try again.',
+        message: 'Something went wrong. Please try again later.',
       );
       return false;
     } finally {

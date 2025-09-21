@@ -1,3 +1,5 @@
+import 'package:QuickCab/generated/assets.dart';
+import 'package:QuickCab/widgets/cache_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
@@ -39,30 +41,41 @@ class EmergencyServiceCard extends StatelessWidget {
           children: [
             /// ---------- Title ----------
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start, // align avatar and text at the top
+              crossAxisAlignment:
+                  CrossAxisAlignment.start, // align avatar and text at the top
               children: [
                 /// ---------- Profile Avatar ----------
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.orange.shade100,
-                  backgroundImage: (profileImage.isNotEmpty) ? NetworkImage(profileImage) : null,
-                  child: (profileImage.isEmpty)
-                      ? Text(
-                          title.isNotEmpty ? title[0].toUpperCase() : "?",
-                          style: TextHelper.h4.copyWith(
-                            color: ColorsForApp.red,
-                            fontFamily: semiBoldFont,
-                          ),
-                        )
-                      : null,
-                ),
+                // CircleAvatar(
+                //   radius: 40,
+                //   backgroundColor: Colors.orange.shade100,
+                //   backgroundImage: (profileImage.isNotEmpty) ? NetworkImage(profileImage) : null,
+                //   child: (profileImage.isEmpty)
+                //       ? Text(
+                //           title.isNotEmpty ? title[0].toUpperCase() : "?",
+                //           style: TextHelper.h4.copyWith(
+                //             color: ColorsForApp.red,
+                //             fontFamily: semiBoldFont,
+                //           ),
+                //         )
+                //       : null,
+                // ),
+
+                SizedBox(
+                    height: 20.w,
+                    width: 20.w,
+                    child: CacheImage(
+                      networkUrl: profileImage,
+                      boxShape: BoxShape.circle,
+                      defaultImagePath: Assets.iconsCab,
+                    )),
 
                 SizedBox(width: 4.w), // spacing between avatar & text
 
                 /// ---------- Profile Info ----------
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start, // align text left
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start, // align text left
                     children: [
                       /// Name
                       Text(
@@ -78,7 +91,8 @@ class EmergencyServiceCard extends StatelessWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.location_on, size: 16.5.sp, color: Colors.grey),
+                          Icon(Icons.location_on,
+                              size: 16.5.sp, color: Colors.grey),
                           SizedBox(width: 2.w),
                           Expanded(
                             child: Text(
@@ -98,7 +112,8 @@ class EmergencyServiceCard extends StatelessWidget {
                       /// Response Time
                       Row(
                         children: [
-                          Icon(Icons.directions_car_outlined, size: 16.sp, color: Colors.grey),
+                          Icon(Icons.directions_car_outlined,
+                              size: 16.sp, color: Colors.grey),
                           SizedBox(width: 2.w),
                           Text(
                             carNumber,
@@ -160,7 +175,8 @@ class EmergencyServiceCard extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 1.7.h),
-                      backgroundColor: ColorsForApp.green, // Centralized red color
+                      backgroundColor:
+                          ColorsForApp.green, // Centralized red color
                       foregroundColor: ColorsForApp.whiteColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(2.w),

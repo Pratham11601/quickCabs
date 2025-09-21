@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 
 import '../../../api/api_manager.dart';
 import '../repository/accept_lead_repository.dart';
-import 'home_controller.dart';
 
 class AcceptLeadOtpPopupController extends GetxController {
   final AcceptLeadRepository repository = AcceptLeadRepository(APIManager());
@@ -15,7 +14,7 @@ class AcceptLeadOtpPopupController extends GetxController {
   AcceptLeadOtpPopupController({required this.leadId});
 
   final RxString otpText = "".obs;
-  final RxInt timerSeconds = 17.obs;
+  final RxInt timerSeconds = 30.obs;
   final RxBool showError = false.obs;
   final RxBool showSuccess = false.obs;
   final RxBool isCountdownActive = true.obs;
@@ -36,7 +35,7 @@ class AcceptLeadOtpPopupController extends GetxController {
 
   void startTimer() {
     isCountdownActive.value = true;
-    timerSeconds.value = 17;
+    timerSeconds.value = 30;
 
     // Cancel existing timer if any before starting new
     _timer?.cancel();
@@ -66,29 +65,9 @@ class AcceptLeadOtpPopupController extends GetxController {
         otp: otpText.value,
       );
 
-      debugPrint('Response status: ${response.status}');
-      debugPrint('Response message: ${response.message}');
-
-      final homeController = Get.find<HomeController>();
-
       if (response.status == 1) {
-        final acceptedLeadId = response.lead.id;
-
-        // ✅ Find index
-        final index = homeController.activeLeads.indexWhere((lead) => lead.id == acceptedLeadId);
-
-        if (index != -1) {
-          // Update the status or acceptedById property
-          homeController.activeLeads[index].isActive = 0; // or status = 'Booked'
-          homeController.activeLeads[index].acceptedById = response.lead.acceptedById;
-
-          // ✅ Trigger UI refresh
-          homeController.activeLeads[index] = homeController.activeLeads[index];
-          homeController.activeLeads.refresh();
-        }
-
-        showSuccess.value = true;
         showError.value = false;
+        showSuccess.value = true;
 
         if (context.mounted) {
           Get.back();
@@ -101,6 +80,10 @@ class AcceptLeadOtpPopupController extends GetxController {
       } else {
         showError.value = true;
         showSuccess.value = false;
+        ShowSnackBar.error(
+          title: 'Error',
+          message: response.message ?? 'Failed to accept lead',
+        );
       }
     } catch (e) {
       debugPrint('Error during acceptLeadApiCall: $e');

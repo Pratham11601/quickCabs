@@ -30,7 +30,8 @@ class MyLeadsController extends GetxController {
 
   final MyLeadRepository repository = MyLeadRepository(APIManager());
   // final PostController locCtrl = Get.find<PostController>();
-  final PostLeadRepository postLeadRepository = PostLeadRepository(APIManager());
+  final PostLeadRepository postLeadRepository =
+      PostLeadRepository(APIManager());
 
   //For debounce
   // Debounce observables (updated by onChanged)
@@ -83,7 +84,8 @@ class MyLeadsController extends GetxController {
     if (q.length >= 3) {
       if (q.length > _lastPickupLength) {
         fetchLocations(q, isPickup: true);
-      } else if (q.length < _lastPickupLength && now.difference(_lastPickupInputTime).inSeconds >= 3) {
+      } else if (q.length < _lastPickupLength &&
+          now.difference(_lastPickupInputTime).inSeconds >= 3) {
         fetchLocations(q, isPickup: true);
       } else {
         pickupSuggestions.clear();
@@ -102,7 +104,8 @@ class MyLeadsController extends GetxController {
     if (q.length >= 3) {
       if (q.length > _lastDropLength) {
         fetchLocations(q, isPickup: false);
-      } else if (q.length < _lastDropLength && now.difference(_lastDropInputTime).inSeconds >= 3) {
+      } else if (q.length < _lastDropLength &&
+          now.difference(_lastDropInputTime).inSeconds >= 3) {
         fetchLocations(q, isPickup: false);
       } else {
         dropSuggestions.clear();
@@ -198,7 +201,8 @@ class MyLeadsController extends GetxController {
       } else {
         isLoadingDrop.value = true;
       }
-      final response = await postLeadRepository.fetchLocationForPost(location: query);
+      final response =
+          await postLeadRepository.fetchLocationForPost(location: query);
       final results = response.results ?? [];
 
       final suggestions = results.map<Map<String, String>>((item) {
@@ -228,19 +232,16 @@ class MyLeadsController extends GetxController {
 
   Future<void> fetchLeads({bool forceRefresh = false}) async {
     // If we already have data and not forcing refresh, just return
-    if (!forceRefresh && activeLeads.isNotEmpty && completedLeads.isNotEmpty) {
-      return;
-    }
 
     try {
-      isLoading(true);
+      isLoading.value = true;
       final response = await repository.myLeadApicall();
 
       activeLeads.assignAll(
-        response.leads.where((lead) => lead.isActive == true).toList(),
+        response.leads.where((lead) => lead.leadStatus == "pending").toList(),
       );
       completedLeads.assignAll(
-        response.leads.where((lead) => lead.isActive == false).toList(),
+        response.leads.where((lead) => lead.leadStatus == "booked").toList(),
       );
 
       filteredActiveLeads.assignAll(activeLeads);
@@ -248,30 +249,10 @@ class MyLeadsController extends GetxController {
     } catch (e) {
       print('Error loading leads: $e');
     } finally {
-      isLoading(false);
+      isLoading.value = false;
     }
   }
 
-  void filterLeads(String query) {
-    if (query.isEmpty) {
-      filteredActiveLeads.assignAll(activeLeads);
-      filteredCompletedLeads.assignAll(completedLeads);
-    } else {
-      filteredActiveLeads.assignAll(activeLeads
-          .where((lead) =>
-              (lead.locationFrom ?? '').toLowerCase().contains(query.toLowerCase()) ||
-              (lead.toLocation ?? '').toLowerCase().contains(query.toLowerCase()) ||
-              (lead.fare ?? '').contains(query))
-          .toList());
-
-      filteredCompletedLeads.assignAll(completedLeads
-          .where((lead) =>
-              (lead.locationFrom ?? '').toLowerCase().contains(query.toLowerCase()) ||
-              (lead.toLocation ?? '').toLowerCase().contains(query.toLowerCase()) ||
-              (lead.fare ?? '').contains(query))
-          .toList());
-    }
-  }
 
   Rx<EditLeadModel> editModelResponse = EditLeadModel().obs;
 
@@ -279,7 +260,8 @@ class MyLeadsController extends GetxController {
     final params = {
       "date": DateFormat('yyyy-MM-dd').format(selectedDate.value),
       "time": selectedTime.value.format(Get.context!),
-      "locationFrom": fromLocationController.text, // ✅ use debounce if user typed new value
+      "locationFrom":
+          fromLocationController.text, // ✅ use debounce if user typed new value
       "location_from_area": "",
       "toLocation": toLocationController.text, // ✅ same for drop
       "to_location_area": "",
@@ -289,6 +271,7 @@ class MyLeadsController extends GetxController {
       "cab_number": "",
       "vendor_contact": vendorMobile.value,
     };
+
     try {
       isLoading.value = true;
       editModelResponse.value = await repository.editLeadApiCall(
@@ -300,12 +283,16 @@ class MyLeadsController extends GetxController {
         return true;
       } else {
         isLoading.value = false;
-        ShowSnackBar.error(title: 'Error', message: editModelResponse.value.message ?? 'Failed to update lead');
+        ShowSnackBar.error(
+            title: 'Error',
+            message:
+                editModelResponse.value.message ?? 'Failed to update lead');
         return false;
       }
     } catch (e) {
       isLoading.value = false;
-      ShowSnackBar.error(title: 'Error', message: 'Something went wrong. Please try again.');
+      ShowSnackBar.error(
+          title: 'Error', message: 'Something went wrong. Please try again.');
       return false;
     }
   }

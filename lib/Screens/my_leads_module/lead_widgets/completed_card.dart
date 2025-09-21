@@ -9,9 +9,9 @@ class CompletedLeadCard extends StatelessWidget {
   final Lead lead;
 
   const CompletedLeadCard({
-    Key? key,
+    super.key,
     required this.lead,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,8 @@ class CompletedLeadCard extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      Icon(Icons.navigation_outlined, color: ColorsForApp.green, size: 20),
+                      Icon(Icons.navigation_outlined,
+                          color: ColorsForApp.green, size: 20),
                       SizedBox(width: 8),
                       Flexible(
                         child: Text(
@@ -44,9 +45,11 @@ class CompletedLeadCard extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 8),
-                      Icon(Icons.arrow_right_alt, color: Colors.black, size: 20),
+                      Icon(Icons.arrow_right_alt,
+                          color: Colors.black, size: 20),
                       SizedBox(width: 8),
-                      Icon(Icons.location_on, color: ColorsForApp.red, size: 20),
+                      Icon(Icons.location_on,
+                          color: ColorsForApp.red, size: 20),
                       SizedBox(width: 6),
                       Flexible(
                         child: Text(
@@ -134,7 +137,8 @@ class CompletedLeadCard extends StatelessWidget {
                 Flexible(
                   child: Text(
                     lead.carModel ?? '',
-                    style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                    style: TextHelper.size18
+                        .copyWith(color: ColorsForApp.blackColor),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -147,24 +151,29 @@ class CompletedLeadCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.calendar_today, size: 16, color: ColorsForApp.blackColor),
+                    Icon(Icons.calendar_today,
+                        size: 16, color: ColorsForApp.blackColor),
                     SizedBox(width: 6),
                     Text(
+                      // ignore: unnecessary_null_comparison
                       lead.date != null
                           ? "${lead.date.year.toString().padLeft(4, '0')}-${lead.date.month.toString().padLeft(2, '0')}-${lead.date.day.toString().padLeft(2, '0')}"
                           : '',
-                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                      style: TextHelper.size18
+                          .copyWith(color: ColorsForApp.blackColor),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
                 Row(
                   children: [
-                    Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
+                    Icon(Icons.access_time,
+                        size: 16, color: ColorsForApp.blackColor),
                     SizedBox(width: 6),
                     Text(
                       lead.time ?? '',
-                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                      style: TextHelper.size18
+                          .copyWith(color: ColorsForApp.blackColor),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
@@ -184,7 +193,8 @@ class CompletedLeadCard extends StatelessWidget {
                     Flexible(
                       child: Text(
                         lead.vendorContact ?? '',
-                        style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                        style: TextHelper.size18
+                            .copyWith(color: ColorsForApp.blackColor),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -198,7 +208,8 @@ class CompletedLeadCard extends StatelessWidget {
                   ),
                   child: Text(
                     "PIN: ${lead.otp ?? ''}",
-                    style: TextHelper.size18.copyWith(color: ColorsForApp.primaryDarkColor),
+                    style: TextHelper.size18
+                        .copyWith(color: ColorsForApp.primaryDarkColor),
                   ),
                 ),
               ],
