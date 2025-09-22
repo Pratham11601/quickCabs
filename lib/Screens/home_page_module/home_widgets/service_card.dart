@@ -1,5 +1,6 @@
 import 'package:QuickCab/generated/assets.dart';
 import 'package:QuickCab/widgets/cache_image.dart';
+import 'package:QuickCab/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
@@ -11,7 +12,9 @@ import '../controller/service_card_controller.dart';
 
 class EmergencyServiceCard extends StatelessWidget {
   final String title;
-  final String location;
+  final String address;
+  final String city;
+  final String pincode;
   final String serviceType;
   final String carNumber;
   final String profileImage;
@@ -21,7 +24,9 @@ class EmergencyServiceCard extends StatelessWidget {
   EmergencyServiceCard({
     super.key,
     required this.title,
-    required this.location,
+    required this.address,
+    required this.city,
+    required this.pincode,
     required this.serviceType,
     required this.profileImage,
     required this.carNumber,
@@ -30,6 +35,17 @@ class EmergencyServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String fAddress = "";
+    String fCity = "";
+    String fPin = "";
+    String location = "";
+
+    fAddress = address ?? '-';
+    fCity = city ?? '-';
+    fPin = pincode ?? '-';
+
+    location = "$address, $city, $pincode";
+
     return Card(
       elevation: 4,
       margin: const EdgeInsets.all(4),
@@ -41,8 +57,7 @@ class EmergencyServiceCard extends StatelessWidget {
           children: [
             /// ---------- Title ----------
             Row(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start, // align avatar and text at the top
+              crossAxisAlignment: CrossAxisAlignment.start, // align avatar and text at the top
               children: [
                 /// ---------- Profile Avatar ----------
                 // CircleAvatar(
@@ -74,8 +89,7 @@ class EmergencyServiceCard extends StatelessWidget {
                 /// ---------- Profile Info ----------
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start, // align text left
+                    crossAxisAlignment: CrossAxisAlignment.start, // align text left
                     children: [
                       /// Name
                       Text(
@@ -91,8 +105,7 @@ class EmergencyServiceCard extends StatelessWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.location_on,
-                              size: 16.5.sp, color: Colors.grey),
+                          Icon(Icons.location_on, size: 16.5.sp, color: Colors.grey),
                           SizedBox(width: 2.w),
                           Expanded(
                             child: Text(
@@ -112,8 +125,7 @@ class EmergencyServiceCard extends StatelessWidget {
                       /// Response Time
                       Row(
                         children: [
-                          Icon(Icons.directions_car_outlined,
-                              size: 16.sp, color: Colors.grey),
+                          Icon(Icons.directions_car_outlined, size: 16.sp, color: Colors.grey),
                           SizedBox(width: 2.w),
                           Text(
                             carNumber,
@@ -139,7 +151,11 @@ class EmergencyServiceCard extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: () {
                       // TODO: Implement Navigation action
-                      openGoogleMap(location);
+                      if (fAddress != '-' && fCity != '-' && fPin != '-') {
+                        openGoogleMap(location);
+                      } else {
+                        ShowSnackBar.error(title: "Error", message: "Address Not Found");
+                      }
                     },
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 1.7.h),
@@ -175,8 +191,7 @@ class EmergencyServiceCard extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 1.7.h),
-                      backgroundColor:
-                          ColorsForApp.green, // Centralized red color
+                      backgroundColor: ColorsForApp.green, // Centralized red color
                       foregroundColor: ColorsForApp.whiteColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(2.w),

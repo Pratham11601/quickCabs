@@ -4,6 +4,9 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
     id "com.google.gms.google-services"
 }
+def keystorePropertiesFile = rootProject.file("key.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
     namespace = "com.quickcabpune.quickcab"
@@ -28,11 +31,18 @@ android {
         jvmTarget = "1.8"
     }
 
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+
     buildTypes {
         release {
-            // For now, using debug signing for testing release build
-//            signingConfig = signingConfigs.debug
-            // Recommended: enable minification and proguard if needed
+            signingConfig signingConfigs.release
             minifyEnabled false
             shrinkResources false
         }

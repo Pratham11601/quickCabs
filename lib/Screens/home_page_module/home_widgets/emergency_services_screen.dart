@@ -10,8 +10,7 @@ import '../controller/service_card_controller.dart';
 class EmergencyServicesScreen extends StatelessWidget {
   String title = Get.arguments[0];
   String serviceType = Get.arguments[2];
-  EmergencyServicesCardController controller =
-      Get.put(EmergencyServicesCardController(category: Get.arguments[0]));
+  EmergencyServicesCardController controller = Get.put(EmergencyServicesCardController(category: Get.arguments[0]));
   EmergencyServicesScreen({super.key});
 
   @override
@@ -33,33 +32,29 @@ class EmergencyServicesScreen extends StatelessWidget {
           onNotification: (ScrollNotification scrollInfo) {
             if (!controller.isLoading.value &&
                 controller.isMoreDataAvailable.value &&
-                scrollInfo.metrics.pixels ==
-                    scrollInfo.metrics.maxScrollExtent) {
+                scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
               controller.loadMore();
             }
             return false;
           },
           child: controller.vendors.isEmpty
               ? Center(
-                  child:
-                      NoDataFoundScreen(title: "NO $title Found", subTitle: ""),
+                  child: NoDataFoundScreen(title: "NO $title Found", subTitle: ""),
                 )
               : ListView.builder(
-                  itemCount: controller.vendors.length +
-                      (controller.isMoreDataAvailable.value ? 1 : 0),
+                  itemCount: controller.vendors.length + (controller.isMoreDataAvailable.value ? 1 : 0),
                   itemBuilder: (context, index) {
                     if (index < controller.vendors.length) {
                       final vendor = controller.vendors[index];
                       return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12.0, vertical: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
                         child: EmergencyServiceCard(
                           title: vendor.businessName ?? vendor.fullname ?? "-",
-                          location:
-                              "${vendor.currentAddress ?? '-'}, ${vendor.city ?? '-'}, ${vendor.pinCode ?? '-'}",
+                          address: vendor.currentAddress ?? "-",
+                          city: vendor.city ?? "-",
+                          pincode: vendor.pinCode ?? "-",
                           serviceType: vendor.vendorCat ?? "-",
-                          profileImage:
-                              "https://quickcabpune.com/app/${vendor.profileImgUrl}",
+                          profileImage: "https://quickcabpune.com/app/${vendor.profileImgUrl}",
                           carNumber: vendor.carnumber ?? "-",
                           phone: vendor.phone ?? "-",
                         ),

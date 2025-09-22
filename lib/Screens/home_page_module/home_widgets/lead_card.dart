@@ -42,14 +42,62 @@ class LeadCard extends StatelessWidget {
             /// ---------------- Header Row ----------------
             ///
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text(
-                  "QuickCab${lead['id'] ?? ''}",
-                  style: TextHelper.size17.copyWith(
-                    color: ColorsForApp.colorBlackShade,
-                    fontWeight: FontWeight.w900,
-                    fontFamily: semiBoldFont,
+                Expanded(
+                  child: Row(
+                    children: [
+                      Text(
+                        "Booking Id - ",
+                        style: TextHelper.size18.copyWith(
+                          color: ColorsForApp.subtle,
+                          fontFamily: semiBoldFont,
+                        ),
+                      ),
+                      Flexible(
+                        child: Text(
+                          "QCS${lead['id'] ?? ''}",
+                          style: TextHelper.size18.copyWith(
+                            color: ColorsForApp.blackColor,
+                            fontFamily: semiBoldFont,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(width: 16), // space between Booking Id and Trip Type
+
+                /// Trip Type
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end, // push text to the right
+                    children: [
+                      Text(
+                        "Trip Type - ",
+                        style: TextHelper.size18.copyWith(
+                          color: ColorsForApp.subtle,
+                          fontFamily: semiBoldFont,
+                        ),
+                      ),
+                      Flexible(
+                        child: Text(
+                          lead['trip_type'] == 0
+                              ? "Oneway"
+                              : lead['trip_type'] == 1
+                                  ? "Return"
+                                  : lead['trip_type'] == 2
+                                      ? "Rented"
+                                      : "Other",
+                          style: TextHelper.size18.copyWith(
+                            color: ColorsForApp.blackColor,
+                            fontFamily: semiBoldFont,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -64,8 +112,7 @@ class LeadCard extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 16,
-                        backgroundColor:
-                            ColorsForApp.primaryColor.withValues(alpha: 0.1),
+                        backgroundColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
                         child: Icon(
                           Icons.handshake,
                           color: ColorsForApp.primaryColor,
@@ -78,8 +125,7 @@ class LeadCard extends StatelessWidget {
                           "${lead['name'] ?? ''}",
                           style: TextHelper.size19.copyWith(
                             color: ColorsForApp.primaryDarkColor,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: semiBoldFont,
+                            fontFamily: boldFont,
                           ),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
@@ -92,8 +138,7 @@ class LeadCard extends StatelessWidget {
                 /// Accept / Booked button
                 (lead['lead_status'] == 'booked')
                     ? Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 18, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                         decoration: BoxDecoration(
                           color: Colors.green,
                           borderRadius: BorderRadius.circular(8),
@@ -111,10 +156,8 @@ class LeadCard extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorsForApp.primaryColor,
                           foregroundColor: ColorsForApp.whiteColor,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
                         child: Text(
                           "Accept",
@@ -172,6 +215,15 @@ class LeadCard extends StatelessWidget {
                     ],
                   ),
                 ),
+
+                /// Price
+                Text(
+                  "₹ ${lead['price']}",
+                  style: TextHelper.size20.copyWith(
+                    color: ColorsForApp.green,
+                    fontFamily: boldFont,
+                  ),
+                ),
               ],
             ),
 
@@ -184,50 +236,35 @@ class LeadCard extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      const Icon(Icons.directions_car_outlined,
-                          color: Colors.red),
+                      const Icon(Icons.directions_car_outlined, color: Colors.red),
                       width(1.w),
-
                       Expanded(
                         child: Text(
                           lead['car'],
-                          style: TextHelper.size18
-                              .copyWith(color: ColorsForApp.blackColor),
+                          style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           softWrap: false,
                         ),
                       ),
-
-                      /// Price
-                      Text(
-                        "₹${lead['price']}",
-                        style: TextHelper.size20.copyWith(
-                          color: ColorsForApp.green,
-                          fontFamily: semiBoldFont,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
                     ],
                   ),
                 ),
-
-                /// Distance
               ],
             ),
             height(1.h),
             Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(Icons.location_on_outlined, color: Colors.red),
-                width(1.w),
-                Expanded(
-                  child: Text(
-                    lead['distance'],
-                    style: TextHelper.size18
-                        .copyWith(color: ColorsForApp.blackColor),
-                  ),
+                Row(
+                  children: [
+                    const Icon(Icons.location_on_outlined, color: Colors.red),
+                    width(1.w),
+                    Text(
+                      lead['distance'] ?? " - ",
+                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -236,32 +273,30 @@ class LeadCard extends StatelessWidget {
 
             /// ---------------- Date & Time ----------------
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 /// Date
                 Row(
                   children: [
-                    Icon(Icons.calendar_today,
-                        size: 16, color: ColorsForApp.blackColor),
+                    Icon(Icons.calendar_today, size: 16, color: ColorsForApp.blackColor),
                     width(1.w),
                     Text(
                       lead['date'],
-                      style: TextHelper.size18
-                          .copyWith(color: ColorsForApp.blackColor),
+                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                     ),
                   ],
+                ),
+                SizedBox(
+                  width: 8,
                 ),
 
                 /// Time
                 Row(
                   children: [
-                    Icon(Icons.access_time,
-                        size: 16, color: ColorsForApp.blackColor),
+                    Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
                     width(1.w),
                     Text(
                       lead['time'],
-                      style: TextHelper.size18
-                          .copyWith(color: ColorsForApp.blackColor),
+                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                     ),
                   ],
                 ),

@@ -137,13 +137,13 @@ class DocumentCard extends StatelessWidget {
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
-                        Assets.iconsLogo,
+                        Assets.imagesQuickcabLogo,
                         fit: BoxFit.contain,
                       );
                     },
                   )
                 : Image.asset(
-                    Assets.iconsLogo,
+                    Assets.imagesQuickcabLogo,
                     fit: BoxFit.contain,
                   ),
           ),

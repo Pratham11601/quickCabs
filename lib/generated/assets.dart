@@ -29,6 +29,8 @@ class Assets {
   static const String iconsTowing = 'assets/icons/towing.png';
   static const String imagesAppBarBg = 'assets/images/appBarBg.svg';
   static const String imagesForgetPasswordImage = 'assets/images/forgetPasswordImage.svg';
+  static const String imagesQuickcabLogo = 'assets/images/quickcab_logo.png';
   static const String imagesSelect = 'assets/images/select.png';
   static const String imagesWalletBalanceImage = 'assets/images/walletBalanceImage.jpeg';
+  static const String quickCabs = '.env';
 }
