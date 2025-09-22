@@ -18,7 +18,7 @@ class Languages extends Translations {
           'state_support': 'State wise support',
           'language': 'Language',
           'choose_language': 'Choose Language',
-          'app_version_info': 'Quick Cabs Driver v2.1.0\nMade with ❤️ for professional drivers',
+          'app_version_info': 'Quick Cabs Driver v{version}\nMade with ❤️ for professional drivers',
           'enter_password': 'Enter password',
           //home screen
           'emergency_services': 'Emergency Services',
@@ -95,7 +95,7 @@ class Languages extends Translations {
           'state_support': 'राज्यवार समर्थन',
           'language': 'भाषा',
           'choose_language': 'भाषा चुनें',
-          'app_version_info': 'क्विक कॅब्स चालक v2.1.0\nपेशेवर ड्राइवरों के लिए ❤️ के साथ बनाया गया',
+          'app_version_info': 'क्विक कॅब्स चालक v{version}\nपेशेवर ड्राइवरों के लिए ❤️ के साथ बनाया गया',
           'enter_password': 'पासवर्ड दर्ज करें',
           //home screen
           'emergency_services': 'आपातकालीन सेवाएं',
@@ -172,7 +172,7 @@ class Languages extends Translations {
           'state_support': 'ರಾಜ್ಯ ಪ್ರಕಾರ ಬೆಂಬಲ',
           'language': 'ಭಾಷೆ',
           'choose_language': 'ಭಾಷೆ ಆಯ್ಕೆ ಮಾಡಿ',
-          'app_version_info': 'ಕ್ವಿಕ್ ಕ್ಯಾಬ್ಸ್ ಚಾಲಕ v2.1.0\nವೃತ್ತಿಪರ ಚಾಲಕರಿಗಾಗಿ ❤️ ನೆಡಿಸಿದೆ',
+          'app_version_info': 'ಕ್ವಿಕ್ ಕ್ಯಾಬ್ಸ್ ಚಾಲಕ v{version}\nವೃತ್ತಿಪರ ಚಾಲಕರಿಗಾಗಿ ❤️ ನೆಡಿಸಿದೆ',
           'enter_password': 'ಪಾಸ್ವರ್ಡ್ ನಮೂದಿಸಿ',
           //home screen
           'emergency_services': 'आपत्कालीन सेवा',
@@ -249,7 +249,7 @@ class Languages extends Translations {
           'state_support': 'राज्यनिहाय समर्थन',
           'language': 'भाषा',
           'choose_language': 'भाषा निवडा',
-          'app_version_info': 'क्विक कॅब्स चालक v2.1.0\nव्यावसायिक चालकांसाठी ❤️ ने तयार केले',
+          'app_version_info': 'क्विक कॅब्स चालक v{version}\nव्यावसायिक चालकांसाठी ❤️ ने तयार केले',
           'enter_password': 'पासवर्ड टाका',
           //home screen
           'emergency_services': 'आपत्कालीन सेवा',

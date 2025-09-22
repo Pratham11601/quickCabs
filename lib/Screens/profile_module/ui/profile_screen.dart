@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../../../routes/routes.dart';
 import '../../../utils/text_styles.dart';
+import '../../../widgets/app_version.dart';
 import '../../../widgets/common_widgets.dart';
 import '../controller/profile_controller.dart';
 import '../profile_widgets/profile_widget.dart';
@@ -26,12 +27,10 @@ class ProfileScreen extends StatelessWidget {
                   name: controller.userDetails.value?.fullname ?? "Unknown",
                   phone: controller.userDetails.value?.phone ?? "-",
                   email: controller.userDetails.value?.email ?? "-",
-                  profileImage: (controller.userDetails.value?.profileImgUrl !=
-                              null &&
-                          controller
-                              .userDetails.value!.profileImgUrl!.isNotEmpty)
-                      ? "https://quickcabpune.com/app/${controller.userDetails.value!.profileImgUrl}"
-                      : "",
+                  profileImage:
+                      (controller.userDetails.value?.profileImgUrl != null && controller.userDetails.value!.profileImgUrl!.isNotEmpty)
+                          ? "https://quickcabpune.com/app/${controller.userDetails.value!.profileImgUrl}"
+                          : "",
                 )),
 
             /// Account Section
@@ -61,8 +60,7 @@ class ProfileScreen extends StatelessWidget {
                   title: "privacy_security".tr,
                   onTap: () async {
                     // For Privacy Policy
-                    await UrlLauncherHelper.openUrl(
-                        "https://quickcabpune.com/privacy-policy.html");
+                    await UrlLauncherHelper.openUrl("https://quickcabpune.com/privacy-policy.html");
                   },
                 ),
                 //For now as per client requirement it is hide, later on it will be uncomment
@@ -96,46 +94,35 @@ class ProfileScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(16),
                         decoration: const BoxDecoration(
                           color: Colors.white,
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(20)),
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text("choose_language".tr,
-                                style: TextHelper.h5.copyWith(
-                                    fontFamily: semiBoldFont,
-                                    color: ColorsForApp.blackColor)),
+                                style: TextHelper.h5.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                             const SizedBox(height: 16),
                             ListTile(
                               title: Text("English",
-                                  style: TextHelper.size19.copyWith(
-                                      fontFamily: semiBoldFont,
-                                      color: ColorsForApp.blackColor)),
+                                  style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("English");
-                                Get.updateLocale(
-                                    Locale('en', 'US')); // Switch to Hindi
+                                Get.updateLocale(Locale('en', 'US')); // Switch to Hindi
                                 Get.back();
                               },
                             ),
                             ListTile(
                               title: Text("हिंदी",
-                                  style: TextHelper.size19.copyWith(
-                                      fontFamily: semiBoldFont,
-                                      color: ColorsForApp.blackColor)),
+                                  style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("हिंदी");
-                                Get.updateLocale(
-                                    Locale('hi', 'IN')); // Switch to Hindi
+                                Get.updateLocale(Locale('hi', 'IN')); // Switch to Hindi
                                 Get.back();
                               },
                             ),
                             ListTile(
                               title: Text("मराठी",
-                                  style: TextHelper.size19.copyWith(
-                                      fontFamily: semiBoldFont,
-                                      color: ColorsForApp.blackColor)),
+                                  style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("मराठी");
                                 Get.updateLocale(Locale('mr', 'IN'));
@@ -152,8 +139,7 @@ class ProfileScreen extends StatelessWidget {
                               ),
                               onTap: () {
                                 controller.changeLanguage("ಕನ್ನಡ");
-                                Get.updateLocale(
-                                    Locale('kn', 'IN')); // Kannada locale code
+                                Get.updateLocale(Locale('kn', 'IN')); // Kannada locale code
                                 Get.back();
                               },
                             ),
@@ -172,11 +158,31 @@ class ProfileScreen extends StatelessWidget {
             /// Footer
             const SizedBox(height: 20),
             Center(
-              child: Text("app_version_info".tr,
-                  textAlign: TextAlign.center,
-                  style: TextHelper.size18.copyWith(
-                      color: ColorsForApp.subTitleColor,
-                      fontFamily: semiBoldFont)),
+              child: FutureBuilder<String>(
+                future: getAppVersionText(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(
+                      snapshot.data!,
+                      textAlign: TextAlign.center,
+                      style: TextHelper.size18.copyWith(
+                        color: ColorsForApp.subTitleColor,
+                        fontFamily: semiBoldFont,
+                      ),
+                    );
+                  } else {
+                    // fallback
+                    return Text(
+                      "Quick Cabs Driver\nMade with ❤️",
+                      textAlign: TextAlign.center,
+                      style: TextHelper.size18.copyWith(
+                        color: ColorsForApp.subTitleColor,
+                        fontFamily: semiBoldFont,
+                      ),
+                    );
+                  }
+                },
+              ),
             ),
             const SizedBox(height: 20),
           ],

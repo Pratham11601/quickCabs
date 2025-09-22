@@ -12,15 +12,13 @@ import '../../../api/api_manager.dart';
 import '../../../utils/date_time_picker.dart';
 import '../home_widgets/accept_lead_popup.dart';
 import '../model/active_lead_model.dart';
-
 import '../model/all_live_lead_model.dart';
 import '../model/banner_model.dart';
 import '../repository/active_lead_repository.dart';
 
 class HomeController extends GetxController {
   HomeRepository authRepository = HomeRepository(APIManager());
-  ActiveLeadRepository activeLeadRepository =
-      ActiveLeadRepository(APIManager());
+  ActiveLeadRepository activeLeadRepository = ActiveLeadRepository(APIManager());
 
   @override
   void onInit() {
@@ -41,8 +39,7 @@ class HomeController extends GetxController {
   RxBool isKycCompleted = false.obs;
   Future<bool> checkProfileCompletion() async {
     try {
-      CheckProfileCompletionModel checkProfileCompletionModel =
-          await authRepository.checkProfileCompletionApiCall();
+      CheckProfileCompletionModel checkProfileCompletionModel = await authRepository.checkProfileCompletionApiCall();
       if (checkProfileCompletionModel.status == true) {
         isKycCompleted.value = checkProfileCompletionModel.isComplete ?? false;
         return true;
@@ -74,12 +71,7 @@ class HomeController extends GetxController {
   final fromLocationController = TextEditingController();
   RxBool isFilterApplied = false.obs;
 
-
-
-
-
   RxList<String> emergencyServiceList = <String>[].obs;
-
 
   void applyFilter() {
     isFilterApplied.value = true; // 👈 show filtered list
@@ -97,7 +89,7 @@ class HomeController extends GetxController {
     return formatter.format(dateTime);
   }
 
-String formatTime(String time) {
+  String formatTime(String time) {
     try {
       // Input format: HH:mm:ss (24-hour)
       final inputFormat = DateFormat("HH:mm:ss");
@@ -110,6 +102,7 @@ String formatTime(String time) {
       return time; // fallback agar parse fail ho jaye
     }
   }
+
   ///accept or booked logic
   Future<void> acceptLead(int index) async {
     if (index < 0 || index >= activeLeads.length) return;
@@ -209,11 +202,9 @@ String formatTime(String time) {
   }
 
   // Driver availability post api
-  Rx<DriverAvailabilityModel> driverAvailabilityModel =
-      DriverAvailabilityModel().obs;
+  Rx<DriverAvailabilityModel> driverAvailabilityModel = DriverAvailabilityModel().obs;
 
-  Future<bool> postDriverAvailability(BuildContext context,
-      {bool isLoaderShow = true}) async {
+  Future<bool> postDriverAvailability(BuildContext context, {bool isLoaderShow = true}) async {
     final params = {
       "car": carController.text.trim(),
       "location": locationController.text.trim(),
@@ -238,8 +229,7 @@ String formatTime(String time) {
       } else {
         ShowSnackBar.error(
           title: 'Error',
-          message: driverAvailabilityModel.value.message ??
-              'Failed to share availability',
+          message: driverAvailabilityModel.value.message ?? 'Failed to share availability',
         );
         return false;
       }
@@ -265,8 +255,7 @@ String formatTime(String time) {
   Future<LiveLeadModel> fetchMyAvailability(dynamic pageNumber) async {
     try {
       isLoadingLiveLeads.value = true;
-      final response =
-          await activeLeadRepository.myAvailabilityApiCall(pageNumber);
+      final response = await activeLeadRepository.myAvailabilityApiCall(pageNumber);
       debugPrint('Fetched leads count: ${response.data!.length}');
       liveLeads.assignAll(response.data!);
       return response;
@@ -286,8 +275,7 @@ String formatTime(String time) {
     try {
       isLoadingActiveLeads.value = true;
       errorMsg.value = '';
-      final response = await activeLeadRepository.activeLeadApiCall(
-          pageNumber, fromLocation.value, toLocation.value);
+      final response = await activeLeadRepository.activeLeadApiCall(pageNumber, fromLocation.value, toLocation.value);
       debugPrint('Fetched leads count: ${response.posts.length}');
       activeLeads.assignAll(response.posts);
       filteredActiveLeads.clear(); // 👈 reset filter results
@@ -302,12 +290,10 @@ String formatTime(String time) {
     }
   }
 
-  Future<AllLiveLeadModel> fetchAllDriversAvailability(
-      dynamic pageNumber) async {
+  Future<AllLiveLeadModel> fetchAllDriversAvailability(dynamic pageNumber) async {
     try {
       isLoadingLiveLeads.value = true;
-      final response =
-          await activeLeadRepository.allDriverAvailabilityApiCall(pageNumber);
+      final response = await activeLeadRepository.allDriverAvailabilityApiCall(pageNumber);
       debugPrint('Fetched leads count: ${response.data!.length}');
       allLiveLeads.assignAll(response.data!);
       driversCount.value = response.pagination!.totalCount!;
@@ -322,8 +308,7 @@ String formatTime(String time) {
   }
 
 // Update driver availability
-  Rx<DriverAvailabilityModel> updateDriverAvailabilityModel =
-      DriverAvailabilityModel().obs;
+  Rx<DriverAvailabilityModel> updateDriverAvailabilityModel = DriverAvailabilityModel().obs;
 
   Future<bool> updatetDriverAvailability({
     bool isLoaderShow = true,
@@ -349,8 +334,7 @@ String formatTime(String time) {
     try {
       isLoading.value = true;
 
-      final response = await authRepository.updateDriverAvailabilityApiCall(
-          isLoaderShow: isLoaderShow, params: params, leadId: leadId);
+      final response = await authRepository.updateDriverAvailabilityApiCall(isLoaderShow: isLoaderShow, params: params, leadId: leadId);
 
       updateDriverAvailabilityModel.value = response;
 
@@ -359,8 +343,7 @@ String formatTime(String time) {
       } else {
         ShowSnackBar.error(
           title: 'Error',
-          message: updateDriverAvailabilityModel.value.message ??
-              'Failed to update availability',
+          message: updateDriverAvailabilityModel.value.message ?? 'Failed to update availability',
         );
         return false;
       }
