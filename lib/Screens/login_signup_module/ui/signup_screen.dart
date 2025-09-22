@@ -30,7 +30,8 @@ class _SignupScreenState extends State<SignupScreen> {
               slivers: [
                 SliverToBoxAdapter(child: SignUpHeader(onBack: Get.back)),
                 SliverPadding(
-                  padding: EdgeInsets.symmetric(horizontal: paddingH, vertical: 12),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: paddingH, vertical: 12),
                   sliver: SliverToBoxAdapter(
                     child: SignupCard(signupController: signupController),
                   ),
@@ -61,7 +62,10 @@ class SignupCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: ColorsForApp.cardStroke),
-        boxShadow: const [BoxShadow(color: Color(0x1A000000), blurRadius: 14, offset: Offset(0, 10))],
+        boxShadow: const [
+          BoxShadow(
+              color: Color(0x1A000000), blurRadius: 14, offset: Offset(0, 10))
+        ],
       ),
       child: Obx(() {
         return Form(
@@ -77,7 +81,10 @@ class SignupCard extends StatelessWidget {
                           children: [
                             // const Icon(Icons.person_add_alt_1_rounded, color: ColorsForApp.primaryColor, size: 40),
                             // const SizedBox(height: 8),
-                            Text('Create Account', style: TextHelper.h3.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
+                            Text('Create Account',
+                                style: TextHelper.h3.copyWith(
+                                    color: ColorsForApp.headline,
+                                    fontFamily: semiBoldFont)),
                             const SizedBox(height: 6),
                             Text('Fill in your details to get started',
                                 style: TextHelper.size19.copyWith(
@@ -90,18 +97,28 @@ class SignupCard extends StatelessWidget {
                       const SizedBox(height: 20),
 
                       // Mobile
-                      Text('Mobile Number', style: TextHelper.size19.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
+                      Text('Mobile Number',
+                          style: TextHelper.size19.copyWith(
+                              color: ColorsForApp.headline,
+                              fontFamily: semiBoldFont)),
                       const SizedBox(height: 8),
                       Obx(() => OutlinedField(
                             isFocused: signupController.isPhoneFocused.value,
                             child: Row(
                               children: [
                                 const SizedBox(width: 10),
-                                const Icon(Icons.call_outlined, color: ColorsForApp.primaryColor),
+                                const Icon(Icons.call_outlined,
+                                    color: ColorsForApp.primaryColor),
                                 const SizedBox(width: 10),
-                                Text('+91', style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                                Text('+91',
+                                    style: TextHelper.size19.copyWith(
+                                        color: ColorsForApp.blackColor,
+                                        fontFamily: semiBoldFont)),
                                 const SizedBox(width: 10),
-                                Container(width: 1, height: 24, color: Colors.grey.shade300),
+                                Container(
+                                    width: 1,
+                                    height: 24,
+                                    color: Colors.grey.shade300),
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: TextField(
@@ -112,16 +129,20 @@ class SignupCard extends StatelessWidget {
                                     decoration: InputDecoration(
                                       counterText: '',
                                       isDense: true,
-                                      contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 10, // keeps it comfortable, not too tall/short
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                        vertical:
+                                            10, // keeps it comfortable, not too tall/short
                                       ),
                                       border: InputBorder.none,
                                       enabledBorder: InputBorder.none,
                                       focusedBorder: InputBorder.none,
                                       hintText: 'Enter 10-digit mobile num',
-                                      hintStyle: TextHelper.size19.copyWith(color: ColorsForApp.subtle),
+                                      hintStyle: TextHelper.size19
+                                          .copyWith(color: ColorsForApp.subtle),
                                     ),
-                                    style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor),
+                                    style: TextHelper.size19.copyWith(
+                                        color: ColorsForApp.blackColor),
                                   ),
                                 ),
                               ],
@@ -130,34 +151,46 @@ class SignupCard extends StatelessWidget {
                       const SizedBox(height: 16),
 
                       // Password
-                      Text('Password', style: TextHelper.size19.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
+                      Text('Password',
+                          style: TextHelper.size19.copyWith(
+                              color: ColorsForApp.headline,
+                              fontFamily: semiBoldFont)),
                       const SizedBox(height: 8),
                       Obx(() => OutlinedField(
                             isFocused: signupController.isPassFocused.value,
                             child: Row(
                               children: [
                                 const SizedBox(width: 10),
-                                const Icon(Icons.lock_outline, color: ColorsForApp.primaryColor),
+                                const Icon(Icons.lock_outline,
+                                    color: ColorsForApp.primaryColor),
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: TextFormField(
                                     controller: signupController.passCtrl,
                                     focusNode: signupController.passFocus,
-                                    obscureText: signupController.isPassObscured.value,
+                                    obscureText:
+                                        signupController.isPassObscured.value,
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
                                       enabledBorder: InputBorder.none,
                                       focusedBorder: InputBorder.none,
-                                      errorStyle: TextHelper.size15.copyWith(color: ColorsForApp.red),
-                                      contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 10, // keeps it comfortable, not too tall/short
+                                      errorStyle: TextHelper.size15
+                                          .copyWith(color: ColorsForApp.red),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                        vertical:
+                                            10, // keeps it comfortable, not too tall/short
                                       ),
                                       hintText: 'Enter password (min. 6 chars)',
-                                      hintStyle: TextHelper.size19.copyWith(color: ColorsForApp.subtle),
+                                      hintStyle: TextHelper.size19
+                                          .copyWith(color: ColorsForApp.subtle),
                                     ),
-                                    style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor),
+                                    style: TextHelper.size19.copyWith(
+                                        color: ColorsForApp.blackColor),
                                     validator: (value) {
-                                      if (signupController.passCtrl.text.trim().isEmpty) {
+                                      if (signupController.passCtrl.text
+                                          .trim()
+                                          .isEmpty) {
                                         return 'Please enter password';
                                       } else if (value!.length < 6) {
                                         return 'Please enter at least 6 Characters password';
@@ -167,9 +200,12 @@ class SignupCard extends StatelessWidget {
                                   ),
                                 ),
                                 IconButton(
-                                  onPressed: () => signupController.isPassObscured.toggle(),
+                                  onPressed: () =>
+                                      signupController.isPassObscured.toggle(),
                                   icon: Icon(
-                                    signupController.isPassObscured.value ? Icons.visibility_off : Icons.visibility,
+                                    signupController.isPassObscured.value
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
                                     color: ColorsForApp.subtle,
                                   ),
                                 ),
@@ -179,36 +215,50 @@ class SignupCard extends StatelessWidget {
                       const SizedBox(height: 15),
 
                       // Confirm
-                      Text('Confirm Password', style: TextHelper.size19.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
+                      Text('Confirm Password',
+                          style: TextHelper.size19.copyWith(
+                              color: ColorsForApp.headline,
+                              fontFamily: semiBoldFont)),
                       const SizedBox(height: 8),
                       Obx(() => OutlinedField(
                             isFocused: signupController.isConfirmFocused.value,
                             child: Row(
                               children: [
                                 const SizedBox(width: 10),
-                                const Icon(Icons.lock_outline, color: ColorsForApp.primaryColor),
+                                const Icon(Icons.lock_outline,
+                                    color: ColorsForApp.primaryColor),
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: TextFormField(
                                     controller: signupController.confirmCtrl,
                                     focusNode: signupController.confirmFocus,
-                                    obscureText: signupController.isConfirmObscured.value,
+                                    obscureText: signupController
+                                        .isConfirmObscured.value,
                                     decoration: InputDecoration(
-                                      contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 10, // keeps it comfortable, not too tall/short
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                        vertical:
+                                            10, // keeps it comfortable, not too tall/short
                                       ),
                                       border: InputBorder.none,
-                                      errorStyle: TextHelper.size15.copyWith(color: ColorsForApp.red),
+                                      errorStyle: TextHelper.size15
+                                          .copyWith(color: ColorsForApp.red),
                                       enabledBorder: InputBorder.none,
                                       focusedBorder: InputBorder.none,
                                       hintText: 'Confirm your password',
-                                      hintStyle: TextHelper.size19.copyWith(color: ColorsForApp.subtle),
+                                      hintStyle: TextHelper.size19
+                                          .copyWith(color: ColorsForApp.subtle),
                                     ),
-                                    style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor),
+                                    style: TextHelper.size19.copyWith(
+                                        color: ColorsForApp.blackColor),
                                     validator: (value) {
-                                      if (signupController.confirmCtrl.text.trim().isEmpty) {
+                                      if (signupController.confirmCtrl.text
+                                          .trim()
+                                          .isEmpty) {
                                         return 'Please enter confirm password';
-                                      } else if (signupController.passCtrl.text != value) {
+                                      } else if (signupController
+                                              .passCtrl.text !=
+                                          value) {
                                         return 'New password & confirm password must be same';
                                       }
                                       return null;
@@ -216,9 +266,13 @@ class SignupCard extends StatelessWidget {
                                   ),
                                 ),
                                 IconButton(
-                                  onPressed: () => signupController.isConfirmObscured.toggle(),
+                                  onPressed: () => signupController
+                                      .isConfirmObscured
+                                      .toggle(),
                                   icon: Icon(
-                                    signupController.isConfirmObscured.value ? Icons.visibility_off : Icons.visibility,
+                                    signupController.isConfirmObscured.value
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
                                     color: ColorsForApp.subtle,
                                   ),
                                 ),
@@ -233,7 +287,6 @@ class SignupCard extends StatelessWidget {
                         title: 'Password Requirements:',
                         bullets: const [
                           'At least 6 characters long',
-                          'Must contain at least one letter and one number',
                           'Use a strong, unique password',
                         ],
                       ),
@@ -296,8 +349,11 @@ class SignupCard extends StatelessWidget {
                           icon: Icons.arrow_right_alt_rounded,
                           onPressed: () async {
                             if (signupController.canSubmit) {
-                              if (signupController.formKey.currentState!.validate()) {
-                                signupController.showOtpScreen.value = await signupController.generateRegistrationOtp();
+                              if (signupController.formKey.currentState!
+                                  .validate()) {
+                                signupController.showOtpScreen.value =
+                                    await signupController
+                                        .generateRegistrationOtp();
                                 if (signupController.showOtpScreen.value) {
                                   signupController.startTimer();
                                 }
@@ -311,7 +367,9 @@ class SignupCard extends StatelessWidget {
                         child: Wrap(
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            Text('Already have an account?', style: TextHelper.size19.copyWith(color: ColorsForApp.subtle)),
+                            Text('Already have an account?',
+                                style: TextHelper.size19
+                                    .copyWith(color: ColorsForApp.subtle)),
                             const SizedBox(width: 6),
                             InkWell(
                               onTap: () => Get.offAllNamed(Routes.LOGIN_SCREEN),
@@ -326,7 +384,9 @@ class SignupCard extends StatelessWidget {
                       )
                     ],
                   )
-                : OtpVerifyContainer(phoneNumber: signupController.phoneCtrl.text, onChangeNumber: signupController.changeMobileNumber));
+                : OtpVerifyContainer(
+                    phoneNumber: signupController.phoneCtrl.text,
+                    onChangeNumber: signupController.changeMobileNumber));
       }),
     );
   }

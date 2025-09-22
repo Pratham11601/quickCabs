@@ -32,64 +32,79 @@ class OtpVerifyContainer extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.verified_user, color: ColorsForApp.primaryColor, size: 50),
+          const Icon(Icons.verified_user,
+              color: ColorsForApp.primaryColor, size: 50),
           const SizedBox(height: 15),
 
           /// Title
           Text(
             "Verify OTP",
-            style: TextHelper.h4.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont),
+            style: TextHelper.h4.copyWith(
+                color: ColorsForApp.headline, fontFamily: semiBoldFont),
           ),
           const SizedBox(height: 8),
           Text(
-            "Enter the 6-digit code sent to",
+            "Enter the 4-digit code sent to",
             style: TextHelper.size18.copyWith(color: ColorsForApp.headline),
           ),
           const SizedBox(height: 4),
           Text(
             "+91 $phoneNumber",
-            style: TextHelper.size18.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont),
+            style: TextHelper.size18.copyWith(
+                color: ColorsForApp.headline, fontFamily: semiBoldFont),
           ),
           const SizedBox(height: 20),
 
           /// OTP Input
-          Obx(() => OutlinedField(
-                isFocused: signupController.isOtpFocused.value || forgotPasswordController.isOtpFocused.value,
-                child: TextFormField(
-                  controller: signupController.otpController.text.isNotEmpty
-                      ? signupController.otpController
-                      : forgotPasswordController.otpController,
-                  focusNode: signupController.otpFocusNode.hasFocus ? signupController.otpFocusNode : forgotPasswordController.otpFocusNode,
-                  keyboardType: TextInputType.number,
-                  maxLength: 4,
-                  textAlign: TextAlign.center,
-                  style: TextHelper.h5.copyWith(
-                    color: ColorsForApp.blackColor,
-                    letterSpacing: 2,
-                    fontFamily: semiBoldFont,
-                  ),
-                  decoration: InputDecoration(
-                    counterText: '',
-                    hintText: "Enter Your OTP",
-                    hintStyle: TextHelper.size18.copyWith(color: Colors.grey, fontFamily: regularFont),
-                    contentPadding: EdgeInsets.symmetric(vertical: 5),
-                    border: InputBorder.none, // ✅ no border
-                    enabledBorder: InputBorder.none, // ✅ no border
-                    focusedBorder: InputBorder.none, // ✅ no border
-                  ),
+          Obx(() {
+            final isSignupFlow = signupController.canSubmit;
+            final isForgotFlow = forgotPasswordController.canForgot;
+
+            return OutlinedField(
+              isFocused: isSignupFlow
+                  ? signupController.isOtpFocused.value
+                  : forgotPasswordController.isOtpFocused.value,
+              child: TextFormField(
+                controller: isSignupFlow
+                    ? signupController.otpController
+                    : forgotPasswordController.otpController,
+                focusNode: isSignupFlow
+                    ? signupController.otpFocusNode
+                    : forgotPasswordController.otpFocusNode,
+                keyboardType: TextInputType.number,
+                maxLength: 4,
+                textAlign: TextAlign.center,
+                style: TextHelper.h5.copyWith(
+                  color: ColorsForApp.blackColor,
+                  letterSpacing: 2,
+                  fontFamily: semiBoldFont,
                 ),
-              )),
+                decoration: InputDecoration(
+                  counterText: '',
+                  hintText: "Enter Your OTP",
+                  hintStyle: TextHelper.size18
+                      .copyWith(color: Colors.grey, fontFamily: regularFont),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 5),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                ),
+              ),
+            );
+          }),
           const SizedBox(height: 15),
 
           /// Verify Button
           Obx(() => CommonElevatedButton(
-                isLoading: signupController.isLoading.value || forgotPasswordController.isLoading.value,
+                isLoading: signupController.isLoading.value ||
+                    forgotPasswordController.isLoading.value,
                 text: 'Verify & Continue',
                 icon: Icons.arrow_right_alt_rounded,
                 onPressed: () async {
                   // 🔹 Signup Flow
                   if (signupController.canSubmit) {
-                    final result = await signupController.verifyRegistrationOtp();
+                    final result =
+                        await signupController.verifyRegistrationOtp();
                     if (result) {
                       Get.toNamed(Routes.REGISTRATION_DETAILS_SCREEN);
                     }
@@ -97,9 +112,11 @@ class OtpVerifyContainer extends StatelessWidget {
 
                   // 🔹 Forgot Password Flow
                   else if (forgotPasswordController.canForgot) {
-                    final result = await forgotPasswordController.verifyForgotOtp();
+                    final result =
+                        await forgotPasswordController.verifyForgotOtp();
                     if (result) {
-                      forgotPasswordController.currentStep.value = 2; // go to Change Password
+                      forgotPasswordController.currentStep.value =
+                          2; // go to Change Password
                     }
                   }
                 },
@@ -133,7 +150,8 @@ class OtpVerifyContainer extends StatelessWidget {
                 onTap: () async {
                   // Signup resend
                   if (signupController.canSubmit) {
-                    signupController.showOtpScreen.value = await signupController.generateRegistrationOtp();
+                    signupController.showOtpScreen.value =
+                        await signupController.generateRegistrationOtp();
                     if (signupController.showOtpScreen.value) {
                       signupController.startTimer();
                     }
@@ -149,7 +167,8 @@ class OtpVerifyContainer extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.refresh, size: 16, color: ColorsForApp.blackColor),
+                    Icon(Icons.refresh,
+                        size: 16, color: ColorsForApp.blackColor),
                     const SizedBox(width: 5),
                     Text(
                       "Resend OTP",

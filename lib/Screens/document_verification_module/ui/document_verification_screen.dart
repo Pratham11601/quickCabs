@@ -23,7 +23,8 @@ class DocumentVerificationPage extends StatelessWidget {
       backgroundColor: ColorsForApp.bg,
       body: Obx(() {
         return LoadingOverlay(
-          isLoading: userRegistrationController.isLoading.value,
+          isLoading: userRegistrationController.isLoading.value ||
+              userRegistrationController.isDocLoading.value,
           child: Column(
             children: [
               DocHeader(controller: userRegistrationController),
@@ -33,21 +34,31 @@ class DocumentVerificationPage extends StatelessWidget {
                       children: [
                         LeadByCard(signupController: signupController),
                         const SizedBox(height: 16),
-                        ...List.generate(userRegistrationController.docs.length, (i) {
+                        ...List.generate(userRegistrationController.docs.length,
+                            (i) {
                           return Padding(
-                            padding: EdgeInsets.only(bottom: i == userRegistrationController.docs.length - 1 ? 0 : 16),
-                            child: DocCard(index: i, controller: userRegistrationController),
+                            padding: EdgeInsets.only(
+                                bottom: i ==
+                                        userRegistrationController.docs.length -
+                                            1
+                                    ? 0
+                                    : 16),
+                            child: DocCard(
+                                index: i,
+                                controller: userRegistrationController),
                           );
                         }),
                         const SizedBox(height: 16),
                         DocHelpBox(),
                         const SizedBox(height: 16),
-                        FooterProceedButton(controller: userRegistrationController),
+                        FooterProceedButton(
+                            controller: userRegistrationController),
                         const SizedBox(height: 18),
                         Text(
                           'All required documents must be uploaded to continue',
                           textAlign: TextAlign.center,
-                          style: TextHelper.size18.copyWith(color: ColorsForApp.subtitle),
+                          style: TextHelper.size18
+                              .copyWith(color: ColorsForApp.subtitle),
                         ),
                       ],
                     )),
@@ -84,7 +95,8 @@ class LeadByCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
             ),
             alignment: Alignment.center,
-            child: const Icon(Icons.person_outline_rounded, color: Colors.black54, size: 28),
+            child: const Icon(Icons.person_outline_rounded,
+                color: Colors.black54, size: 28),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -107,19 +119,22 @@ class LeadByCard extends StatelessWidget {
                       icon: const Icon(Icons.keyboard_arrow_down_rounded),
                       decoration: InputDecoration(
                         isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 14),
                         filled: true,
                         fillColor: Colors.white,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(
-                            color: ColorsForApp.blackColor.withValues(alpha: 0.3),
+                            color:
+                                ColorsForApp.blackColor.withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: ColorsForApp.orange, width: 1),
+                          borderSide: const BorderSide(
+                              color: ColorsForApp.orange, width: 1),
                         ),
                       ),
                       style: TextHelper.size19.copyWith(
@@ -139,7 +154,8 @@ class LeadByCard extends StatelessWidget {
                               value: item, // depends on your API model field
                               child: Text(
                                 item.name ?? '',
-                                style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                                style: TextHelper.size18
+                                    .copyWith(color: ColorsForApp.blackColor),
                               ),
                             ),
                           )
@@ -147,7 +163,8 @@ class LeadByCard extends StatelessWidget {
                       onChanged: (v) {
                         signupController.leadBy.value = v!.name ?? '';
                         signupController.leadById.value = v.id ?? 0;
-                        debugPrint("Selected Lead By: ${signupController.leadBy.value} (ID: ${signupController.leadById.value})");
+                        debugPrint(
+                            "Selected Lead By: ${signupController.leadBy.value} (ID: ${signupController.leadById.value})");
                       });
                 }),
               ],
@@ -171,7 +188,9 @@ class DocCard extends StatelessWidget {
       final d = controller.docs[index];
       final chip = d.status == DocStatus.verified
           ? Chip(text: 'Verified', color: ColorsForApp.orange)
-          : Chip(text: d.required ? 'Required' : 'Optional', color: ColorsForApp.orange);
+          : Chip(
+              text: d.required ? 'Required' : 'Optional',
+              color: ColorsForApp.orange);
 
       return Container(
         padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
@@ -179,7 +198,10 @@ class DocCard extends StatelessWidget {
           color: ColorsForApp.card,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: ColorsForApp.stroke),
-          boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 10, offset: Offset(0, 8))],
+          boxShadow: const [
+            BoxShadow(
+                color: Color(0x14000000), blurRadius: 10, offset: Offset(0, 8))
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +210,8 @@ class DocCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.description_outlined, size: 26, color: Colors.black54),
+                const Icon(Icons.description_outlined,
+                    size: 26, color: Colors.black54),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -198,13 +221,18 @@ class DocCard extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(d.title,
-                                style: TextHelper.size20.copyWith(height: 1.1, color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                                style: TextHelper.size20.copyWith(
+                                    height: 1.1,
+                                    color: ColorsForApp.blackColor,
+                                    fontFamily: semiBoldFont)),
                           ),
                           chip,
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text(d.subtitle, style: TextHelper.size18.copyWith(height: 1.35, color: ColorsForApp.blackColor)),
+                      Text(d.subtitle,
+                          style: TextHelper.size18.copyWith(
+                              height: 1.35, color: ColorsForApp.blackColor)),
                     ],
                   ),
                 ),
@@ -212,28 +240,37 @@ class DocCard extends StatelessWidget {
             ),
 
             const SizedBox(height: 16),
-
             if (!d.hasFile) // ---- EMPTY STATE (Upload button)
               SizedBox(
                 height: 52,
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: ColorsForApp.orange, width: 1),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    side:
+                        const BorderSide(color: ColorsForApp.orange, width: 1),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
-                  onPressed: () => controller.openUploadSheet(index, d.title == "Selfie Photo" ? true : false),
-                  icon: const Icon(Icons.upload_rounded, color: ColorsForApp.orange),
-                  label: Text('Upload Document', style: TextHelper.size18.copyWith(color: ColorsForApp.orange, fontFamily: semiBoldFont)),
+                  onPressed: () => controller.openUploadSheet(
+                      index, d.title == "Selfie Photo" ? true : false),
+                  icon: const Icon(Icons.upload_rounded,
+                      color: ColorsForApp.orange),
+                  label: Text('Upload Document',
+                      style: TextHelper.size18.copyWith(
+                          color: ColorsForApp.orange,
+                          fontFamily: semiBoldFont)),
                 ),
               )
             else ...[
               // ---- SUCCESS ROW
               Row(
                 children: [
-                  Icon(Icons.check_circle, color: ColorsForApp.colorVerifyGreen, size: 24),
+                  Icon(Icons.check_circle,
+                      color: ColorsForApp.colorVerifyGreen, size: 24),
                   SizedBox(width: 10),
                   Text('Document uploaded successfully',
-                      style: TextHelper.size18.copyWith(color: ColorsForApp.colorVerifyGreen, fontFamily: semiBoldFont)),
+                      style: TextHelper.size18.copyWith(
+                          color: ColorsForApp.colorVerifyGreen,
+                          fontFamily: semiBoldFont)),
                 ],
               ),
               const SizedBox(height: 10),
@@ -243,7 +280,8 @@ class DocCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       d.fileName ?? '',
-                      style: const TextStyle(fontSize: 16, color: ColorsForApp.title),
+                      style: const TextStyle(
+                          fontSize: 16, color: ColorsForApp.title),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -266,7 +304,8 @@ class DocCard extends StatelessWidget {
                     icon: Icons.autorenew_rounded,
                     color: ColorsForApp.yellow,
                     label: 'Replace',
-                    onTap: () => controller.replaceDoc(index, d.title == "Selfie Photo" ? true : false),
+                    onTap: () => controller.replaceDoc(
+                        index, d.title == "Selfie Photo" ? true : false),
                   ),
                   ActionLink(
                     icon: Icons.delete_outline_rounded,
@@ -305,21 +344,27 @@ class FooterProceedButton extends StatelessWidget {
       final remaining = controller.remainingRequiredCount();
       final allUploaded = remaining == 0;
 
-      final text = allUploaded ? 'Proceed to verify' : '$remaining more documents needed';
+      final text = allUploaded
+          ? 'Proceed to verify'
+          : '$remaining more documents needed';
 
       return GestureDetector(
         onTap: allUploaded
             ? () async {
-                if (signupController.leadBy.value.isEmpty && signupController.leadById.value == 0) {
+                if (signupController.leadBy.value.isEmpty &&
+                    signupController.leadById.value == 0) {
                   ShowSnackBar.info(message: "Please select who referred you");
                 } else {
                   bool result = await userRegistrationController.registerVendor(
                       email: userRegistrationController.emailController.text,
                       password: signupController.passCtrl.text.trim(),
-                      businessName: userRegistrationController.businessNameController.text,
+                      businessName: userRegistrationController
+                          .businessNameController.text,
                       // city: userRegistrationController.cityName.value,
-                      vendorCat: userRegistrationController.selectedService.value,
-                      currentAddress: userRegistrationController.currentAddressController.text,
+                      vendorCat:
+                          userRegistrationController.selectedService.value,
+                      currentAddress: userRegistrationController
+                          .currentAddressController.text,
                       referredBy: signupController.leadById.value,
                       phoneNumber: signupController.phoneCtrl.text.trim());
                   if (result) {
@@ -332,7 +377,9 @@ class FooterProceedButton extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: BoxDecoration(
-            color: allUploaded ? ColorsForApp.primaryColor : ColorsForApp.cta, // toggle background
+            color: allUploaded
+                ? ColorsForApp.primaryColor
+                : ColorsForApp.cta, // toggle background
             borderRadius: BorderRadius.circular(14),
           ),
           child: Row(
