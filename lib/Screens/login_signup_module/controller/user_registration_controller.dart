@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../api/api_manager.dart';
 import '../../../utils/app_colors.dart';
@@ -51,124 +52,18 @@ class UserRegistrationController extends GetxController {
     isLanguageDropdownVisible.value = !isLanguageDropdownVisible.value;
   }
 
-  // Future<bool> userRegisration({required String password,vendorCat}) async {
-  //   isLoading.value = true;
-  //   try {
-  //     UserRegistrationModel model =
-  //         await authRepository.userRegistrationApiCall(params: {
-  //       "fullname":fullName.value.trim(),
-  //       "phone": phoneNumber.value.trim(),
-  //       "aadhaar_number": "1234-5678-9012",
-  //       "password": password,
-  //       "vendor_cat": vendorCat,
-  //       "vendor_gender": selectedGender.value,
-  //     });
-  //     if (model.status == true) {
-  //       ShowSnackBar.success(message: model.message!);
-  //       isLoading.value = false;
-
-  //       return true;
-  //     } else {
-  //       ShowSnackBar.info(message: model.message!);
-  //       isLoading.value = false;
-  //       return false;
-  //     }
-  //   } catch (e) {
-  //     isLoading.value = false;
-  //     ShowSnackBar.info(message: e.toString());
-  //     return false;
-  //   }
-  // }
-
-  // Future<bool> registerVendor({
-  //   required String email,
-  //   required String phoneNumber,
-  //   required String password,
-  //   required String businessName,
-  //   required String vendorCat,
-  //   required String currentAddress,
-  //   required String pinCode,
-  //   required String carNumber,
-  //   required int referredBy,
-  //   File? profileImgUrl,
-  //   File? documentImage,
-  //   File? shopImgUrl,
-  //   File? vehicleImgUrl,
-  // }) async {
-  //   try {
-  //     isLoading.value = true;
-  //
-  //     final params = {
-  //       "fullname": fullNameController.text.trim(),
-  //       "phone": phoneNumber.trim(),
-  //       // "aadhaar_number": aadhaarNumber,
-  //       "email": email,
-  //       "password": password,
-  //       "businessName": businessName,
-  //       // "city": city,
-  //       "vendor_cat": vendorCat,
-  //       "currentAddress": currentAddress,
-  //       // "pin_code": pinCode,
-  //       // "carnumber": carNumber,
-  //       "vendor_gender": selectedGender.value,
-  //       "referred_by": referredBy,
-  //       // "profileImgUrl": profileImgUrl,
-  //       // "documentImage": documentImage,
-  //       // "shopImgUrl": shopImgUrl,
-  //       // "vehicleImgUrl": vehicleImgUrl,
-  //     };
-  //
-  //     final files = <String, File>{};
-  //
-  //     void addFileIfExists(String key, String? path) {
-  //       if (path != null && path.isNotEmpty) {
-  //         final file = File(path);
-  //         if (file.existsSync()) files[key] = file;
-  //       }
-  //     }
-  //
-  //     addFileIfExists(
-  //       'documentImage',
-  //       docs.firstWhereOrNull((d) => d.title == "Aadhar Card")?.filePath,
-  //     );
-  //     addFileIfExists(
-  //       'profileImgUrl',
-  //       docs.firstWhereOrNull((d) => d.title == "Selfie Photo")?.filePath,
-  //     );
-  //     addFileIfExists(
-  //       'shopImgUrl',
-  //       docs.firstWhereOrNull((d) => d.title == "Shop Photo")?.filePath,
-  //     );
-  //     addFileIfExists(
-  //       'vehicleImgUrl',
-  //       docs.firstWhereOrNull((d) => d.title == "Vehicle Photo")?.filePath,
-  //     );
-  //     // addFileIfExists(
-  //     //   'licenseImage',
-  //     //   docs.firstWhereOrNull((d) => d.title == "Driving License")?.filePath,
-  //     // );
-  //
-  //     final response = await authRepository.registerVendor(
-  //       params: params,
-  //       files: files.isEmpty ? null : files,
-  //     );
-  //
-  //     if (response.status == true) {
-  //       ShowSnackBar.success(message: "Registration successful!");
-  //       isLoading.value = false;
-  //       return true;
-  //     } else {
-  //       ShowSnackBar.error(message: response.message ?? "Registration failed.");
-  //       isLoading.value = false;
-  //       return false;
-  //     }
-  //   } catch (e) {
-  //     ShowSnackBar.error(message: e.toString());
-  //     return false;
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
+  /// Helper: save picked file to local dir
+  Future<String?> saveFileToLocalDir(String path) async {
+    final file = File(path);
+    if (await file.exists()) {
+      final dir = await getApplicationDocumentsDirectory();
+      final newPath =
+          "${dir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
+      final newFile = await file.copy(newPath);
+      return newFile.path;
+    }
+    return null;
+  }
 
   Future<bool> registerVendor({
     required String email,
@@ -205,12 +100,20 @@ class UserRegistrationController extends GetxController {
       /// Helper: compress image and add to byteFiles
       Future<void> addCompressedByteFile(String key, String? path) async {
         if (path != null && path.isNotEmpty) {
-          final bytes = await File(path).readAsBytes();
-          final compressedBytes = await compressImage(bytes);
-          byteFiles[key] = compressedBytes;
+          final localPath =
+              await saveFileToLocalDir(path); // ✅ always permanent
+          if (localPath != null) {
+            final file = File(localPath);
+            if (await file.exists()) {
+              final bytes = await file.readAsBytes();
+              final compressedBytes = await compressImage(bytes);
+              byteFiles[key] = compressedBytes;
+            }
+          }
         }
       }
 
+      // 3️⃣ Add all docs
       await addCompressedByteFile(
         'documentImage',
         docs.firstWhereOrNull((d) => d.title == "Aadhar Card")?.filePath,
@@ -232,20 +135,20 @@ class UserRegistrationController extends GetxController {
         docs.firstWhereOrNull((d) => d.title == "Driving License")?.filePath,
       );
 
-      // 3️⃣ Debug prints
+      // 4️⃣ Debug prints
       print("📌 Params:");
       params.forEach((k, v) => print("   $k: $v"));
 
       print("📌 Byte files:");
       byteFiles.forEach((k, v) => print("   $k: ${v.length} bytes"));
 
-      // 4️⃣ Call repository with byteFiles
+      // 5️⃣ Call repository with byteFiles
       final response = await authRepository.registerVendor(
         params: params,
         byteFiles: byteFiles.isEmpty ? null : byteFiles,
       );
 
-      // 5️⃣ Handle response
+      // 6️⃣ Handle response
       if (response.status == true) {
         ShowSnackBar.success(message: "Registration successful!");
         return true;
@@ -464,6 +367,7 @@ class UserRegistrationController extends GetxController {
   //   docs.assignAll(serviceDocs[service] ?? []);
   //   recomputeProgress();
   // }
+  var isDocLoading = false.obs;
 
   RxDouble progress = 0.0.obs; // 0.0 -> 1.0
 
@@ -482,6 +386,8 @@ class UserRegistrationController extends GetxController {
   /// pick from Camera/Gallery/Files
   Future<void> uploadDoc(int index, UploadSource source) async {
     try {
+      isDocLoading.value = true;
+
       final picker = ImagePicker();
       final pickedFile;
 
@@ -502,9 +408,6 @@ class UserRegistrationController extends GetxController {
         throw Exception("No picture selected.");
       }
 
-      final selectedImageBytes = await selectedFile.value!.readAsBytes();
-      final compressedImgBytes = await compressImage(selectedImageBytes);
-
       // Use pickedFile.path directly instead of savedPath
       final filePath = pickedFile.path;
       final fileName =
@@ -521,8 +424,13 @@ class UserRegistrationController extends GetxController {
       recomputeProgress();
     } catch (e, st) {
       debugPrint('Upload failed: $e\n$st');
+    } finally {
+      isDocLoading.value = false;
     }
   }
+
+  /// Per-document uploading flags so UI can show loader only on that doc card
+  final Map<int, RxBool> docUploading = {};
 
   void replaceDoc(int index, bool isOnlysSelfie) =>
       openUploadSheet(index, isOnlysSelfie);

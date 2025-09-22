@@ -92,27 +92,6 @@ class SignupController extends GetxController {
         confirmCtrl.text.isNotEmpty && confirmCtrl.text == passCtrl.text;
   }
 
-  Future<void> submit() async {
-    if (!canSubmit) return;
-    isLoading.value = true;
-    try {
-      // TODO: call your API here
-      // final res = await authRepository.signUp(
-      //   phone: '+91${phoneCtrl.text}',
-      //   password: passCtrl.text,
-      // );
-      // handle response / error mapping
-
-      // Navigate after success (adjust to your flow)
-      Get.offAllNamed(Routes.DASHBOARD_PAGE);
-    } catch (e) {
-      Get.snackbar('Signup failed', e.toString(),
-          snackPosition: SnackPosition.BOTTOM);
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
   // Generate mobile otp
   Future<bool> generateRegistrationOtp({bool isLoaderShow = true}) async {
     isLoading.value = true;
@@ -167,7 +146,7 @@ class SignupController extends GetxController {
   void _initializeListeners() {
     // OTP validation (6 digits)
     otpController.addListener(() {
-      isOtpValid.value = otpController.text.length == 6;
+      isOtpValid.value = otpController.text.length == 4;
     });
 
     // Phone number validation (10 digits)
