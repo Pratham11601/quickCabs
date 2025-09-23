@@ -42,9 +42,6 @@ class GetServerKey {
 
 class FirebaseNotification {
   static Future<void> initialize() async {
-    // Request permissions if needed
-    await checkNotificationPermissions();
-
     // Get the FCM token
     final fcmToken = await FirebaseMessaging.instance.getToken();
     log("FCM Token: $fcmToken");
@@ -109,14 +106,6 @@ class FirebaseNotification {
         );
       }
     });
-  }
-
-  static Future<void> checkNotificationPermissions() async {
-    NotificationSettings settings =
-        await FirebaseMessaging.instance.requestPermission();
-    if (settings.authorizationStatus == AuthorizationStatus.denied) {
-      log("User denied notification permissions.");
-    }
   }
 
   static Future<void> backgroundHandler(RemoteMessage message) async {

@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:QuickCab/notificaton/notification_permission_handler.dart';
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:QuickCab/utils/text_styles.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -5,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../../notificaton/notifications_services.dart';
 import '../../../routes/routes.dart';
+import '../../../utils/config.dart';
 import '../../../widgets/common_widgets.dart';
 import '../controller/login_controller.dart';
 
@@ -19,9 +24,23 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _requestPermissions();
+    initNotifications();
+  }
+
+  Future<void> initNotifications() async {
+    final granted =
+        await NotificationPermissionHelper.requestNotificationPermission();
+
+    if (granted) {
+      await NotificationService.setNotificationEnabled(true);
+      Config.isNotificationEnabled.value = true;
+      log("✅ Notifications enabled (first time)");
+    } else {
+      await NotificationService.setNotificationEnabled(false);
+      Config.isNotificationEnabled.value = false;
+      log("❌ Notifications denied (first time)");
+    }
   }
 
   @override
@@ -32,35 +51,6 @@ class _LoginScreenState extends State<LoginScreen> {
       theme: buildTheme(),
       home: const DriverLoginPage(),
     );
-  }
-
-  Future<void> _requestPermissions() async {
-    // ✅ Location
-    final locationStatus = await Permission.location.request();
-    if (locationStatus.isGranted) {
-      debugPrint("✅ Location granted");
-    } else if (locationStatus.isDenied) {
-      debugPrint("❌ Location denied");
-    } else if (locationStatus.isPermanentlyDenied) {
-      openAppSettings();
-    }
-
-    // ✅ Notifications
-    if (GetPlatform.isAndroid) {
-      final notifStatus = await Permission.notification.request();
-      if (notifStatus.isGranted) {
-        debugPrint("✅ Notifications granted (Android)");
-      } else {
-        debugPrint("❌ Notifications denied (Android)");
-      }
-    } else if (GetPlatform.isIOS) {
-      final settings = await FirebaseMessaging.instance.requestPermission();
-      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        debugPrint("✅ Notifications granted (iOS)");
-      } else {
-        debugPrint("❌ Notifications denied (iOS)");
-      }
-    }
   }
 }
 
@@ -116,10 +106,14 @@ class PhoneNumberContainer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text('Enter Mobile Number',
-                textAlign: TextAlign.center, style: TextHelper.h4.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
+                textAlign: TextAlign.center,
+                style: TextHelper.h4.copyWith(
+                    color: ColorsForApp.headline, fontFamily: semiBoldFont)),
             const SizedBox(height: 10),
             Text("We'll send you an OTP to verify your\nnumber",
-                textAlign: TextAlign.center, style: TextHelper.size18.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
+                textAlign: TextAlign.center,
+                style: TextHelper.size18.copyWith(
+                    color: ColorsForApp.headline, fontFamily: semiBoldFont)),
             const SizedBox(height: 12),
             const PhoneTextField(),
             const SizedBox(height: 12),
@@ -139,7 +133,9 @@ class PhoneNumberContainer extends StatelessWidget {
                         ),
                         Text(
                           "Remember Me",
-                          style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                          style: TextHelper.size18.copyWith(
+                              color: ColorsForApp.blackColor,
+                              fontFamily: regularFont),
                         ),
                       ],
                     ),
@@ -149,11 +145,14 @@ class PhoneNumberContainer extends StatelessWidget {
                       },
                       child: Row(
                         children: [
-                          Icon(Icons.lock_outline, color: ColorsForApp.primaryColor),
+                          Icon(Icons.lock_outline,
+                              color: ColorsForApp.primaryColor),
                           SizedBox(width: 5),
                           Text(
                             "Forgot Password",
-                            style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                            style: TextHelper.size18.copyWith(
+                                color: ColorsForApp.blackColor,
+                                fontFamily: regularFont),
                           ),
                         ],
                       ),
@@ -168,7 +167,8 @@ class PhoneNumberContainer extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () async {
                       if (loginController.isValidNumber.value) {
-                        if (loginController.loginFormKey.currentState!.validate()) {
+                        if (loginController.loginFormKey.currentState!
+                            .validate()) {
                           bool result = await loginController.loginAPI();
                           if (result) {
                             Get.offAllNamed(Routes.DASHBOARD_PAGE);
@@ -177,7 +177,9 @@ class PhoneNumberContainer extends StatelessWidget {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: loginController.isValidNumber.value ? ColorsForApp.primaryColor : ColorsForApp.cta,
+                      backgroundColor: loginController.isValidNumber.value
+                          ? ColorsForApp.primaryColor
+                          : ColorsForApp.cta,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -213,7 +215,9 @@ class PhoneNumberContainer extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
                     "New to Quick Cabs?",
-                    style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                    style: TextHelper.size19.copyWith(
+                        color: ColorsForApp.blackColor,
+                        fontFamily: regularFont),
                   ),
                 ),
                 Expanded(child: Divider(thickness: 1)),
@@ -229,7 +233,8 @@ class PhoneNumberContainer extends StatelessWidget {
                 Get.toNamed(Routes.SIGNUP_SCREEN);
               },
               style: ButtonStyle(
-                minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
+                minimumSize:
+                    WidgetStateProperty.all(const Size(double.infinity, 50)),
                 shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(0),
@@ -244,10 +249,14 @@ class PhoneNumberContainer extends StatelessWidget {
                   },
                 ),
                 side: WidgetStateProperty.all(
-                  BorderSide(color: ColorsForApp.blackColor.withValues(alpha: 0.2)),
+                  BorderSide(
+                      color: ColorsForApp.blackColor.withValues(alpha: 0.2)),
                 ),
               ),
-              child: Text("Create New Account", style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+              child: Text("Create New Account",
+                  style: TextHelper.h7.copyWith(
+                      color: ColorsForApp.blackColor,
+                      fontFamily: semiBoldFont)),
             ),
           ],
         ),
@@ -268,7 +277,9 @@ class PhoneTextField extends StatelessWidget {
           child: Row(
             children: [
               const SizedBox(width: 10),
-              const Icon(Icons.call_outlined, color: ColorsForApp.primaryColor, size: 20), // smaller to match
+              const Icon(Icons.call_outlined,
+                  color: ColorsForApp.primaryColor,
+                  size: 20), // smaller to match
               const SizedBox(width: 10),
               Text(
                 '+91',
@@ -296,7 +307,8 @@ class PhoneTextField extends StatelessWidget {
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     hintText: 'Enter 10-digit mobile number',
-                    hintStyle: TextHelper.size19.copyWith(color: ColorsForApp.subtle),
+                    hintStyle:
+                        TextHelper.size19.copyWith(color: ColorsForApp.subtle),
                   ),
                   style: TextHelper.size19.copyWith(
                     color: ColorsForApp.blackColor,
@@ -321,7 +333,9 @@ class PasswordTextField extends StatelessWidget {
           child: Row(
             children: [
               const SizedBox(width: 10),
-              const Icon(Icons.password, color: ColorsForApp.primaryColor, size: 20), // smaller to match
+              const Icon(Icons.password,
+                  color: ColorsForApp.primaryColor,
+                  size: 20), // smaller to match
               const SizedBox(width: 10),
               Container(width: 1, height: 24, color: Colors.grey.shade300),
               const SizedBox(width: 10),
@@ -330,22 +344,27 @@ class PasswordTextField extends StatelessWidget {
                   () => TextField(
                     controller: loginController.passwordController,
                     focusNode: loginController.passwordFocusNode,
-                    obscureText: !loginController.isPasswordVisible.value, // hide if false
+                    obscureText: !loginController
+                        .isPasswordVisible.value, // hide if false
                     keyboardType: TextInputType.visiblePassword,
                     decoration: InputDecoration(
                       counterText: '',
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10, // keeps it comfortable, not too tall/short
+                        vertical:
+                            10, // keeps it comfortable, not too tall/short
                       ),
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       hintText: 'Enter password',
-                      hintStyle: TextHelper.size19.copyWith(color: ColorsForApp.subtle),
+                      hintStyle: TextHelper.size19
+                          .copyWith(color: ColorsForApp.subtle),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          loginController.isPasswordVisible.value ? Icons.visibility : Icons.visibility_off,
+                          loginController.isPasswordVisible.value
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: ColorsForApp.subtle,
                         ),
                         onPressed: () {

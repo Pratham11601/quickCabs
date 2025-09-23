@@ -28,19 +28,19 @@ class SendNotificationService {
       "message": {
         "topic": "all",
         "notification": {
-          "title": "${source}  To: ${destination}",
-          "body": "To: ${destination}"
+          "title": "Fare Price:-Rs $price /-  ",
+          "body": "$source  🚗   $destination"
         },
         "data": {
           "story_id": "story_12345",
         },
-        "android": {
-          "priority": "high",
-          "notification": {
-            "body": "Fare Price:-Rs ${price} /-  ",
-            "channel_id": "new_lead_channel",
-          }
-        }
+        // "android": {
+        //   "priority": "high",
+        //   "notification": {
+        //     "body": "Fare Price:-Rs ${price} /-  ",
+        //     "channel_id": "new_lead_channel",
+        //   }
+        // }
       }
     };
 

@@ -144,22 +144,20 @@ class _RideRequestCardState extends State<RideRequestCard> {
                   ],
                 ),
               ),
+            ],
+          ),
+          SizedBox(height: 1.h),
+          Row(
+            children: [
+              Icon(Icons.location_on_outlined, color: ColorsForApp.red),
+              SizedBox(width: 1.w),
               Expanded(
-                child: Row(
-                  children: [
-                    Icon(Icons.location_on_outlined, color: ColorsForApp.red),
-                    SizedBox(width: 1.w),
-                    Expanded(
-                      child: Text(
-                        location,
-                        style: TextHelper.size18.copyWith(
-                          color: ColorsForApp.blackColor,
-                          fontFamily: semiBoldFont,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  location,
+                  style: TextHelper.size18.copyWith(
+                    color: ColorsForApp.blackColor,
+                    fontFamily: semiBoldFont,
+                  ),
                 ),
               ),
             ],
@@ -169,13 +167,13 @@ class _RideRequestCardState extends State<RideRequestCard> {
           // From Date
           Row(
             children: [
-              Icon(Icons.calendar_today,
+              Icon(Icons.calendar_month,
                   color: ColorsForApp.blackColor.withValues(alpha: 0.4),
                   size: 2.h),
               SizedBox(width: 1.w),
               Expanded(
                 child: Text(
-                  "From: $fromDate, $fromTime",
+                  " From: $fromDate, $fromTime",
                   style: TextHelper.size18.copyWith(
                     color: ColorsForApp.blackColor,
                     fontFamily: regularFont,
@@ -189,13 +187,13 @@ class _RideRequestCardState extends State<RideRequestCard> {
           // To Date
           Row(
             children: [
-              Icon(Icons.calendar_today,
+              Icon(Icons.calendar_month_rounded,
                   color: ColorsForApp.blackColor.withValues(alpha: 0.4),
                   size: 2.h),
               SizedBox(width: 1.w),
               Expanded(
                 child: Text(
-                  "To:   $toDate, $toTime",
+                  " To: $toDate, $toTime",
                   style: TextHelper.size18.copyWith(
                     color: ColorsForApp.blackColor,
                     fontFamily: regularFont,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../routes/routes.dart';
+import '../../../utils/config.dart';
 import '../../../utils/text_styles.dart';
 import '../../../widgets/app_version.dart';
 import '../../../widgets/common_widgets.dart';
@@ -48,8 +49,8 @@ class ProfileScreen extends StatelessWidget {
                   icon: Icons.notifications_outlined,
                   title: "notifications".tr,
                   hasSwitch: true,
-                  switchValue: controller.isNotificationSound.value,
-                  toggleValue: controller.isNotificationEnabled,
+                  switchValue: Config.isNotificationSound.value,
+                  toggleValue:  Config.isNotificationEnabled,
                   onToggle: (val) async {
                     await controller.toggleNotifications(val);
                     print("✅ Notifications toggled to $val");

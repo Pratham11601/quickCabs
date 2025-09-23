@@ -1,13 +1,19 @@
+import 'dart:developer';
+
 import 'package:QuickCab/Screens/profile_module/model/profile_details_model.dart';
 import 'package:QuickCab/widgets/snackbar.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/api_manager.dart';
+import '../../../notificaton/notification_permission_handler.dart';
 import '../../../notificaton/notifications_services.dart';
 import '../../../routes/routes.dart';
+import '../../../utils/config.dart';
 import '../../../utils/storage_config.dart';
 import '../repository/profile_repository.dart';
 
@@ -15,7 +21,6 @@ class ProfileController extends GetxController {
   ProfileRepository profileRepository = ProfileRepository(APIManager());
 
   /// Account Section
-  var isNotificationEnabled = true.obs;
   var documentsStatus = "Incomplete".obs;
 
   /// Support Section
@@ -23,8 +28,6 @@ class ProfileController extends GetxController {
 
   var userDetails = Rxn<Vendor>(); // vendor model from response
   var isLoading = false.obs;
-
-  RxBool isNotificationSound = true.obs;
 
   /// Change language
   void changeLanguage(String lang) {
@@ -34,13 +37,57 @@ class ProfileController extends GetxController {
   }
 
   Future<void> loadNotificationPreference() async {
-    isNotificationEnabled.value =
+    Config.isNotificationEnabled.value =
         await NotificationService.areNotificationsEnabled();
   }
 
   Future<void> toggleNotifications(bool value) async {
-    isNotificationEnabled.value = value;
-    await NotificationService.setNotificationEnabled(value);
+    if (value) {
+      bool granted = false;
+
+      if (GetPlatform.isAndroid) {
+        final status = await Permission.notification.status;
+
+        if (status.isGranted) {
+          granted = true;
+        } else if (status.isDenied) {
+          final result = await Permission.notification.request();
+          granted = result.isGranted;
+        } else if (status.isPermanentlyDenied) {
+          // Open settings
+          await openAppSettings();
+          granted = false;
+        }
+      } else if (GetPlatform.isIOS) {
+        final settings =
+            await FirebaseMessaging.instance.getNotificationSettings();
+
+        if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+          granted = true;
+        } else if (settings.authorizationStatus ==
+            AuthorizationStatus.notDetermined) {
+          final newSettings =
+              await FirebaseMessaging.instance.requestPermission();
+          granted =
+              newSettings.authorizationStatus == AuthorizationStatus.authorized;
+        } else if (settings.authorizationStatus == AuthorizationStatus.denied) {
+          // Show dialog to open settings
+          Get.snackbar("Permission Denied",
+              "Please enable notifications from Settings.");
+          granted = false;
+        }
+      }
+
+      // Update notification service and config
+      await NotificationService.setNotificationEnabled(granted);
+      Config.isNotificationEnabled.value = granted;
+      log(granted ? "✅ Notifications enabled" : "❌ Notifications OFF");
+    } else {
+      // Turn OFF directly
+      await NotificationService.setNotificationEnabled(false);
+      Config.isNotificationEnabled.value = false;
+      log("🔕 Notifications disabled by user");
+    }
   }
 
   /// Logout function

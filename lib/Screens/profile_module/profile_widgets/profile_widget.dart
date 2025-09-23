@@ -93,21 +93,32 @@ class ProfileInfoCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: TextHelper.h6.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                Text(name,
+                    style: TextHelper.h6.copyWith(
+                        color: ColorsForApp.blackColor,
+                        fontFamily: semiBoldFont)),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.phone_outlined, size: 18, color: ColorsForApp.subtitle),
+                    Icon(Icons.phone_outlined,
+                        size: 18, color: ColorsForApp.subtitle),
                     const SizedBox(width: 6),
-                    Text(phone, style: TextHelper.size17.copyWith(color: ColorsForApp.subtitle, fontFamily: semiBoldFont)),
+                    Text(phone,
+                        style: TextHelper.size17.copyWith(
+                            color: ColorsForApp.subtitle,
+                            fontFamily: semiBoldFont)),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.email_outlined, size: 18, color: ColorsForApp.subtitle),
+                    Icon(Icons.email_outlined,
+                        size: 18, color: ColorsForApp.subtitle),
                     const SizedBox(width: 6),
-                    Text(email, style: TextHelper.size17.copyWith(color: ColorsForApp.subtitle, fontFamily: semiBoldFont)),
+                    Text(email,
+                        style: TextHelper.size17.copyWith(
+                            color: ColorsForApp.subtitle,
+                            fontFamily: semiBoldFont)),
                   ],
                 ),
               ],
@@ -174,6 +185,7 @@ class SettingsCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// Section Title
+            ///
             Text(
               sectionTitle,
               style: TextHelper.size20.copyWith(
@@ -197,7 +209,8 @@ class SettingsCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         child: Row(
                           children: [
-                            Icon(item.icon, size: 23, color: ColorsForApp.primaryDarkColor),
+                            Icon(item.icon,
+                                size: 23, color: ColorsForApp.primaryDarkColor),
                             const SizedBox(width: 16),
 
                             /// Title
@@ -214,7 +227,8 @@ class SettingsCard extends StatelessWidget {
                             /// Label (optional)
                             if (item.label != null)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFFFF4D6),
                                   borderRadius: BorderRadius.circular(6),
@@ -234,7 +248,6 @@ class SettingsCard extends StatelessWidget {
                                   ? Obx(() => Switch(
                                         value: item.toggleValue!.value,
                                         onChanged: (val) async {
-                                          print("Switch ${item.title} to $val");
                                           item.toggleValue!.value = val;
                                           if (item.onToggle != null) {
                                             await item.onToggle!(val);
@@ -323,7 +336,8 @@ class LogoutButton extends StatelessWidget {
         leading: const Icon(Icons.logout, size: 30, color: ColorsForApp.red),
         title: Text(
           "Logout",
-          style: TextHelper.h6.copyWith(color: ColorsForApp.red, fontFamily: semiBoldFont),
+          style: TextHelper.h6
+              .copyWith(color: ColorsForApp.red, fontFamily: semiBoldFont),
         ),
         onTap: onLogout,
       ),

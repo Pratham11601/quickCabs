@@ -258,17 +258,22 @@ class AcceptLeadOtpPopup extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 0.3.h),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Text(label,
               style: TextHelper.size18.copyWith(
                   color: ColorsForApp.subtitle, fontFamily: semiBoldFont)),
           const Spacer(),
-          Text(value,
+          Expanded(
+            child: Text(
+              value,
               style: valueStyle ??
                   TextHelper.size18.copyWith(
-                      color: ColorsForApp.blackColor,
-                      fontFamily: semiBoldFont)),
+                      color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.end,
+            ),
+          ),
         ],
       ),
     );

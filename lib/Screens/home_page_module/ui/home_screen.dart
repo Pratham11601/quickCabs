@@ -450,7 +450,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4),
               child: LeadCard(
                 lead: {
-                  'name': lead.vendorFullname,
+                  'name': lead.vendorName,
                   'from': lead.locationFrom,
                   'to': lead.toLocation,
                   'price': lead.fare,
@@ -465,7 +465,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   'id': lead.id,
                   'trip_type': lead.tripType,
                 },
-                onAccept: () => homeController.acceptLead(index),
+                onAccept: () => homeController.acceptLead(lead),
                 onWhatsApp: (phone) => homeController.openWhatsApp(phone),
                 onCall: (phone) => homeController.makeCall(phone),
               ),

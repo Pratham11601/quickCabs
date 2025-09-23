@@ -34,12 +34,6 @@ class AppController extends GetxController {
     // Initialize network service
     await initializeConnectionServices();
 
-    // Initiate notification
-    String? fcmToken = await notification.initNotificationService();
-
-    debugPrint('Token ===========> ${userToken.toString()}');
-    debugPrint('FCM on Dashboard ===========> ${fcmToken.toString()}');
-
     // Initialize api manager
     APIManager.init(this);
   }

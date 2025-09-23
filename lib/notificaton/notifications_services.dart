@@ -2,7 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationService {
-    static final FirebaseMessaging _firebaseMessaging =
+  static final FirebaseMessaging _firebaseMessaging =
       FirebaseMessaging.instance;
 
   static const String _notificationPrefKey = 'notifications_enabled';
@@ -13,7 +13,7 @@ class NotificationService {
     bool notificationsEnabled = prefs.getBool(_notificationPrefKey) ?? true;
     print(
         "🔔 Notifications are: ${notificationsEnabled ? "ENABLED" : "DISABLED"}");
-          if (notificationsEnabled) {
+    if (notificationsEnabled) {
       await subscribeToNotifications();
     } else {
       await unsubscribeFromNotifications();
@@ -38,7 +38,8 @@ class NotificationService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_notificationPrefKey) ?? true;
   }
-    // Subscribe to notifications
+
+  // Subscribe to notifications
   static Future<void> subscribeToNotifications() async {
     await _firebaseMessaging.subscribeToTopic('all');
     await _firebaseMessaging.requestPermission();
