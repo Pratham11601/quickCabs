@@ -30,7 +30,7 @@ class ProfileScreen extends StatelessWidget {
                   email: controller.userDetails.value?.email ?? "-",
                   profileImage:
                       (controller.userDetails.value?.profileImgUrl != null && controller.userDetails.value!.profileImgUrl!.isNotEmpty)
-                          ? "https://quickcabpune.com/app/${controller.userDetails.value!.profileImgUrl}"
+                          ? "${Config.baseUrl}${controller.userDetails.value!.profileImgUrl}"
                           : "",
                 )),
 
@@ -50,7 +50,7 @@ class ProfileScreen extends StatelessWidget {
                   title: "notifications".tr,
                   hasSwitch: true,
                   switchValue: Config.isNotificationSound.value,
-                  toggleValue:  Config.isNotificationEnabled,
+                  toggleValue: Config.isNotificationEnabled,
                   onToggle: (val) async {
                     await controller.toggleNotifications(val);
                     print("✅ Notifications toggled to $val");

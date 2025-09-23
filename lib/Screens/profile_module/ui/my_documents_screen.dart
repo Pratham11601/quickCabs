@@ -1,4 +1,5 @@
 import 'package:QuickCab/Screens/profile_module/controller/profile_controller.dart';
+import 'package:QuickCab/utils/config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -52,7 +53,7 @@ class MyDocumentsPage extends StatelessWidget {
             "name": "Aadhar Card",
             "status": "Uploaded",
             "icon": Icons.credit_card,
-            "url": "https://quickcabpune.com/app/${vendor.documentImgUrl!}",
+            "url": "${Config.baseUrl}${vendor.documentImgUrl!}",
           });
         }
 
@@ -61,7 +62,7 @@ class MyDocumentsPage extends StatelessWidget {
             "name": "License",
             "status": "Uploaded",
             "icon": Icons.badge,
-            "url": "https://quickcabpune.com/app/${vendor.licenseImgUrl!}",
+            "url": "${Config.baseUrl}${vendor.licenseImgUrl!}",
           });
         }
 
@@ -70,7 +71,7 @@ class MyDocumentsPage extends StatelessWidget {
             "name": "Shop",
             "status": "Uploaded",
             "icon": Icons.store,
-            "url": "https://quickcabpune.com/app/${vendor.shopImgUrl!}",
+            "url": "${Config.baseUrl}${vendor.shopImgUrl!}",
           });
         }
 
@@ -79,7 +80,7 @@ class MyDocumentsPage extends StatelessWidget {
             "name": "Vehicle",
             "status": "Uploaded",
             "icon": Icons.directions_car,
-            "url": "https://quickcabpune.com/app/${vendor.vehicleImgUrl!}",
+            "url": "${Config.baseUrl}${vendor.vehicleImgUrl!}",
           });
         }
 

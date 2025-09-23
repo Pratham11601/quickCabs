@@ -1,4 +1,3 @@
-import 'package:QuickCab/Screens/home_page_module/model/accept_lead_model.dart';
 import 'package:QuickCab/Screens/home_page_module/model/check_profile_completion_model.dart';
 import 'package:QuickCab/Screens/home_page_module/model/driver_availability_model.dart';
 import 'package:QuickCab/Screens/home_page_module/model/live_lead_model.dart';
@@ -19,8 +18,7 @@ import '../repository/active_lead_repository.dart';
 
 class HomeController extends GetxController {
   HomeRepository authRepository = HomeRepository(APIManager());
-  ActiveLeadRepository activeLeadRepository =
-      ActiveLeadRepository(APIManager());
+  ActiveLeadRepository activeLeadRepository = ActiveLeadRepository(APIManager());
 
   @override
   void onInit() {
@@ -41,8 +39,7 @@ class HomeController extends GetxController {
   RxBool isKycCompleted = false.obs;
   Future<bool> checkProfileCompletion() async {
     try {
-      CheckProfileCompletionModel checkProfileCompletionModel =
-          await authRepository.checkProfileCompletionApiCall();
+      CheckProfileCompletionModel checkProfileCompletionModel = await authRepository.checkProfileCompletionApiCall();
       if (checkProfileCompletionModel.status == true) {
         isKycCompleted.value = checkProfileCompletionModel.isComplete ?? false;
         return true;
@@ -202,11 +199,9 @@ class HomeController extends GetxController {
   }
 
   // Driver availability post api
-  Rx<DriverAvailabilityModel> driverAvailabilityModel =
-      DriverAvailabilityModel().obs;
+  Rx<DriverAvailabilityModel> driverAvailabilityModel = DriverAvailabilityModel().obs;
 
-  Future<bool> postDriverAvailability(BuildContext context,
-      {bool isLoaderShow = true}) async {
+  Future<bool> postDriverAvailability(BuildContext context, {bool isLoaderShow = true}) async {
     final params = {
       "car": carController.text.trim(),
       "location": locationController.text.trim(),
@@ -231,8 +226,7 @@ class HomeController extends GetxController {
       } else {
         ShowSnackBar.error(
           title: 'Error',
-          message: driverAvailabilityModel.value.message ??
-              'Failed to share availability',
+          message: driverAvailabilityModel.value.message ?? 'Failed to share availability',
         );
         return false;
       }
@@ -258,8 +252,7 @@ class HomeController extends GetxController {
   Future<LiveLeadModel> fetchMyAvailability(dynamic pageNumber) async {
     try {
       isLoadingLiveLeads.value = true;
-      final response =
-          await activeLeadRepository.myAvailabilityApiCall(pageNumber);
+      final response = await activeLeadRepository.myAvailabilityApiCall(pageNumber);
       debugPrint('Fetched leads count: ${response.data!.length}');
       liveLeads.assignAll(response.data!);
       return response;
@@ -279,8 +272,11 @@ class HomeController extends GetxController {
     try {
       isLoadingActiveLeads.value = true;
       errorMsg.value = '';
-      final response = await activeLeadRepository.activeLeadApiCall(
-          pageNumber, fromLocation.value, toLocation.value);
+      // Pass filter values only if filter is applied
+      final fLocation = isFilterApplied.value ? fromLocation.value : "";
+      final tLocation = isFilterApplied.value ? toLocation.value : "";
+
+      final response = await activeLeadRepository.activeLeadApiCall(pageNumber, fromLocationController.text, toLocationController.text);
       debugPrint('Fetched leads count: ${response.posts.length}');
       activeLeads.assignAll(response.posts);
       filteredActiveLeads.clear(); // 👈 reset filter results
@@ -295,12 +291,10 @@ class HomeController extends GetxController {
     }
   }
 
-  Future<AllLiveLeadModel> fetchAllDriversAvailability(
-      dynamic pageNumber) async {
+  Future<AllLiveLeadModel> fetchAllDriversAvailability(dynamic pageNumber) async {
     try {
       isLoadingLiveLeads.value = true;
-      final response =
-          await activeLeadRepository.allDriverAvailabilityApiCall(pageNumber);
+      final response = await activeLeadRepository.allDriverAvailabilityApiCall(pageNumber);
       debugPrint('Fetched leads count: ${response.data!.length}');
       allLiveLeads.assignAll(response.data!);
       driversCount.value = response.pagination!.totalCount!;
@@ -315,8 +309,7 @@ class HomeController extends GetxController {
   }
 
 // Update driver availability
-  Rx<DriverAvailabilityModel> updateDriverAvailabilityModel =
-      DriverAvailabilityModel().obs;
+  Rx<DriverAvailabilityModel> updateDriverAvailabilityModel = DriverAvailabilityModel().obs;
 
   Future<bool> updatetDriverAvailability({
     bool isLoaderShow = true,
@@ -342,8 +335,7 @@ class HomeController extends GetxController {
     try {
       isLoading.value = true;
 
-      final response = await authRepository.updateDriverAvailabilityApiCall(
-          isLoaderShow: isLoaderShow, params: params, leadId: leadId);
+      final response = await authRepository.updateDriverAvailabilityApiCall(isLoaderShow: isLoaderShow, params: params, leadId: leadId);
 
       updateDriverAvailabilityModel.value = response;
 
@@ -352,8 +344,7 @@ class HomeController extends GetxController {
       } else {
         ShowSnackBar.error(
           title: 'Error',
-          message: updateDriverAvailabilityModel.value.message ??
-              'Failed to update availability',
+          message: updateDriverAvailabilityModel.value.message ?? 'Failed to update availability',
         );
         return false;
       }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../utils/config.dart';
 import '../../../widgets/common_widgets.dart';
 import '../controller/service_card_controller.dart';
 
@@ -54,7 +55,7 @@ class EmergencyServicesScreen extends StatelessWidget {
                           city: vendor.city ?? "-",
                           pincode: vendor.pinCode ?? "-",
                           serviceType: vendor.vendorCat ?? "-",
-                          profileImage: "https://quickcabpune.com/app/${vendor.profileImgUrl}",
+                          profileImage: "${Config.baseUrl}${vendor.profileImgUrl}",
                           carNumber: vendor.carnumber ?? "-",
                           phone: vendor.phone ?? "-",
                         ),

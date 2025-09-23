@@ -8,6 +8,7 @@ import 'package:sliver_tools/sliver_tools.dart';
 
 import '../../../routes/routes.dart';
 import '../../../utils/app_colors.dart';
+import '../../../utils/config.dart';
 import '../../../utils/text_styles.dart';
 import '../../../widgets/constant_widgets.dart';
 import '../../../widgets/no_data_found.dart';
@@ -37,8 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<FormState> postAvailablityFormKey = GlobalKey<FormState>();
 
   late final activeLeadsPagingController = PagingController<int, Post>(
-    getNextPageKey: (state) =>
-        state.lastPageIsEmpty ? null : state.nextIntPageKey,
+    getNextPageKey: (state) => state.lastPageIsEmpty ? null : state.nextIntPageKey,
     fetchPage: (int pageKey) async {
       final response = await homeController.fetchActiveLeads(pageKey);
       final items = response.posts;
@@ -47,20 +47,16 @@ class _HomeScreenState extends State<HomeScreen> {
   );
 
   late final allDriverPagingController = PagingController<int, AllLiveLeadData>(
-    getNextPageKey: (state) =>
-        state.lastPageIsEmpty ? null : state.nextIntPageKey,
+    getNextPageKey: (state) => state.lastPageIsEmpty ? null : state.nextIntPageKey,
     fetchPage: (int pageKey) async {
-      final response =
-          await homeController.fetchAllDriversAvailability(pageKey);
+      final response = await homeController.fetchAllDriversAvailability(pageKey);
       final items = response.data;
       return items ?? [];
     },
   );
 
-  late final myAvailablityPagingController =
-      PagingController<int, LiveLeadData>(
-    getNextPageKey: (state) =>
-        state.lastPageIsEmpty ? null : state.nextIntPageKey,
+  late final myAvailablityPagingController = PagingController<int, LiveLeadData>(
+    getNextPageKey: (state) => state.lastPageIsEmpty ? null : state.nextIntPageKey,
     fetchPage: (int pageKey) async {
       final response = await homeController.fetchMyAvailability(pageKey);
       final items = response.data;
@@ -118,8 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.add_circle_outline,
-                          color: Colors.white, size: 28),
+                      const Icon(Icons.add_circle_outline, color: Colors.white, size: 28),
                       const SizedBox(height: 3),
                       Text(
                         "POST",
@@ -162,14 +157,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          _buildTab(
-                              title: "Booking",
-                              index: 0,
-                              controller: homeController),
-                          _buildTab(
-                              title: "Available",
-                              index: 1,
-                              controller: homeController),
+                          _buildTab(title: "Booking", index: 0, controller: homeController),
+                          _buildTab(title: "Available", index: 1, controller: homeController),
                         ],
                       );
                     }),
@@ -181,9 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Conditional Slivers using Obx + MultiSliver
                 Obx(() {
                   return MultiSliver(
-                    children: homeController.selectedIndex.value == 0
-                        ? _bookingSlivers(state, fetchNextPage)
-                        : _availableSlivers(),
+                    children: homeController.selectedIndex.value == 0 ? _bookingSlivers(state, fetchNextPage) : _availableSlivers(),
                   );
                 }),
               ],
@@ -195,8 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
 // Booking Slivers
-  List<Widget> _bookingSlivers(
-      PagingState<int, Post> state, NextPageCallback fetchNextPage) {
+  List<Widget> _bookingSlivers(PagingState<int, Post> state, NextPageCallback fetchNextPage) {
     return [
       // Emergency Services Section
       SliverToBoxAdapter(
@@ -238,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 items: homeController.banners.map((banner) {
                   final imageUrl = banner.image?.trim().isNotEmpty == true
-                      ? "https://quickcabpune.com/app/${banner.image}"
+                      ? "${Config.baseUrl}${banner.image}"
                       : "https://via.placeholder.com/400x200.png?text=No+Image";
 
                   return Builder(
@@ -246,8 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       return Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          border:
-                              Border.all(color: Colors.grey.shade200, width: 2),
+                          border: Border.all(color: Colors.grey.shade200, width: 2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: ClipRRect(
@@ -260,8 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               return Container(
                                 color: Colors.grey.shade200,
                                 child: Center(
-                                  child: Icon(Icons.broken_image,
-                                      size: 40, color: Colors.grey),
+                                  child: Icon(Icons.broken_image, size: 40, color: Colors.grey),
                                 ),
                               );
                             },
@@ -310,71 +294,51 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text("Filter Leads",
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black)),
+                            Text("Filter Leads", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: homeController.fromLocationController,
-                              style: TextHelper.size18.copyWith(
-                                  color: ColorsForApp.blackColor,
-                                  fontFamily: regularFont),
+                              style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
                               decoration: InputDecoration(
                                 hintText: "Enter from location",
                                 labelText: "From Location",
                                 border: OutlineInputBorder(),
                                 errorStyle: TextStyle(fontSize: 13.sp),
                               ),
-                              onChanged: (value) =>
-                                  homeController.fromLocation.value = value,
-                              validator: (value) =>
-                                  value == null || value.isEmpty
-                                      ? 'Please enter From Location'
-                                      : null,
+                              onChanged: (value) => homeController.fromLocation.value = value,
+                              validator: (value) => value == null || value.isEmpty ? 'Please enter From Location' : null,
                             ),
                             const SizedBox(height: 12),
                             TextFormField(
                               controller: homeController.toLocationController,
-                              style: TextHelper.size18.copyWith(
-                                  color: ColorsForApp.blackColor,
-                                  fontFamily: regularFont),
+                              style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
                               decoration: InputDecoration(
                                 hintText: "Enter to location",
                                 labelText: "To Location",
                                 border: OutlineInputBorder(),
                                 errorStyle: TextStyle(fontSize: 13.sp),
                               ),
-                              onChanged: (value) =>
-                                  homeController.toLocation.value = value,
-                              validator: (value) =>
-                                  value == null || value.isEmpty
-                                      ? 'Please enter To Location'
-                                      : null,
+                              onChanged: (value) => homeController.toLocation.value = value,
+                              validator: (value) => value == null || value.isEmpty ? 'Please enter To Location' : null,
                             ),
                             const SizedBox(height: 20),
                             Row(
                               children: [
                                 Expanded(
                                   child: OutlinedButton(
-                                    onPressed: () {
-                                      homeController.clearFilter();
-                                      activeLeadsPagingController.refresh();
+                                    onPressed: () async {
+                                      homeController.clearFilter(); // reset filter state
+                                      activeLeadsPagingController.refresh(); // clears + triggers reload
                                       Get.back();
                                     },
-                                    child: Text("Clear",
-                                        style: TextHelper.size18.copyWith(
-                                            color: Colors.black,
-                                            fontFamily: boldFont)),
+                                    child: Text("Clear", style: TextHelper.size18.copyWith(color: Colors.black, fontFamily: boldFont)),
                                   ),
                                 ),
                                 SizedBox(width: 12),
                                 Expanded(
                                   child: FilledButton(
                                     onPressed: () {
-                                      if (filterFormKey.currentState!
-                                          .validate()) {
+                                      if (filterFormKey.currentState!.validate()) {
                                         homeController.applyFilter();
                                         activeLeadsPagingController.refresh();
                                         Get.back();
@@ -382,9 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     },
                                     child: Text(
                                       "Apply",
-                                      style: TextHelper.size18.copyWith(
-                                          color: Colors.white,
-                                          fontFamily: boldFont),
+                                      style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: boldFont),
                                     ),
                                   ),
                                 ),
@@ -398,26 +360,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 child: Obx(() {
                   return Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: homeController.isFilterApplied.value
-                          ? ColorsForApp.red
-                          : ColorsForApp.whiteColor,
+                      color: homeController.isFilterApplied.value ? ColorsForApp.red : ColorsForApp.whiteColor,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
                       children: [
                         Icon(Icons.filter_alt_outlined,
-                            color: homeController.isFilterApplied.value
-                                ? ColorsForApp.whiteColor
-                                : ColorsForApp.blackColor,
-                            size: 16),
+                            color: homeController.isFilterApplied.value ? ColorsForApp.whiteColor : ColorsForApp.blackColor, size: 16),
                         SizedBox(width: 4),
-                        Text(
-                            homeController.isFilterApplied.value
-                                ? "Filtered"
-                                : 'Filter',
+                        Text(homeController.isFilterApplied.value ? "Filtered" : 'Filter',
                             style: homeController.isFilterApplied.value
                                 ? TextHelper.size18.copyWith(
                                     fontFamily: semiBoldFont,
@@ -446,8 +399,7 @@ class _HomeScreenState extends State<HomeScreen> {
           itemBuilder: (context, item, index) {
             final lead = item;
             return Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4),
               child: LeadCard(
                 lead: {
                   'name': lead.vendorName,
@@ -473,8 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           firstPageProgressIndicatorBuilder: (_) => leadCardShimmer(),
           newPageProgressIndicatorBuilder: (_) => leadCardShimmer(),
-          noItemsFoundIndicatorBuilder: (_) =>
-              NoDataFoundScreen(title: "NO LEADS FOUND", subTitle: ""),
+          noItemsFoundIndicatorBuilder: (_) => NoDataFoundScreen(title: "NO LEADS FOUND", subTitle: ""),
         ),
       ),
       SliverToBoxAdapter(child: const SizedBox(height: 8)),
@@ -496,12 +447,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 InkWell(
                   onTap: () => homeController.showMyAvailability.value = false,
                   child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 4.5.w, vertical: 0.8.h),
+                    padding: EdgeInsets.symmetric(horizontal: 4.5.w, vertical: 0.8.h),
                     decoration: BoxDecoration(
-                      color: homeController.showMyAvailability.value
-                          ? ColorsForApp.subTitleColor
-                          : ColorsForApp.green,
+                      color: homeController.showMyAvailability.value ? ColorsForApp.subTitleColor : ColorsForApp.green,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Obx(() {
@@ -533,12 +481,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 InkWell(
                   onTap: () => homeController.showMyAvailability.value = true,
                   child: Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 4.5.w, vertical: 0.8.h),
+                    padding: EdgeInsets.symmetric(horizontal: 4.5.w, vertical: 0.8.h),
                     decoration: BoxDecoration(
-                      color: homeController.showMyAvailability.value
-                          ? ColorsForApp.primaryDarkColor
-                          : ColorsForApp.subTitleColor,
+                      color: homeController.showMyAvailability.value ? ColorsForApp.primaryDarkColor : ColorsForApp.subTitleColor,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
@@ -575,12 +520,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           'name': lead.name,
                           'car': lead.car,
                           'location': lead.location,
-                          'from_date':
-                              homeController.formatDateTime(lead.fromDate!),
-                          'from_time':
-                              homeController.formatTime(lead.fromTime!),
-                          'to_date':
-                              homeController.formatDateTime(lead.toDate!),
+                          'from_date': homeController.formatDateTime(lead.fromDate!),
+                          'from_time': homeController.formatTime(lead.fromTime!),
+                          'to_date': homeController.formatDateTime(lead.toDate!),
                           'to_time': homeController.formatTime(lead.toTime!),
                           'phone': lead.phone,
                           'status': lead.status,
@@ -615,8 +557,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             car: lead.car ?? "",
                             location: lead.location ?? "",
                             fromDate: DateTime.parse(lead.fromDate!),
-                            fromTime:
-                                homeController.parseTimeOfDay(lead.fromTime!),
+                            fromTime: homeController.parseTimeOfDay(lead.fromTime!),
                             toDate: DateTime.parse(lead.toDate!),
                             toTime: homeController.parseTimeOfDay(lead.toTime!),
                           );
@@ -626,8 +567,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   firstPageProgressIndicatorBuilder: (_) => leadCardShimmer(),
                   newPageProgressIndicatorBuilder: (_) => leadCardShimmer(),
-                  noItemsFoundIndicatorBuilder: (_) =>
-                      NoDataFoundScreen(title: "NO LEADS FOUND", subTitle: ""),
+                  noItemsFoundIndicatorBuilder: (_) => NoDataFoundScreen(title: "NO LEADS FOUND", subTitle: ""),
                 ),
               );
             },
@@ -649,12 +589,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           'name': lead.name,
                           'car': lead.car,
                           'location': lead.location,
-                          'from_date':
-                              homeController.formatDateTime(lead.fromDate!),
-                          'from_time':
-                              homeController.formatTime(lead.fromTime!),
-                          'to_date':
-                              homeController.formatDateTime(lead.toDate!),
+                          'from_date': homeController.formatDateTime(lead.fromDate!),
+                          'from_time': homeController.formatTime(lead.fromTime!),
+                          'to_date': homeController.formatDateTime(lead.toDate!),
                           'to_time': homeController.formatTime(lead.toTime!),
                           'phone': lead.phone,
                           'status': lead.status,
@@ -686,8 +623,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   firstPageProgressIndicatorBuilder: (_) => leadCardShimmer(),
                   newPageProgressIndicatorBuilder: (_) => leadCardShimmer(),
-                  noItemsFoundIndicatorBuilder: (_) =>
-                      NoDataFoundScreen(title: "NO LEADS FOUND", subTitle: ""),
+                  noItemsFoundIndicatorBuilder: (_) => NoDataFoundScreen(title: "NO LEADS FOUND", subTitle: ""),
                 ),
               );
             },
@@ -986,7 +922,7 @@ class _HomeScreenState extends State<HomeScreen> {
   //               ),
   //               items: homeController.banners.map((banner) {
   //                 final imageUrl = banner.image?.trim().isNotEmpty == true
-  //                     ? "https://quickcabpune.com/app/${banner.image}"
+  //                     ? "${Config.baseUrl}${banner.image}"
   //                     : "https://via.placeholder.com/400x200.png?text=No+Image";
 
   //                 return Builder(
@@ -1291,18 +1227,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                  Text("Post Availability",
-                      style: TextHelper.h6.copyWith(fontFamily: boldFont)),
+                  Text("Post Availability", style: TextHelper.h6.copyWith(fontFamily: boldFont)),
                   const SizedBox(height: 16),
 
                   // Inputs
-                  CustomTextField(
-                      controller: homeController.carController,
-                      label: "Enter Car Name/Model"),
+                  CustomTextField(controller: homeController.carController, label: "Enter Car Name/Model"),
                   const SizedBox(height: 12),
-                  CustomTextField(
-                      controller: homeController.locationController,
-                      label: "Enter Location"),
+                  CustomTextField(controller: homeController.locationController, label: "Enter Location"),
                   const SizedBox(height: 12),
 
                   DateTile(
@@ -1342,12 +1273,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () => Get.back(),
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
-                          child: Text("Cancel",
-                              style: TextHelper.size18
-                                  .copyWith(fontFamily: boldFont)),
+                          child: Text("Cancel", style: TextHelper.size18.copyWith(fontFamily: boldFont)),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -1357,10 +1285,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Obx(() {
                           return FilledButton(
                             onPressed: () async {
-                              if (postAvailablityFormKey.currentState!
-                                  .validate()) {
-                                bool response = await homeController
-                                    .postDriverAvailability(context);
+                              if (postAvailablityFormKey.currentState!.validate()) {
+                                bool response = await homeController.postDriverAvailability(context);
                                 if (response) {
                                   // close sheet
                                   Get.back();
@@ -1368,14 +1294,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                   ShowSnackBar.success(
                                     title: 'Success',
-                                    message: homeController
-                                            .driverAvailabilityModel
-                                            .value
-                                            .message ??
-                                        'Availability posted successfully',
+                                    message: homeController.driverAvailabilityModel.value.message ?? 'Availability posted successfully',
                                   );
-                                  homeController.showMyAvailability.value =
-                                      true;
+                                  homeController.showMyAvailability.value = true;
                                   myAvailablityPagingController.refresh();
 
                                   // clear inputs
@@ -1385,8 +1306,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                             style: FilledButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
                             child: homeController.isLoading.value
                                 ? const SizedBox(
@@ -1397,10 +1317,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       color: Colors.white,
                                     ),
                                   )
-                                : Text("Submit",
-                                    style: TextHelper.size18.copyWith(
-                                        color: Colors.white,
-                                        fontFamily: boldFont)),
+                                : Text("Submit", style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: boldFont)),
                           );
                         }),
                       ),
@@ -1448,8 +1365,7 @@ Widget _buildTab({
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
-  const CustomTextField(
-      {super.key, required this.controller, required this.label});
+  const CustomTextField({super.key, required this.controller, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -1464,8 +1380,7 @@ class CustomTextField extends StatelessWidget {
         labelStyle: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      validator: (value) =>
-          value == null || value.isEmpty ? 'Please enter $label' : null,
+      validator: (value) => value == null || value.isEmpty ? 'Please enter $label' : null,
     );
   }
 }
@@ -1474,11 +1389,7 @@ class DateTile extends StatelessWidget {
   final String label;
   final Rx<DateTime> date;
   final VoidCallback onTap;
-  const DateTile(
-      {super.key,
-      required this.label,
-      required this.date,
-      required this.onTap});
+  const DateTile({super.key, required this.label, required this.date, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -1489,15 +1400,13 @@ class DateTile extends StatelessWidget {
           child: InputDecorator(
             decoration: InputDecoration(
               labelText: label,
-              labelStyle:
-                  TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+              labelStyle: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
               prefixIcon: Icon(
                 Icons.calendar_today,
                 color: ColorsForApp.primaryColor,
                 size: 20,
               ),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
             child: Text(
               date.value.toLocal().toString().split(' ')[0],
@@ -1512,11 +1421,7 @@ class TimeTile extends StatelessWidget {
   final String label;
   final Rx<TimeOfDay> time;
   final VoidCallback onTap;
-  const TimeTile(
-      {super.key,
-      required this.label,
-      required this.time,
-      required this.onTap});
+  const TimeTile({super.key, required this.label, required this.time, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -1527,14 +1432,10 @@ class TimeTile extends StatelessWidget {
           child: InputDecorator(
             decoration: InputDecoration(
               labelText: label,
-              labelStyle:
-                  TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
-              prefixIcon:
-                  Icon(Icons.access_time, color: ColorsForApp.primaryColor),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+              labelStyle: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+              prefixIcon: Icon(Icons.access_time, color: ColorsForApp.primaryColor),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
             ),
             child: Text(
               time.value.format(context),
