@@ -1,3 +1,4 @@
+import 'package:QuickCab/controller/app_update_controller.dart';
 import 'package:QuickCab/routes/app_pages.dart';
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:QuickCab/utils/theme_config.dart';
@@ -45,6 +46,7 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   Get.put(NetworkController()); // inject globally
+  Get.put(AppUpdateController());
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // await NotificationService.initialize();
