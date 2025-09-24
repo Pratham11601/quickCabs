@@ -1,3 +1,4 @@
+import 'package:QuickCab/Screens/home_page_module/controller/home_controller.dart';
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:QuickCab/utils/text_styles.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +62,7 @@ class AcceptLeadOtpPopup extends StatelessWidget {
                           style: TextHelper.h7.copyWith(
                               fontFamily: boldFont,
                               color: ColorsForApp.blackColor)),
-                      Text("Enter OTP to confirm",
+                      Text("Enter PIN to confirm",
                           style: TextHelper.size17.copyWith(
                               fontFamily: regularFont,
                               color: ColorsForApp.subtitle)),
@@ -92,15 +93,15 @@ class AcceptLeadOtpPopup extends StatelessWidget {
 
               /// ---------------- OTP Section ----------------
               Text(
-                "Enter 4-digit OTP",
+                "Enter 4-digit PIN",
                 style: TextHelper.size18.copyWith(
                     color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
               ),
               SizedBox(height: 0.5.h),
               Text(
-                "OTP sent to your registered mobile number",
+                "Call $sharedBy and ask pin to accept lead",
                 style: TextHelper.size16.copyWith(
-                    color: ColorsForApp.subtitle, fontFamily: regularFont),
+                    color: ColorsForApp.blackColor, fontFamily: regularFont),
               ),
               SizedBox(height: 2.h),
 
@@ -138,26 +139,6 @@ class AcceptLeadOtpPopup extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 1.5.h),
-
-              /// Resend OTP or Countdown
-              Obx(() {
-                if (controller.isCountdownActive.value) {
-                  return Text("Resend OTP in ${controller.timerSeconds.value}s",
-                      style: TextHelper.size18.copyWith(
-                          color: ColorsForApp.primaryDarkColor,
-                          fontFamily: semiBoldFont));
-                } else {
-                  return GestureDetector(
-                    onTap: controller.resendOtp,
-                    child: Text("Resend OTP",
-                        style: TextHelper.size18.copyWith(
-                            color: ColorsForApp.primaryDarkColor,
-                            fontFamily: semiBoldFont,
-                            decoration: TextDecoration.underline)),
-                  );
-                }
-              }),
               SizedBox(height: 1.5.h),
 
               /// OTP Status Message

@@ -20,18 +20,28 @@ class ActiveLeadRepository {
     return response;
   }
 
-  Future<List<BannerModel>> fetchBannersApiCall() async {
-    var jsonData = await apiManager.getAPICall(
-      url: '/advertise',
-    );
 
-    // ensure response is a List
-    if (jsonData is List) {
-      return jsonData.map((e) => BannerModel.fromJson(e)).toList();
-    } else {
-      return [];
-    }
+  Future<BannerModel> fetchBannersApiCall() async {
+    var jsonData = await apiManager.getAPICall(
+      url: '/advertise/get',
+
+    );
+    var response = BannerModel.fromJson(jsonData);
+    return response;
   }
+
+  // Future<BannerModel> fetchBannersApiCall() async {
+  //   var jsonData = await apiManager.getAPICall(
+  //     url: '/advertise/get',
+  //   );
+
+  //   // ensure response is a List
+  //   if (jsonData is List) {
+  //     return jsonData.map((e) => FormattedAdvertisements.fromJson(e)).toList();
+  //   } else {
+  //     return [];
+  //   }
+  // }
 
   //Live Lead api call
   Future<LiveLeadModel> myAvailabilityApiCall(dynamic pageNumber) async {

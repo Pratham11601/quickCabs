@@ -2,9 +2,11 @@ import 'package:QuickCab/Screens/profile_module/controller/profile_controller.da
 import 'package:QuickCab/notificaton/notifications_services.dart';
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:QuickCab/utils/text_styles.dart';
+import 'package:QuickCab/widgets/cache_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:sizer/sizer.dart';
 
 /// Profile Info Card
 
@@ -46,36 +48,11 @@ class ProfileInfoCard extends StatelessWidget {
             radius: 40,
             backgroundColor: Colors.orange.shade100,
             child: (profileImage.isNotEmpty)
-                ? ClipOval(
-                    child: Image.network(
-                      profileImage,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child; // loaded
-                        return Shimmer.fromColors(
-                          baseColor: Colors.grey.shade300,
-                          highlightColor: Colors.grey.shade100,
-                          child: Container(
-                            width: 80,
-                            height: 80,
-                            color: Colors.grey,
-                          ),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        // fallback to initial if image is broken
-                        return Center(
-                          child: Text(
-                            name.isNotEmpty ? name[0].toUpperCase() : "?",
-                            style: TextHelper.h4.copyWith(
-                              color: ColorsForApp.red,
-                              fontFamily: semiBoldFont,
-                            ),
-                          ),
-                        );
-                      },
+                ? SizedBox(
+                    height: 20.h,
+                    child: CacheImage(
+                      networkUrl: profileImage,
+                      boxShape: BoxShape.circle,
                     ),
                   )
                 : Text(

@@ -114,7 +114,8 @@ class MyDocumentsPage extends StatelessWidget {
               decoration: BoxDecoration(
                 color: ColorsForApp.orange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: ColorsForApp.colorBlue.withValues(alpha: 0.2)),
+                border: Border.all(
+                    color: ColorsForApp.colorBlue.withValues(alpha: 0.2)),
               ),
               child: Column(
                 children: [

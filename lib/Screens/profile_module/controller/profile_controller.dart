@@ -90,38 +90,6 @@ class ProfileController extends GetxController {
     }
   }
 
-  /// Logout function
-  void logout() async {
-    try {
-      // 1. Clear persistent storage
-      await LocalStorage.erase();
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
-      debugPrint("Prefs after clear: ${prefs.getKeys()}"); // debug
-
-      // 2. Clear APIManager token header
-      APIManager().clearAuthorizationHeader();
-
-      // 3. Cancel any ongoing API requests
-      APIManager().cancelRequests();
-
-      // 4. Delete all controllers
-      Get.deleteAll(force: true);
-
-      // 5. Show snackbar first
-      ShowSnackBar.success(
-        title: "Logout",
-        message: "You have been logged out successfully!",
-      );
-
-      // 6. Then navigate
-      Future.delayed(Duration(milliseconds: 300), () {
-        Get.offAllNamed(Routes.LOGIN_SCREEN);
-      });
-    } catch (e) {
-      debugPrint("Logout error: $e");
-    }
-  }
 
   @override
   void onInit() {

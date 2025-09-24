@@ -57,8 +57,6 @@ Widget buildInputField(
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Please enter your fare amount';
-          } else if (int.parse(value) <= 0) {
-            return 'Fare amount should be greater than 0';
           }
           return null;
         },

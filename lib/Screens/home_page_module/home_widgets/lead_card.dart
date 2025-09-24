@@ -60,8 +60,8 @@ class LeadCard extends StatelessWidget {
                                       ? "RENTED TRIP"
                                       : "OTHER TRIP",
                           style: TextHelper.size18.copyWith(
-                            color: ColorsForApp.blackColor,
-                            fontFamily: semiBoldFont,
+                            color: ColorsForApp.colorBlackShade,
+                            fontFamily: boldFont,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -75,7 +75,7 @@ class LeadCard extends StatelessWidget {
                     children: [
                       Text(
                         "Booking Id - ",
-                        style: TextHelper.size16.copyWith(
+                        style: TextHelper.size18.copyWith(
                           color: ColorsForApp.subtle,
                           fontFamily: semiBoldFont,
                         ),
@@ -83,9 +83,9 @@ class LeadCard extends StatelessWidget {
                       Flexible(
                         child: Text(
                           "QCS${lead['id'] ?? ''}",
-                          style: TextHelper.size16.copyWith(
+                          style: TextHelper.size18.copyWith(
                             color: ColorsForApp.blackColor,
-                            fontFamily: semiBoldFont,
+                            fontFamily: boldFont,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,

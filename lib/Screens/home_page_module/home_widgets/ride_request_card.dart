@@ -83,9 +83,12 @@ class _RideRequestCardState extends State<RideRequestCard> {
               ),
               Obx(
                 () => Container(
-                  padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
                   decoration: BoxDecoration(
-                    color: status.value == 1 ? ColorsForApp.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                    color: status.value == 1
+                        ? ColorsForApp.green.withOpacity(0.1)
+                        : Colors.red.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(2.w),
                   ),
                   child: Row(
@@ -94,7 +97,9 @@ class _RideRequestCardState extends State<RideRequestCard> {
                       Text(
                         status.value == 1 ? "Active" : "Inactive",
                         style: TextHelper.size18.copyWith(
-                          color: status.value == 1 ? ColorsForApp.green : Colors.red,
+                          color: status.value == 1
+                              ? ColorsForApp.green
+                              : Colors.red,
                           fontFamily: boldFont,
                         ),
                         overflow: TextOverflow.ellipsis,
@@ -129,7 +134,8 @@ class _RideRequestCardState extends State<RideRequestCard> {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(Icons.directions_car_outlined, color: ColorsForApp.colorBlue),
+                    Icon(Icons.directions_car_outlined,
+                        color: ColorsForApp.colorBlue),
                     SizedBox(width: 1.w),
                     Text(
                       car,
@@ -164,7 +170,9 @@ class _RideRequestCardState extends State<RideRequestCard> {
           // From Date
           Row(
             children: [
-              Icon(Icons.calendar_month, color: ColorsForApp.blackColor.withValues(alpha: 0.4), size: 2.h),
+              Icon(Icons.calendar_month,
+                  color: ColorsForApp.blackColor.withValues(alpha: 0.4),
+                  size: 2.h),
               SizedBox(width: 1.w),
               Expanded(
                 child: Text(
@@ -182,7 +190,9 @@ class _RideRequestCardState extends State<RideRequestCard> {
           // To Date
           Row(
             children: [
-              Icon(Icons.calendar_month_rounded, color: ColorsForApp.blackColor.withValues(alpha: 0.4), size: 2.h),
+              Icon(Icons.calendar_month_rounded,
+                  color: ColorsForApp.blackColor.withValues(alpha: 0.4),
+                  size: 2.h),
               SizedBox(width: 1.w),
               Expanded(
                 child: Text(
@@ -207,7 +217,8 @@ class _RideRequestCardState extends State<RideRequestCard> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                icon: Icon(FontAwesomeIcons.whatsapp, color: ColorsForApp.whiteColor),
+                icon: Icon(FontAwesomeIcons.whatsapp,
+                    color: ColorsForApp.whiteColor),
                 label: Text(
                   "WhatsApp",
                   style: TextHelper.size18.copyWith(
