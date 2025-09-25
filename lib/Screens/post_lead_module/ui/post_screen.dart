@@ -123,13 +123,21 @@ class PostScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   child: Obx(() {
                     bool isRouteDetails = controller.currentStep.value == 0;
-                    final isLastStep = controller.currentStep.value == 2; //  2 is your last page (Price Confirmation)
+                    final isLastStep = controller.currentStep.value == 2; // Last page (Price Confirmation)
 
                     return Row(
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: isRouteDetails ? controller.cancel : controller.previousStep,
+                            onPressed: () {
+                              if (isRouteDetails) {
+                                controller.cancel();
+                              } else {
+                                // Reset subtype selection when going back
+                                controller.selectedSubTypeIndex.value = null;
+                                controller.previousStep();
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               backgroundColor: Colors.grey.shade200,
@@ -161,16 +169,16 @@ class PostScreen extends StatelessWidget {
                                   }
                                 : null,
                             style: ButtonStyle(
-                              minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
-                              backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                              minimumSize: MaterialStateProperty.all(const Size(double.infinity, 50)),
+                              backgroundColor: MaterialStateProperty.resolveWith<Color>(
                                 (states) {
-                                  if (states.contains(WidgetState.disabled)) {
+                                  if (states.contains(MaterialState.disabled)) {
                                     return ColorsForApp.cta;
                                   }
                                   return ColorsForApp.primaryColor;
                                 },
                               ),
-                              shape: WidgetStateProperty.all(
+                              shape: MaterialStateProperty.all(
                                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                               ),
                             ),
@@ -270,7 +278,8 @@ class PostScreen extends StatelessWidget {
             Colors.green,
             locCtrl.pickupController,
             focusNode: locCtrl.pickupFocus,
-            onChanged: (val) => locCtrl.debouncePickup.value = val,
+            // onChanged: (val) => locCtrl.debouncePickup.value = val,
+            onChanged: (val) => locCtrl.onPickupChanged(val),
           ),
           // small gap
           const SizedBox(height: 6),
@@ -320,7 +329,7 @@ class PostScreen extends StatelessWidget {
             Colors.red,
             locCtrl.dropController,
             focusNode: locCtrl.dropFocus,
-            onChanged: (val) => locCtrl.debounceDrop.value = val,
+            onChanged: (val) => locCtrl.onDropChanged(val),
           ),
           const SizedBox(height: 6),
           Obx(() {
@@ -401,120 +410,238 @@ class PostScreen extends StatelessWidget {
   Widget _buildTripInformation(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text("trip_information".tr, style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont)),
-        const SizedBox(height: 16),
-        Text("vehicle_type".tr, style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
-        const SizedBox(height: 8),
-
-        // Vehicle Grid (static grid; each item is reactive)
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: controller.vehicles.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 1,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "trip_information".tr,
+            style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont),
           ),
-          itemBuilder: (context, index) {
-            final vehicle = controller.vehicles[index];
+          const SizedBox(height: 16),
+          Text(
+            "vehicle_type".tr,
+            style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+          ),
+          const SizedBox(height: 8),
 
-            return Obx(() {
-              final bool isSelected = controller.selectedVehicleIndex.value == index;
-              final Color color = vehicle["color"] as Color;
-              final String name = vehicle["name"] as String;
-              final String seats = (vehicle["seats"] as String?) ?? "";
+          /// Vehicle / Subtype Grid
+          Obx(() {
+            final selectedIdx = controller.selectedVehicleIndex.value;
+            final vehicleName = selectedIdx != null ? controller.vehicles[selectedIdx]["name"] as String : null;
+            final hasSubTypes = vehicleName != null && controller.vehicleSubTypes.containsKey(vehicleName);
 
-              return GestureDetector(
-                onTap: () => controller.selectVehicle(index),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isSelected ? color.withOpacity(0.2) : Colors.white,
-                    border: Border.all(color: isSelected ? color : Colors.grey.shade300, width: 2),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [BoxShadow(color: Colors.grey.shade200, blurRadius: 6, spreadRadius: 1, offset: const Offset(0, 3))],
-                  ),
-                  child: Center(
-                    child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      Icon(Icons.directions_car, color: color),
-                      const SizedBox(height: 6),
-                      Flexible(
-                        child: Text(name,
-                            textAlign: TextAlign.center,
-                            style: TextHelper.size16.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
-                      ),
-                      if (seats.isNotEmpty)
-                        Text(seats, style: TextHelper.size17.copyWith(color: ColorsForApp.subTitleColor, fontFamily: regularFont)),
-                    ]),
-                  ),
-                ),
-              );
-            });
-          },
-        ),
-
-        const SizedBox(height: 16),
-
-        // Seat Configuration (only for vehicles marked with "seatConfig": true)
-        Obx(() {
-          final int? idx = controller.selectedVehicleIndex.value;
-          final bool showConfig = idx != null && (controller.vehicles[idx]["seatConfig"] == true);
-          if (!showConfig) return const SizedBox.shrink();
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("seat_configuration".tr, style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
-              const SizedBox(height: 8),
-              GridView.count(
-                crossAxisCount: 3, // 3 items per row
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-                childAspectRatio: 1.5, // width / height ratio
+            if (!hasSubTypes || controller.showMainVehicles.value) {
+              // Show main vehicle grid
+              return GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
+                itemCount: controller.vehicles.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 1,
+                ),
+                itemBuilder: (context, index) {
+                  final vehicle = controller.vehicles[index];
+                  return Obx(() {
+                    final isSelected = controller.selectedVehicleIndex.value == index;
+                    final Color color = vehicle["color"] as Color;
+                    final String name = vehicle["name"] as String;
+                    final String seats = (vehicle["seats"] as String?) ?? "";
+
+                    return GestureDetector(
+                      onTap: () {
+                        controller.selectVehicle(index);
+                        controller.selectedSubTypeIndex.value = null;
+                        // If vehicle has subtypes, hide main vehicles
+                        if (controller.vehicleSubTypes.containsKey(name)) {
+                          controller.showMainVehicles.value = false;
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isSelected ? color.withOpacity(0.2) : Colors.white,
+                          border: Border.all(color: isSelected ? color : Colors.grey.shade300, width: 2),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [BoxShadow(color: Colors.grey.shade200, blurRadius: 6, spreadRadius: 1, offset: const Offset(0, 3))],
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.directions_car, color: color),
+                              const SizedBox(height: 6),
+                              Flexible(
+                                child: Text(
+                                  name,
+                                  textAlign: TextAlign.center,
+                                  style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor),
+                                ),
+                              ),
+                              if (seats.isNotEmpty)
+                                Text(
+                                  seats,
+                                  style: TextHelper.size17.copyWith(color: ColorsForApp.subTitleColor, fontFamily: regularFont),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  });
+                },
+              );
+            } else {
+              // Show selected vehicle + subtypes
+              final subTypes = controller.vehicleSubTypes[vehicleName]!;
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _seatOption("9-seater", 9),
-                  _seatOption("13-seater", 13),
-                  _seatOption("17-seater", 17),
-                  _seatOption("20-seater", 20),
-                  _seatOption("27-seater", 27),
-                  _seatOption("32-seater", 32),
-                  _seatOption("45-seater", 45),
-                  _seatOption("50-seater", 50),
+                  // Selected Vehicle Card
+                  Card(
+                    color: Colors.grey.shade200,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.directions_car, color: controller.vehicles[selectedIdx!]["color"] as Color),
+                          const SizedBox(width: 12),
+                          Text(vehicleName, style: TextHelper.size18.copyWith(fontFamily: semiBoldFont)),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () {
+                              controller.showMainVehicles.value = true;
+                              controller.selectedVehicleIndex.value = null;
+                              controller.selectedSubTypeIndex.value = null;
+                            },
+                            child: Icon(Icons.edit, color: Colors.grey.shade700),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Subtypes Grid
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: subTypes.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 1,
+                    ),
+                    itemBuilder: (context, index) {
+                      final subType = subTypes[index];
+                      final Color color = subType["color"] as Color;
+                      final String name = subType["name"] as String;
+                      return Obx(() {
+                        final isSelected = controller.selectedSubTypeIndex.value == index;
+                        return GestureDetector(
+                          onTap: () => controller.selectSubType(index),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isSelected ? color.withOpacity(0.2) : Colors.white,
+                              border: Border.all(color: isSelected ? color : Colors.grey.shade300, width: 2),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(color: Colors.grey.shade200, blurRadius: 6, spreadRadius: 1, offset: const Offset(0, 3))
+                              ],
+                            ),
+                            child: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.directions_car, color: color),
+                                  const SizedBox(height: 6),
+                                  Flexible(
+                                    child: Text(
+                                      name,
+                                      textAlign: TextAlign.center,
+                                      style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      });
+                    },
+                  ),
                 ],
-              )
+              );
+            }
+          }),
+
+          const SizedBox(height: 16),
+
+          // Seat Configuration (if applicable)
+          Obx(() {
+            final int? idx = controller.selectedVehicleIndex.value;
+            final bool showConfig = idx != null && (controller.vehicles[idx]["seatConfig"] == true);
+            if (!showConfig) return const SizedBox.shrink();
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("seat_configuration".tr, style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                const SizedBox(height: 8),
+                GridView.count(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                  childAspectRatio: 1.5,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    _seatOption("9-seater", 9),
+                    _seatOption("13-seater", 13),
+                    _seatOption("17-seater", 17),
+                    _seatOption("20-seater", 20),
+                    _seatOption("27-seater", 27),
+                    _seatOption("32-seater", 32),
+                    _seatOption("45-seater", 45),
+                    _seatOption("50-seater", 50),
+                  ],
+                )
+              ],
+            );
+          }),
+
+          const SizedBox(height: 16),
+
+          // Date & Time pickers
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => controller.selectFromDate(context),
+                  child: Obx(() => _buildInputBox(
+                        icon: Icons.calendar_today,
+                        text: controller.formattedDate,
+                      )),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => controller.selectFromTime(context),
+                  child: Obx(() => _buildInputBox(
+                        icon: Icons.access_time,
+                        text: controller.formattedTime(context),
+                      )),
+                ),
+              ),
             ],
-          );
-        }),
-
-        const SizedBox(height: 16),
-
-        // Date & Time pickers
-        Row(children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: () => controller.selectFromDate(context),
-              child: Obx(() => _buildInputBox(
-                    icon: Icons.calendar_today,
-                    text: controller.formattedDate,
-                  )),
-            ),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: GestureDetector(
-              onTap: () => controller.selectFromTime(context),
-              child: Obx(() => _buildInputBox(
-                    icon: Icons.access_time,
-                    text: controller.formattedTime(context),
-                  )),
-            ),
-          ),
-        ]),
-      ]),
+        ],
+      ),
     );
   }
 

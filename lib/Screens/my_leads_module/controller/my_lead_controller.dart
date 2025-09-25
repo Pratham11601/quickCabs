@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../api/api_manager.dart';
+import '../../../utils/date_time_picker.dart';
 import '../../post_lead_module/repository/post_lead_repository.dart';
 import '../model/mylead_model.dart';
 import '../repository/mylead_repository.dart';
@@ -18,8 +19,6 @@ class MyLeadsController extends GetxController {
 
   // Observable fields
   RxBool isTripActive = true.obs;
-  Rx<DateTime> selectedDate = DateTime.now().obs;
-  Rx<TimeOfDay> selectedTime = TimeOfDay.now().obs;
   RxString fromLocation = ''.obs;
   RxString toLocation = ''.obs;
   RxString vendorMobile = ''.obs;
@@ -30,13 +29,12 @@ class MyLeadsController extends GetxController {
 
   final MyLeadRepository repository = MyLeadRepository(APIManager());
   // final PostController locCtrl = Get.find<PostController>();
-  final PostLeadRepository postLeadRepository =
-      PostLeadRepository(APIManager());
+  final PostLeadRepository postLeadRepository = PostLeadRepository(APIManager());
 
   //For debounce
   // Debounce observables (updated by onChanged)
-  final debouncePickup = ''.obs;
-  final debounceDrop = ''.obs;
+  // final debouncePickup = ''.obs;
+  // final debounceDrop = ''.obs;
 
   // Loading flags (optional)
   final isLoadingPickup = false.obs;
@@ -67,7 +65,7 @@ class MyLeadsController extends GetxController {
   final pickupFocus = FocusNode();
   final dropFocus = FocusNode();
 
-  void setupDebouncers() {
+  /*void setupDebouncers() {
     debounce(fromLocation, (String? val) {
       if (!isEditing.value) return; // 🚫 Ignore prefill changes
       _handlePickupDebounce(val ?? '');
@@ -77,15 +75,14 @@ class MyLeadsController extends GetxController {
       if (!isEditing.value) return; // 🚫 Ignore prefill changes
       _handleDropDebounce(val ?? '');
     }, time: const Duration(milliseconds: 500));
-  }
+  }*/
 
-  void _handlePickupDebounce(String q) {
+/*  void _handlePickupDebounce(String q) {
     final now = DateTime.now();
     if (q.length >= 3) {
       if (q.length > _lastPickupLength) {
         fetchLocations(q, isPickup: true);
-      } else if (q.length < _lastPickupLength &&
-          now.difference(_lastPickupInputTime).inSeconds >= 3) {
+      } else if (q.length < _lastPickupLength && now.difference(_lastPickupInputTime).inSeconds >= 3) {
         fetchLocations(q, isPickup: true);
       } else {
         pickupSuggestions.clear();
@@ -104,8 +101,7 @@ class MyLeadsController extends GetxController {
     if (q.length >= 3) {
       if (q.length > _lastDropLength) {
         fetchLocations(q, isPickup: false);
-      } else if (q.length < _lastDropLength &&
-          now.difference(_lastDropInputTime).inSeconds >= 3) {
+      } else if (q.length < _lastDropLength && now.difference(_lastDropInputTime).inSeconds >= 3) {
         fetchLocations(q, isPickup: false);
       } else {
         dropSuggestions.clear();
@@ -117,13 +113,13 @@ class MyLeadsController extends GetxController {
     }
     _lastDropLength = q.length;
     _lastDropInputTime = now;
-  }
+  }*/
 
   @override
   void onInit() {
     super.onInit();
     fetchLeads(forceRefresh: true);
-    setupDebouncers();
+    // setupDebouncers();
     // Focus listeners: hide suggestions when field loses focus
     pickupFocus.addListener(() {
       if (!pickupFocus.hasFocus) {
@@ -158,7 +154,7 @@ class MyLeadsController extends GetxController {
 
   // Method to set lead data before editing
   void setLeadData(Lead lead) {
-    isEditing.value = false; // 🚫 disable debounce during prefill
+    // isEditing.value = false; // 🚫 disable debounce during prefill
 
     // fill values
     fromLocation.value = lead.locationFrom ?? '';
@@ -170,11 +166,20 @@ class MyLeadsController extends GetxController {
     carModelController.text = lead.carModel ?? '';
     fareController.text = lead.fare ?? '';
     vendorMobile.value = lead.vendorContact ?? '';
+    // Parse date string safely
+    // For date
+    selectedDate.value = lead.date; // already a DateTime
 
+    // For time (assuming lead.time is String like "14:30")
+    if (lead.time != null && lead.time!.isNotEmpty) {
+      selectedTime.value = parseTimeOfDay(lead.time!);
+    } else {
+      selectedTime.value = null;
+    }
     // enable debounce after short delay (so UI settles)
-    Future.delayed(const Duration(milliseconds: 300), () {
-      isEditing.value = true; // ✅ now user typing will trigger debounce
-    });
+    // Future.delayed(const Duration(milliseconds: 300), () {
+    //   isEditing.value = true; // ✅ now user typing will trigger debounce
+    // });
   }
 
   /// call this to set text and clear suggestions when user picks an item
@@ -201,8 +206,7 @@ class MyLeadsController extends GetxController {
       } else {
         isLoadingDrop.value = true;
       }
-      final response =
-          await postLeadRepository.fetchLocationForPost(location: query);
+      final response = await postLeadRepository.fetchLocationForPost(location: query);
       final results = response.results ?? [];
 
       final suggestions = results.map<Map<String, String>>((item) {
@@ -253,15 +257,101 @@ class MyLeadsController extends GetxController {
     }
   }
 
+  // Observables for date & time
+  final Rxn<DateTime> selectedDate = Rxn<DateTime>();
+  final Rxn<TimeOfDay> selectedTime = Rxn<TimeOfDay>();
+
+// Format date for UI
+  String get formattedDate => selectedDate.value == null ? "dd/MM/yyyy" : DateFormat("dd/MM/yyyy").format(selectedDate.value!);
+
+// Format time for UI (uses 24-hour format by default)
+  String formattedTime(BuildContext ctx) => selectedTime.value == null ? "--:--" : selectedTime.value!.format(ctx);
+
+// Convert TimeOfDay to 12-hour formatted string
+  String formatTime12Hour(TimeOfDay time) {
+    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final period = time.period == DayPeriod.am ? "AM" : "PM";
+    return "$hour:$minute $period";
+  }
+
+// Pick a date
+  Future<void> selectFromDate(BuildContext context) async {
+    final now = DateTime.now();
+
+    // Use selectedDate if not null, else today
+    final initial = selectedDate.value ?? now;
+
+    // Ensure initialDate is not before firstDate
+    final initialDate = initial.isBefore(now) ? now : initial;
+
+    final picked = await AppDateTimePicker.pickDate(
+      context,
+      initialDate: initialDate,
+      firstDate: now, // can't pick past dates
+      lastDate: DateTime(now.year + 5),
+    );
+
+    if (picked != null) {
+      selectedDate.value = picked;
+    }
+  }
+
+// Pick a time
+  Future<void> selectFromTime(BuildContext context) async {
+    final picked = await AppDateTimePicker.pickTime(
+      context,
+      initialTime: selectedTime.value ?? TimeOfDay.now(),
+    );
+
+    if (picked != null) {
+      selectedTime.value = picked;
+    }
+  }
 
   Rx<EditLeadModel> editModelResponse = EditLeadModel().obs;
 
+  // Future<bool> editRideLead({bool isLoaderShow = true}) async {
+  //   final params = {
+  //     "date": selectedDate.value != null ? DateFormat('yyyy-MM-dd').format(selectedDate.value!) : null, // optional: omit if null
+  //     "time": selectedTime.value?.format(Get.context!),
+  //     "locationFrom": fromLocationController.text,
+  //     "location_from_area": "",
+  //     "toLocation": toLocationController.text,
+  //     "to_location_area": "",
+  //     "car_model": carModelController.text.trim(),
+  //     "add_on": "",
+  //     "fare": fareController.text.trim(),
+  //     "cab_number": "",
+  //     "vendor_contact": vendorMobile.value,
+  //   };
+  //
+  //   try {
+  //     isLoading.value = true;
+  //     editModelResponse.value = await repository.editLeadApiCall(
+  //       params: params,
+  //       leadId: selectedId.value,
+  //     );
+  //     if (editModelResponse.value.status == true) {
+  //       isLoading.value = true;
+  //       return true;
+  //     } else {
+  //       isLoading.value = false;
+  //       ShowSnackBar.error(title: 'Error', message: editModelResponse.value.message ?? 'Failed to update lead');
+  //       return false;
+  //     }
+  //   } catch (e) {
+  //     isLoading.value = false;
+  //     ShowSnackBar.error(title: 'Error', message: 'Something went wrong. Please try again.');
+  //     return false;
+  //   }
+  // }
+
   Future<bool> editRideLead({bool isLoaderShow = true}) async {
     final params = {
-      "date": DateFormat('yyyy-MM-dd').format(selectedDate.value),
-      "time": selectedTime.value.format(Get.context!),
-      "locationFrom":
-          fromLocationController.text, // ✅ use debounce if user typed new value
+      "date": DateFormat('yyyy-MM-dd').format(selectedDate.value!),
+      "time": selectedTime.value?.format(Get.context!),
+      "locationFrom": fromLocationController.text, // ✅ use debounce if user typed new value
       "location_from_area": "",
       "toLocation": toLocationController.text, // ✅ same for drop
       "to_location_area": "",
@@ -279,20 +369,16 @@ class MyLeadsController extends GetxController {
         leadId: selectedId.value,
       );
       if (editModelResponse.value.status == true) {
-        isLoading.value = true;
+        isLoading.value = false;
         return true;
       } else {
         isLoading.value = false;
-        ShowSnackBar.error(
-            title: 'Error',
-            message:
-                editModelResponse.value.message ?? 'Failed to update lead');
+        ShowSnackBar.error(title: 'Error', message: editModelResponse.value.message ?? 'Failed to update lead');
         return false;
       }
     } catch (e) {
       isLoading.value = false;
-      ShowSnackBar.error(
-          title: 'Error', message: 'Something went wrong. Please try again.');
+      ShowSnackBar.error(title: 'Error', message: 'Something went wrong. Please try again.');
       return false;
     }
   }

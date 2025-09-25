@@ -28,37 +28,93 @@ class PostController extends GetxController {
   final RxInt tripType = 0.obs;
 
   // ── Vehicle & Seat Config ────────────────────────────────────────────────────
+  /// Vehicle selection
   final RxnInt selectedVehicleIndex = RxnInt();
+  final RxnInt selectedSubTypeIndex = RxnInt();
   final RxnInt selectedSeatConfig = RxnInt();
 
+  /// Show main vehicle grid or subtype grid
+  final RxBool showMainVehicles = true.obs;
+
+  /// Vehicles list
   // If a vehicle needs seat configuration, mark it with "seatConfig": true
   final List<Map<String, dynamic>> vehicles = <Map<String, dynamic>>[
     {"name": "Hatchback", "seats": "", "color": Colors.orange},
     {"name": "Sedan", "seats": "", "color": Colors.blue},
     {"name": "SUV", "seats": "", "color": Colors.green},
-    {
-      "name": "Innova Crysta",
-      "seats": "",
-      "color": Colors.amber,
-    },
     {"name": "Tempo Traveler", "seats": "", "color": Colors.blue},
     {"name": "Force Urbania", "seats": "", "color": Colors.red},
     {"name": "Mini Bus", "seats": "", "color": Colors.blue},
     {"name": "Bus", "seats": "", "color": Colors.green, "seatConfig": true},
-    {"name": "Luxury Cars", "seats": "", "color": Colors.amber},
     {"name": "Only Parcel", "seats": "", "color": Colors.red},
   ];
+
+  /// Vehicle subtypes with colors
+  final Map<String, List<Map<String, dynamic>>> vehicleSubTypes = {
+    "Sedan": [
+      {"name": "Desire", "color": Colors.blue},
+      {"name": "Etios", "color": Colors.blue},
+      {"name": "Xcent Aura", "color": Colors.blue}
+    ],
+    "SUV": [
+      {"name": "Innova", "color": Colors.green},
+      {"name": "Innova Crysta", "color": Colors.green},
+      {"name": "Ertiga", "color": Colors.green},
+      {"name": "Tavera", "color": Colors.green}
+    ],
+  };
+
+  /// Select a main vehicle
+  void selectVehicle(int index) {
+    selectedVehicleIndex.value = index;
+    selectedSubTypeIndex.value = null;
+
+    final vehicleName = vehicles[index]["name"] as String;
+    if (vehicleSubTypes.containsKey(vehicleName)) {
+      showMainVehicles.value = false; // show subtypes
+    } else {
+      showMainVehicles.value = true; // keep showing main grid
+    }
+  }
+
+  /// Select a subtype
+  void selectSubType(int index) {
+    selectedSubTypeIndex.value = index;
+  }
+
+  /// Reset selection (e.g., go back to main vehicle grid)
+  void resetSelection() {
+    selectedVehicleIndex.value = null;
+    selectedSubTypeIndex.value = null;
+    showMainVehicles.value = true;
+  }
+
+  /// Get selected vehicle string
+  String getSelectedCarModel() {
+    if (selectedVehicleIndex.value == null) return "";
+
+    final vehicle = vehicles[selectedVehicleIndex.value!];
+    final vehicleName = vehicle["name"] as String;
+    final seat = selectedSeatConfig.value != null ? " ${selectedSeatConfig.value} Seater" : "";
+
+    // Check if subtype selected
+    if (selectedSubTypeIndex.value != null && vehicleSubTypes.containsKey(vehicleName)) {
+      final subType = vehicleSubTypes[vehicleName]![selectedSubTypeIndex.value!]["name"] as String;
+      return "$vehicleName - $subType$seat";
+    }
+
+    return "$vehicleName$seat";
+  }
+
+  void selectSeatConfig(int seats) => selectedSeatConfig.value = seats;
 
   // ── Date & Time ──────────────────────────────────────────────────────────────
   final Rxn<DateTime> selectedDate = Rxn<DateTime>();
   final Rxn<TimeOfDay> selectedTime = Rxn<TimeOfDay>();
 
-  String get formattedDate => selectedDate.value == null
-      ? "dd/mm/yyyy"
-      : DateFormat("dd/MM/yyyy").format(selectedDate.value!);
+  String get formattedDate => selectedDate.value == null ? "dd/mm/yyyy" : DateFormat("dd/MM/yyyy").format(selectedDate.value!);
 
-  String formattedTime(BuildContext ctx) =>
-      selectedTime.value == null ? "--:--" : selectedTime.value!.format(ctx);
+  String formattedTime(BuildContext ctx) => selectedTime.value == null ? "--:--" : selectedTime.value!.format(ctx);
 
   String formatTime12Hour(TimeOfDay time) {
     final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
@@ -84,16 +140,8 @@ class PostController extends GetxController {
   }
 
   void validateForm() {
-    isFormValid.value =
-        pickupController.text.isNotEmpty && dropController.text.isNotEmpty;
+    isFormValid.value = pickupController.text.isNotEmpty && dropController.text.isNotEmpty;
   }
-
-  void selectVehicle(int index) {
-    selectedVehicleIndex.value = index;
-    selectedSeatConfig.value = null; // reset seat choice when vehicle changes
-  }
-
-  void selectSeatConfig(int seats) => selectedSeatConfig.value = seats;
 
   Future<void> selectFromDate(BuildContext context) async {
     final picked = await AppDateTimePicker.pickDate(
@@ -118,8 +166,7 @@ class PostController extends GetxController {
   }
 
   var currentStep = 0.obs;
-  var isFormValid =
-      false.obs; // this will control the Next button enabled/disabled
+  var isFormValid = false.obs; // this will control the Next button enabled/disabled
 
   bool validateTripInformation() {
     // Validate Date
@@ -138,9 +185,7 @@ class PostController extends GetxController {
     final int? idx = selectedVehicleIndex.value;
     if (idx != null && vehicles[idx]["seatConfig"] == true) {
       if (selectedSeatConfig.value == null) {
-        ShowSnackBar.info(
-            title: 'Select Seat',
-            message: "Please select a Seat Configuration");
+        ShowSnackBar.info(title: 'Select Seat', message: "Please select a Seat Configuration");
 
         return false;
       }
@@ -177,7 +222,7 @@ class PostController extends GetxController {
     dropController.addListener(validateForm);
 
     // Listen to text changes with debounce
-    setupDebouncers();
+    // setupDebouncers();
 
     // Focus listeners: hide suggestions when field loses focus
     pickupFocus.addListener(() {
@@ -215,8 +260,8 @@ class PostController extends GetxController {
   final dropFocus = FocusNode();
 
   // Debounce observables (updated by onChanged)
-  final debouncePickup = ''.obs;
-  final debounceDrop = ''.obs;
+/*  final debouncePickup = ''.obs;
+  final debounceDrop = ''.obs;*/
 
   // Loading flags (optional)
   final isLoadingPickup = false.obs;
@@ -231,14 +276,14 @@ class PostController extends GetxController {
   final showDropSuggestions = false.obs;
 
   // Track last lengths
-  int _lastPickupLength = 0;
+  /* int _lastPickupLength = 0;
   int _lastDropLength = 0;
 
   // Track last typing times
   DateTime _lastPickupInputTime = DateTime.now();
-  DateTime _lastDropInputTime = DateTime.now();
+  DateTime _lastDropInputTime = DateTime.now();*/
 
-  void setupDebouncers() {
+  /*void setupDebouncers() {
     // Pickup debounce
     debounce(debouncePickup, (String? val) {
       final q = val?.trim() ?? '';
@@ -293,6 +338,26 @@ class PostController extends GetxController {
       _lastDropLength = q.length;
       _lastDropInputTime = now;
     }, time: const Duration(milliseconds: 500));
+  }*/
+
+  /// Called when pickup text changes
+  void onPickupChanged(String val) {
+    if (val.trim().length >= 3) {
+      fetchLocations(val.trim(), isPickup: true);
+    } else {
+      pickupSuggestions.clear();
+      showPickupSuggestions.value = false;
+    }
+  }
+
+  /// Called when drop text changes
+  void onDropChanged(String val) {
+    if (val.trim().length >= 3) {
+      fetchLocations(val.trim(), isPickup: false);
+    } else {
+      dropSuggestions.clear();
+      showDropSuggestions.value = false;
+    }
   }
 
   /// API call
@@ -305,8 +370,7 @@ class PostController extends GetxController {
       } else {
         isLoadingDrop.value = true;
       }
-      final response =
-          await postLeadRepository.fetchLocationForPost(location: query);
+      final response = await postLeadRepository.fetchLocationForPost(location: query);
       final results = response.results ?? [];
 
       final suggestions = results.map<Map<String, String>>((item) {
@@ -335,8 +399,7 @@ class PostController extends GetxController {
   }
 
   /// call this to set text and clear suggestions when user picks an item
-  void selectSuggestion(
-      {required bool isPickup, required String name, required String address}) {
+  void selectSuggestion({required bool isPickup, required String name, required String address}) {
     if (isPickup) {
       pickupController.text = name;
       pickupAreaController.text = address;
@@ -352,27 +415,17 @@ class PostController extends GetxController {
     }
   }
 
-  final PostLeadRepository postLeadRepository =
-      PostLeadRepository(APIManager());
+  final PostLeadRepository postLeadRepository = PostLeadRepository(APIManager());
 
   Future<void> submitRideLead({bool isLoaderShow = true}) async {
     final params = {
-      "date": selectedDate.value == null
-          ? ""
-          : DateFormat('yyyy-MM-dd').format(selectedDate.value!),
-      "time": selectedTime.value == null
-          ? ""
-          : formatTime12Hour(selectedTime.value!),
+      "date": selectedDate.value == null ? "" : DateFormat('yyyy-MM-dd').format(selectedDate.value!),
+      "time": selectedTime.value == null ? "" : formatTime12Hour(selectedTime.value!),
       "location_from": pickupController.text.trim(),
       "location_from_area": pickupAreaController.text,
       "to_location": dropController.text.trim(),
       "to_location_area": dropAreaController.text,
-      "car_model": selectedVehicleIndex.value != null &&
-              selectedSeatConfig.value != null
-          ? "${vehicles[selectedVehicleIndex.value!]["name"]} ${selectedSeatConfig.value} Seater"
-          : selectedVehicleIndex.value != null
-              ? "${vehicles[selectedVehicleIndex.value!]["name"]}"
-              : "",
+      "car_model": getSelectedCarModel(),
       "add_on": "",
       "fare": int.tryParse(fareController.text.trim()) ?? 0,
       "cab_number": "",
@@ -382,17 +435,13 @@ class PostController extends GetxController {
 
     try {
       isLoading.value = true;
-      final response = await postLeadRepository.postLeadApiCall(
-          isLoaderShow: isLoaderShow, params: params);
+      final response = await postLeadRepository.postLeadApiCall(isLoaderShow: isLoaderShow, params: params);
       if (response.status == true) {
         await SendNotificationService.sendNotificationUsingApi(
-            pickupAreaController.text,
-            dropAreaController.text,
-            "${int.tryParse(fareController.text) ?? 00}");
+            pickupAreaController.text, dropAreaController.text, "${int.tryParse(fareController.text) ?? 00}");
         showAppDialog(
           title: 'Lead Shared Successfully',
-          message:
-              'Your ride lead has been shared with the driver network. Other drivers can now see and contact you for this trip.',
+          message: 'Your ride lead has been shared with the driver network. Other drivers can now see and contact you for this trip.',
           icon: Icons.check_circle_rounded,
           buttonText: 'OK',
           onConfirm: () {
@@ -401,9 +450,7 @@ class PostController extends GetxController {
         );
       } else {
         isLoading.value = false;
-        ShowSnackBar.error(
-            title: 'Error',
-            message: response.message ?? 'Failed to share lead');
+        ShowSnackBar.error(title: 'Error', message: response.message ?? 'Failed to share lead');
       }
     } catch (e) {
       isLoading.value = false;
@@ -441,15 +488,13 @@ class PostController extends GetxController {
               const SizedBox(height: 20),
               Text(
                 title,
-                style: TextHelper.h7
-                    .copyWith(color: ColorsForApp.green, fontFamily: boldFont),
+                style: TextHelper.h7.copyWith(color: ColorsForApp.green, fontFamily: boldFont),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               Text(
                 message,
-                style: TextHelper.size17.copyWith(
-                    color: ColorsForApp.blackColor, fontFamily: regularFont),
+                style: TextHelper.size17.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
@@ -468,8 +513,7 @@ class PostController extends GetxController {
                 onPressed: onConfirm,
                 child: Text(
                   buttonText,
-                  style: TextHelper.size18.copyWith(
-                      color: ColorsForApp.whiteColor, fontFamily: boldFont),
+                  style: TextHelper.size18.copyWith(color: ColorsForApp.whiteColor, fontFamily: boldFont),
                 ),
               ),
             ],
