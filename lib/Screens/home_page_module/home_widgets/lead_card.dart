@@ -317,22 +317,19 @@ class LeadCard extends StatelessWidget {
           ),
         ),
 
-        /// ---------------- Watermark ----------------
+        /// ---------------- Ribbon BOOKED ----------------
         if (lead['lead_status'] == 'booked')
-          Positioned.fill(
-            child: IgnorePointer(
-              child: Center(
-                child: Transform.rotate(
-                  angle: -0.5, // tilt
-                  child: Text(
-                    "BOOKED",
-                    style: TextStyle(
-                      fontSize: 40.sp, // responsive text
-                      color: Colors.red.withOpacity(0.3),
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 4,
-                    ),
-                  ),
+          Positioned(
+            top: 18,
+            left: -28, // shift to align ribbon
+            child: Transform.rotate(
+              angle: -0.785, // -45 degrees
+              child: Container(
+                width: 120,
+                color: Colors.red,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Center(
+                  child: Text("BOOKED", style: TextHelper.size17.copyWith(color: Colors.white, fontFamily: boldFont, letterSpacing: 1)),
                 ),
               ),
             ),

@@ -263,8 +263,7 @@ class LeadCard extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      Icon(Icons.navigation_outlined,
-                          color: ColorsForApp.green, size: 20),
+                      Icon(Icons.navigation_outlined, color: ColorsForApp.green, size: 20),
                       SizedBox(width: 8),
                       Flexible(
                         child: Text(
@@ -277,11 +276,9 @@ class LeadCard extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 8),
-                      Icon(Icons.arrow_right_alt,
-                          color: Colors.black, size: 20),
+                      Icon(Icons.arrow_right_alt, color: Colors.black, size: 20),
                       SizedBox(width: 8),
-                      Icon(Icons.location_on,
-                          color: ColorsForApp.red, size: 20),
+                      Icon(Icons.location_on, color: ColorsForApp.red, size: 20),
                       SizedBox(width: 6),
                       Flexible(
                         child: Text(
@@ -314,10 +311,8 @@ class LeadCard extends StatelessWidget {
                       iconButtonTheme: IconButtonThemeData(
                         style: ButtonStyle(
                           padding: MaterialStateProperty.all(EdgeInsets.zero),
-                          minimumSize:
-                              MaterialStateProperty.all(const Size(24, 24)),
-                          fixedSize:
-                              MaterialStateProperty.all(const Size(24, 24)),
+                          minimumSize: MaterialStateProperty.all(const Size(24, 24)),
+                          fixedSize: MaterialStateProperty.all(const Size(24, 24)),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                       ),
@@ -327,8 +322,7 @@ class LeadCard extends StatelessWidget {
                       iconSize: 20,
                       icon: const Icon(Icons.more_vert, color: Colors.black),
                       color: ColorsForApp.whiteColor,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       itemBuilder: (context) => [
                         // PopupMenuItem(
                         //   value: 'share',
@@ -343,20 +337,17 @@ class LeadCard extends StatelessWidget {
                           child: Row(children: [
                             Icon(Icons.edit, size: 18),
                             SizedBox(width: 8),
-                            Text("Edit Lead",
-                                style: TextHelper.size17.copyWith(
-                                    color: ColorsForApp.blackColor,
-                                    fontFamily: semiBoldFont)),
+                            Text("Edit Lead", style: TextHelper.size17.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
                           ]),
                         ),
-                        // PopupMenuItem(
-                        //   value: 'delete',
-                        //   child: Row(children: [
-                        //     Icon(Icons.delete, size: 18, color: Colors.red),
-                        //     SizedBox(width: 8),
-                        //     Text("Delete Lead", style: TextHelper.size17.copyWith(color: ColorsForApp.red, fontFamily: semiBoldFont)),
-                        //   ]),
-                        // ),
+                        PopupMenuItem(
+                          value: 'delete',
+                          child: Row(children: [
+                            Icon(Icons.delete, size: 18, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text("Delete Lead", style: TextHelper.size17.copyWith(color: ColorsForApp.red, fontFamily: semiBoldFont)),
+                          ]),
+                        ),
                       ],
                       onSelected: (v) {
                         if (v == 'share') onShare();
@@ -378,8 +369,7 @@ class LeadCard extends StatelessWidget {
                 Flexible(
                   child: Text(
                     lead.carModel ?? '',
-                    style: TextHelper.size18
-                        .copyWith(color: ColorsForApp.blackColor),
+                    style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -392,29 +382,25 @@ class LeadCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.calendar_today,
-                        size: 16, color: ColorsForApp.blackColor),
+                    Icon(Icons.calendar_today, size: 16, color: ColorsForApp.blackColor),
                     SizedBox(width: 6),
                     Text(
                       // ignore: unnecessary_null_comparison
                       lead.date != null
                           ? "${lead.date.year.toString().padLeft(4, '0')}-${lead.date.month.toString().padLeft(2, '0')}-${lead.date.day.toString().padLeft(2, '0')}"
                           : '',
-                      style: TextHelper.size18
-                          .copyWith(color: ColorsForApp.blackColor),
+                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
                 Row(
                   children: [
-                    Icon(Icons.access_time,
-                        size: 16, color: ColorsForApp.blackColor),
+                    Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
                     SizedBox(width: 6),
                     Text(
                       lead.time ?? '',
-                      style: TextHelper.size18
-                          .copyWith(color: ColorsForApp.blackColor),
+                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
@@ -432,8 +418,7 @@ class LeadCard extends StatelessWidget {
               ),
               child: Text(
                 "PIN: ${lead.otp ?? ''}",
-                style: TextHelper.size18
-                    .copyWith(color: ColorsForApp.primaryDarkColor),
+                style: TextHelper.size20.copyWith(color: ColorsForApp.primaryDarkColor),
               ),
             ),
           ],

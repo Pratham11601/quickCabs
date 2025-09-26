@@ -1,3 +1,5 @@
+import 'package:QuickCab/Screens/profile_module/model/help_support_model.dart';
+
 import '../../../api/api_manager.dart';
 import '../model/create_order_model.dart';
 import '../model/packages_model.dart';
@@ -44,6 +46,12 @@ class ProfileRepository {
       params: params,
     );
     var response = RechargeRazorModel.fromJson(jsonData);
+    return response;
+  }
+
+  Future<HelpSupportModel> getHelpSupport() async {
+    var jsonData = await apiManager.getAPICall(url: '/contact-support/get-all');
+    var response = HelpSupportModel.fromJson(jsonData);
     return response;
   }
 }

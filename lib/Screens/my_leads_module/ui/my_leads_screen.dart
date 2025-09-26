@@ -1,9 +1,11 @@
 import 'package:QuickCab/utils/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../../utils/app_colors.dart';
 import '../../../widgets/common_widgets.dart';
+import '../../../widgets/constant_widgets.dart';
 import '../../../widgets/no_data_found.dart';
 import '../../../widgets/shimmer_widget.dart';
 import '../../post_lead_module/controller/post_controller.dart';
@@ -90,7 +92,11 @@ class MyLeadsPage extends StatelessWidget {
                                           controller.selectedId.value = controller.filteredActiveLeads[index].id!;
                                           showEditLeadBottomSheet(context, controller);
                                         },
-                                        onDelete: () => print("Delete"),
+                                        onDelete: () {
+                                          controller.setLeadData(controller.filteredActiveLeads[index]);
+                                          controller.selectedId.value = controller.filteredActiveLeads[index].id!;
+                                          showDeleteDialog(context);
+                                        },
                                       ),
                                     ),
                             ),
@@ -140,8 +146,18 @@ class MyLeadsPage extends StatelessWidget {
     );
   }
 
+  /// Shows a bottom sheet for editing lead information
+  ///
+  /// This function displays a modal bottom sheet containing a form
+  /// for editing various lead details such as date, time, locations,
+  /// car model, and fare.
+  ///
+  /// @param context The BuildContext used to display the bottom sheet
+  /// @param controller The MyLeadsController that manages the form data
   void showEditLeadBottomSheet(BuildContext context, MyLeadsController controller) {
+    // Initialize and permanently store the PostController
     final locCtrl = Get.put(PostController(), permanent: true);
+    // Display the modal bottom sheet
     showModalBottomSheet(
       context: context,
       isScrollControlled: true, // 👈 allows full height scroll
@@ -161,7 +177,7 @@ class MyLeadsPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min, // 👈 wrap content
               children: [
-                // Header Row
+                // Header Row with edit icon and title
                 Row(
                   children: [
                     Icon(Icons.edit, color: ColorsForApp.primaryColor),
@@ -185,7 +201,7 @@ class MyLeadsPage extends StatelessWidget {
                 // ✅ Your same form fields from AlertDialog
                 const SizedBox(height: 16),
 
-                // Trip Active
+                // Trip Active section (currently commented out)
                 /*Row(
                   children: [
                     Expanded(
@@ -207,7 +223,7 @@ class MyLeadsPage extends StatelessWidget {
                 ),*/
                 const SizedBox(height: 16),
 
-                // 📅 Date Picker
+                // 📅 Date Picker section
                 Obx(() => TextFormField(
                       readOnly: true,
                       controller: TextEditingController(
@@ -224,7 +240,7 @@ class MyLeadsPage extends StatelessWidget {
                     )),
                 const SizedBox(height: 16),
 
-                // ⏰ Time Picker
+                // ⏰ Time Picker section
                 Obx(() => TextFormField(
                       readOnly: true,
                       controller: TextEditingController(
@@ -241,7 +257,7 @@ class MyLeadsPage extends StatelessWidget {
                     )),
                 const SizedBox(height: 16),
 
-                // From Location
+                // From Location section with autocomplete suggestions
                 TextFormField(
                   controller: controller.fromLocationController,
                   // onTap: () => controller.isEditing.value = true,
@@ -260,7 +276,7 @@ class MyLeadsPage extends StatelessWidget {
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
-                // suggestions container
+                // suggestions container for pickup locations
                 Obx(() {
                   if (controller.isLoadingPickup.value) {
                     return const Padding(
@@ -301,7 +317,7 @@ class MyLeadsPage extends StatelessWidget {
                 }),
                 const SizedBox(height: 16),
 
-                // To Location
+                // To Location section with autocomplete suggestions
                 TextFormField(
                   controller: controller.toLocationController,
                   // onTap: () => controller.isEditing.value = true,
@@ -319,6 +335,7 @@ class MyLeadsPage extends StatelessWidget {
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
+                // suggestions container for drop locations
                 Obx(() {
                   if (controller.isLoadingDrop.value) {
                     return const Padding(
@@ -362,7 +379,7 @@ class MyLeadsPage extends StatelessWidget {
 
                 const SizedBox(height: 16),
 
-                // Car Model
+                // Car Model input field
                 TextFormField(
                   controller: controller.carModelController,
                   style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
@@ -375,7 +392,7 @@ class MyLeadsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // Fare
+                // Fare input field
                 TextFormField(
                   controller: controller.fareController,
                   style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
@@ -434,6 +451,93 @@ class MyLeadsPage extends StatelessWidget {
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+
+  /// Shows a delete confirmation dialog in the given context.
+  ///
+  /// This function displays a dialog box that prompts the user to confirm
+  /// whether they want to delete a lead. The dialog cannot be dismissed by
+  /// tapping outside of it.
+  ///
+  /// @param context The BuildContext in which to show the dialog.
+  ///
+  /// The dialog contains:
+  /// - A title styled with bold font
+  /// - A content message asking for confirmation
+  /// - Two action buttons: Cancel and Confirm
+  showDeleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevents dialog from being dismissed by tapping outside
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          elevation: 4,
+          title: Text(
+            'Delete Confirmation',
+            style: TextHelper.h7.copyWith(fontFamily: boldFont, color: ColorsForApp.blackColor),
+          ),
+          content: Text(
+            'Are you sure you want to delete this lead?',
+            style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                InkWell(
+                  onTap: () async {
+                    Get.back();
+                  },
+                  splashColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
+                  highlightColor: ColorsForApp.primaryColor.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(100),
+                  child: Text(
+                    'Cancel',
+                    style: TextHelper.size19.copyWith(
+                      fontFamily: regularFont,
+                      color: ColorsForApp.blackColor,
+                    ),
+                  ),
+                ),
+                width(4.w),
+                InkWell(
+                  onTap: () async {
+                    Get.back();
+                    bool response = await controller.deleteRideLead();
+                    if (response == true) {
+                      showAppDialog(
+                        title: "Success",
+                        message: "Lead deleted successfully",
+                        icon: Icons.check_circle_rounded,
+                        buttonText: 'OK',
+                        onConfirm: () async {
+                          await controller.fetchLeads();
+                          Get.back();
+                        },
+                      );
+                    }
+                  },
+                  splashColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
+                  highlightColor: ColorsForApp.primaryColor.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(100),
+                  child: Text(
+                    'Confirm',
+                    style: TextHelper.size19.copyWith(
+                      fontFamily: regularFont,
+                      color: ColorsForApp.primaryDarkColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         );
       },
     );

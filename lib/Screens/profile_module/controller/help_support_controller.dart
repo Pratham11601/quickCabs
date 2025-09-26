@@ -1,5 +1,8 @@
+import 'package:QuickCab/Screens/profile_module/repository/profile_repository.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
+import '../../../api/api_manager.dart';
 import '../model/help_support_model.dart';
 
 class HelpSupportController extends GetxController {
@@ -8,7 +11,7 @@ class HelpSupportController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadMockData(); // Load sample data
+    fetchContacts(); // Load sample data
   }
 
   // // Dummy support contacts
@@ -30,7 +33,7 @@ class HelpSupportController extends GetxController {
   // ].obs;
 
 // Mock data function
-  void loadMockData() {
+  /* void loadMockData() {
     var mockData = HelpSupportModel(
       status: 1,
       data: [
@@ -57,5 +60,20 @@ class HelpSupportController extends GetxController {
     );
 
     contacts.value = mockData.data ?? [];
+  }*/
+
+  var isLoading = false.obs;
+  final ProfileRepository repository = ProfileRepository(APIManager());
+
+  Future<void> fetchContacts({bool forceRefresh = false}) async {
+    try {
+      isLoading.value = true;
+      final response = await repository.getHelpSupport();
+      contacts.assignAll(response.data ?? []);
+    } catch (e) {
+      debugPrint('Error loading contacts: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

@@ -382,4 +382,41 @@ class MyLeadsController extends GetxController {
       return false;
     }
   }
+
+  Future<bool> deleteRideLead({bool isLoaderShow = true}) async {
+    final params = {
+      "date": DateFormat('yyyy-MM-dd').format(selectedDate.value!),
+      "time": selectedTime.value?.format(Get.context!),
+      "locationFrom": fromLocationController.text, // ✅ use debounce if user typed new value
+      "location_from_area": "",
+      "toLocation": toLocationController.text, // ✅ same for drop
+      "to_location_area": "",
+      "car_model": carModelController.text.trim(),
+      "add_on": "",
+      "fare": fareController.text.trim(),
+      "cab_number": "",
+      "vendor_contact": vendorMobile.value,
+      "is_active": 0,
+    };
+
+    try {
+      isLoading.value = true;
+      editModelResponse.value = await repository.editLeadApiCall(
+        params: params,
+        leadId: selectedId.value,
+      );
+      if (editModelResponse.value.status == true) {
+        isLoading.value = false;
+        return true;
+      } else {
+        isLoading.value = false;
+        ShowSnackBar.error(title: 'Error', message: editModelResponse.value.message ?? 'Failed to delete lead');
+        return false;
+      }
+    } catch (e) {
+      isLoading.value = false;
+      ShowSnackBar.error(title: 'Error', message: 'Something went wrong. Please try again.');
+      return false;
+    }
+  }
 }
