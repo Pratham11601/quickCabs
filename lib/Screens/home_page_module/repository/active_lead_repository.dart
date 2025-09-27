@@ -10,38 +10,29 @@ class ActiveLeadRepository {
   ActiveLeadRepository(this.apiManager);
 
   //Active lead api call
-  Future<ActiveLeadModel> activeLeadApiCall(
-      dynamic pageNumber, String? fromLoaction, String? toLoacation) async {
+  Future<ActiveLeadModel> activeLeadApiCall(dynamic pageNumber, String? fromLoaction, String? toLoacation) async {
     var jsonData = await apiManager.getAPICall(
-      url:
-          '/leads/active?location_from=$fromLoaction&to_location=$toLoacation&page=$pageNumber&pageSize=10',
+      url: '/leads/active?location_from=$fromLoaction&to_location=$toLoacation&page=$pageNumber&pageSize=10',
     );
     var response = ActiveLeadModel.fromJson(jsonData);
     return response;
   }
 
+  Future<ActiveLeadModel> leadHistoryApiCall(dynamic pageNumber, String? fromLoaction, String? toLoacation) async {
+    var jsonData = await apiManager.getAPICall(
+      url: '/leads/get_all',
+    );
+    var response = ActiveLeadModel.fromJson(jsonData);
+    return response;
+  }
 
   Future<BannerModel> fetchBannersApiCall() async {
     var jsonData = await apiManager.getAPICall(
       url: '/advertise/get',
-
     );
     var response = BannerModel.fromJson(jsonData);
     return response;
   }
-
-  // Future<BannerModel> fetchBannersApiCall() async {
-  //   var jsonData = await apiManager.getAPICall(
-  //     url: '/advertise/get',
-  //   );
-
-  //   // ensure response is a List
-  //   if (jsonData is List) {
-  //     return jsonData.map((e) => FormattedAdvertisements.fromJson(e)).toList();
-  //   } else {
-  //     return [];
-  //   }
-  // }
 
   //Live Lead api call
   Future<LiveLeadModel> myAvailabilityApiCall(dynamic pageNumber) async {
@@ -52,8 +43,7 @@ class ActiveLeadRepository {
     return response;
   }
 
-  Future<AllLiveLeadModel> allDriverAvailabilityApiCall(
-      dynamic pageNumber) async {
+  Future<AllLiveLeadModel> allDriverAvailabilityApiCall(dynamic pageNumber) async {
     var jsonData = await apiManager.getAPICall(
       url: '/driver-availability/get-all-active?page=$pageNumber&pageSize=10',
     );

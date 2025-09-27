@@ -1,6 +1,6 @@
+import 'package:QuickCab/Screens/landing_page/controller/dashboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:QuickCab/Screens/landing_page/controller/dashboard_controller.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../generated/assets.dart';
@@ -29,8 +29,7 @@ class CustomHeader extends StatelessWidget {
                     CircleAvatar(
                       radius: 30,
                       backgroundColor: Colors.black.withValues(alpha: 0.4),
-                      child: Image.asset(Assets.iconsLogo,
-                          width: 30, height: 30, fit: BoxFit.fill),
+                      child: Image.asset(Assets.iconsLogo, width: 30, height: 30, fit: BoxFit.fill),
                     ),
                     const SizedBox(width: 12),
                     Column(
@@ -47,8 +46,7 @@ class CustomHeader extends StatelessWidget {
                         Flexible(
                           child: Text(
                             "Driver Dashboard",
-                            style: TextHelper.size18.copyWith(
-                                color: Colors.white, fontFamily: semiBoldFont),
+                            style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: semiBoldFont),
                           ),
                         ),
                       ],
@@ -78,15 +76,14 @@ class CustomHeader extends StatelessWidget {
                 Flexible(
                   child: Text(
                     "Manage your shared leads",
-                    style: TextHelper.size18.copyWith(
-                        color: Colors.white, fontFamily: semiBoldFont),
+                    style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: semiBoldFont),
                   ),
                 ),
               ],
             ),
           ),
         );
-      } else if (controller.currentIndex.value == 3) {
+      } else if (controller.currentIndex.value == 4) {
         // Profile Header
         return SafeArea(
           child: Padding(
@@ -105,10 +102,29 @@ class CustomHeader extends StatelessWidget {
                 Flexible(
                   child: Text(
                     "Manage your account settings",
-                    style: TextHelper.size18.copyWith(
-                        color: Colors.white, fontFamily: semiBoldFont),
+                    style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: semiBoldFont),
                   ),
                 ),
+              ],
+            ),
+          ),
+        );
+      } else if (controller.currentIndex.value == 3) {
+        // Profile Header
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Leads History",
+                  style: TextHelper.h5.copyWith(
+                    color: Colors.white,
+                    fontFamily: semiBoldFont,
+                  ),
+                ),
+                SizedBox(height: 0.1.h),
               ],
             ),
           ),

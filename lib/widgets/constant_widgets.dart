@@ -311,43 +311,45 @@ showExitDialog(BuildContext context) {
   );
 }
 
-
 // Common message dialog
 showCommonMessageDialog(BuildContext context, String title, String message, GestureTapCallback onClick) {
   showDialog(
     barrierDismissible: false,
     context: context,
     builder: (BuildContext context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        elevation: 4,
-        title: Text(
-          title,
-          style: TextHelper.h7.copyWith(
-            fontFamily: boldFont,
+      return PopScope(
+        canPop: false,
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
           ),
-        ),
-        content: Text(
-          message,
-          style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor.withValues(alpha: 0.7), fontFamily: regularFont),
-        ),
-        actions: [
-          InkWell(
-            onTap: onClick,
-            splashColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
-            highlightColor: ColorsForApp.primaryColor.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(100),
-            child: Text(
-              'Proceed',
-              style: TextHelper.size18.copyWith(
-                fontFamily: semiBoldFont,
-                color: ColorsForApp.primaryColor,
-              ),
+          elevation: 4,
+          title: Text(
+            title,
+            style: TextHelper.h7.copyWith(
+              fontFamily: boldFont,
             ),
           ),
-        ],
+          content: Text(
+            message,
+            style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor.withValues(alpha: 0.7), fontFamily: regularFont),
+          ),
+          actions: [
+            InkWell(
+              onTap: onClick,
+              splashColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
+              highlightColor: ColorsForApp.primaryColor.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(100),
+              child: Text(
+                'Proceed',
+                style: TextHelper.size18.copyWith(
+                  fontFamily: semiBoldFont,
+                  color: ColorsForApp.primaryColor,
+                ),
+              ),
+            ),
+          ],
+        ),
       );
     },
   );

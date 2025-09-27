@@ -242,7 +242,7 @@ class MyLeadsController extends GetxController {
       final response = await repository.myLeadApicall();
 
       activeLeads.assignAll(
-        response.leads.where((lead) => lead.leadStatus == "pending").toList(),
+        response.leads.where((lead) => lead.leadStatus == "pending" && lead.isActive == true).toList(),
       );
       completedLeads.assignAll(
         response.leads.where((lead) => lead.leadStatus == "booked").toList(),

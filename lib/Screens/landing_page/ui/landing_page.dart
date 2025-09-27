@@ -1,3 +1,4 @@
+import 'package:QuickCab/Screens/history_module/lead_history_screen.dart';
 import 'package:QuickCab/Screens/home_page_module/ui/home_screen.dart';
 import 'package:QuickCab/Screens/landing_page/controller/dashboard_controller.dart';
 import 'package:QuickCab/Screens/my_leads_module/ui/my_leads_screen.dart';
@@ -26,6 +27,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     HomeScreen(),
     MyLeadsPage(),
     PostScreen(),
+    LeadHistoryScreen(),
     ProfileScreen(),
   ];
 
@@ -143,13 +145,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         index: 2,
                         controller: controller,
                       ),
-                    ), // Profile
+                    ),
                     GestureDetector(
                       onTap: () => controller.currentIndex.value = 3,
                       child: buildNavItem(
+                        icon: Icons.history,
+                        label: "History",
+                        index: 3,
+                        controller: controller,
+                      ),
+                    ), // Profile
+                    GestureDetector(
+                      onTap: () => controller.currentIndex.value = 4,
+                      child: buildNavItem(
                         icon: Icons.person_2_outlined,
                         label: "Profile",
-                        index: 3,
+                        index: 4,
                         controller: controller,
                       ),
                     ),

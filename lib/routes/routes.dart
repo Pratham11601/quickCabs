@@ -15,6 +15,7 @@ class Routes {
 
   //Home Page
   static const HOME_PAGE = "/home_page";
+  static const LEAD_HISTORY_PAGE = "/lead_history_page";
   static const DASHBOARD_PAGE = '/dashboard_screen';
   static const EMERGENCY_SERVICE_SCREEN = '/emergency_service_screen';
 

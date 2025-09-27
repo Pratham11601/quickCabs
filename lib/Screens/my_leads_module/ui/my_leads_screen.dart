@@ -264,7 +264,7 @@ class MyLeadsPage extends StatelessWidget {
                   onChanged: (val) {
                     controller.fromLocation.value = val;
                     // Optional: directly fetch suggestions if you want
-                    if (val.length >= 3) {
+                    if (val.isNotEmpty) {
                       controller.fetchLocations(val, isPickup: true);
                     }
                   },
@@ -284,7 +284,6 @@ class MyLeadsPage extends StatelessWidget {
                       child: LinearProgressIndicator(minHeight: 2),
                     );
                   }
-
                   if (!controller.showPickupSuggestions.value || controller.pickupSuggestions.isEmpty) {
                     return const SizedBox.shrink();
                   }
@@ -323,7 +322,7 @@ class MyLeadsPage extends StatelessWidget {
                   // onTap: () => controller.isEditing.value = true,
                   onChanged: (val) {
                     controller.toLocation.value = val;
-                    if (val.length >= 3) {
+                    if (val.isNotEmpty) {
                       controller.fetchLocations(val, isPickup: false);
                     }
                   },

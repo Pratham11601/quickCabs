@@ -1,4 +1,5 @@
 import 'package:QuickCab/Screens/document_verification_module/ui/document_verification_screen.dart';
+import 'package:QuickCab/Screens/history_module/lead_history_screen.dart';
 import 'package:QuickCab/Screens/home_page_module/ui/home_screen.dart';
 import 'package:QuickCab/Screens/login_signup_module/ui/forgot_password_screen.dart';
 import 'package:QuickCab/Screens/login_signup_module/ui/signup_screen.dart';
@@ -57,6 +58,11 @@ class AppPages {
     GetPage(
       name: Routes.HOME_PAGE,
       page: () => HomeScreen(),
+      binding: DashBoardBinding(),
+    ),
+    GetPage(
+      name: Routes.LEAD_HISTORY_PAGE,
+      page: () => LeadHistoryScreen(),
       binding: DashBoardBinding(),
     ),
     GetPage(

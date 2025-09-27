@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:QuickCab/utils/text_styles.dart';
 import 'package:QuickCab/widgets/snackbar.dart';
@@ -223,7 +225,7 @@ class PostController extends GetxController {
 
     // Listen to text changes with debounce
     // setupDebouncers();
-
+    //
     // Focus listeners: hide suggestions when field loses focus
     pickupFocus.addListener(() {
       if (!pickupFocus.hasFocus) {
@@ -260,8 +262,8 @@ class PostController extends GetxController {
   final dropFocus = FocusNode();
 
   // Debounce observables (updated by onChanged)
-/*  final debouncePickup = ''.obs;
-  final debounceDrop = ''.obs;*/
+  final debouncePickup = ''.obs;
+  final debounceDrop = ''.obs;
 
   // Loading flags (optional)
   final isLoadingPickup = false.obs;
@@ -276,20 +278,20 @@ class PostController extends GetxController {
   final showDropSuggestions = false.obs;
 
   // Track last lengths
-  /* int _lastPickupLength = 0;
+  int _lastPickupLength = 0;
   int _lastDropLength = 0;
 
   // Track last typing times
   DateTime _lastPickupInputTime = DateTime.now();
-  DateTime _lastDropInputTime = DateTime.now();*/
+  DateTime _lastDropInputTime = DateTime.now();
 
-  /*void setupDebouncers() {
+  void setupDebouncers() {
     // Pickup debounce
     debounce(debouncePickup, (String? val) {
       final q = val?.trim() ?? '';
       final now = DateTime.now();
 
-      if (q.length >= 3) {
+      if (q.isNotEmpty) {
         if (q.length > _lastPickupLength) {
           // ✅ Forward typing → call API
           fetchLocations(q, isPickup: true);
@@ -317,7 +319,7 @@ class PostController extends GetxController {
       final q = val?.trim() ?? '';
       final now = DateTime.now();
 
-      if (q.length >= 3) {
+      if (q.isNotEmpty) {
         if (q.length > _lastDropLength) {
           // ✅ Forward typing → call API
           fetchLocations(q, isPickup: false);
@@ -338,25 +340,45 @@ class PostController extends GetxController {
       _lastDropLength = q.length;
       _lastDropInputTime = now;
     }, time: const Duration(milliseconds: 500));
-  }*/
+  }
+
+  final _pickupDebouncer = Debouncer(milliseconds: 500);
+  final _dropDebouncer = Debouncer(milliseconds: 500);
 
   /// Called when pickup text changes
   void onPickupChanged(String val) {
-    if (val.trim().length >= 3) {
-      fetchLocations(val.trim(), isPickup: true);
-    } else {
+    final query = val.trim();
+
+    if (query.isEmpty) {
+      // ✅ Cancel old debounce task
+      _pickupDebouncer.cancel();
       pickupSuggestions.clear();
       showPickupSuggestions.value = false;
+    } else {
+      _pickupDebouncer.run(() {
+        final latest = pickupController.text.trim();
+        if (latest.isNotEmpty) {
+          fetchLocations(latest, isPickup: true);
+        }
+      });
     }
   }
 
   /// Called when drop text changes
   void onDropChanged(String val) {
-    if (val.trim().length >= 3) {
-      fetchLocations(val.trim(), isPickup: false);
-    } else {
+    final query = val.trim();
+
+    if (query.isEmpty) {
+      _dropDebouncer.cancel();
       dropSuggestions.clear();
       showDropSuggestions.value = false;
+    } else {
+      _dropDebouncer.run(() {
+        final latest = dropController.text.trim();
+        if (latest.isNotEmpty) {
+          fetchLocations(latest, isPickup: false);
+        }
+      });
     }
   }
 
@@ -522,5 +544,22 @@ class PostController extends GetxController {
       ),
       barrierDismissible: false,
     );
+  }
+}
+
+class Debouncer {
+  final int milliseconds;
+  Timer? _timer;
+
+  Debouncer({required this.milliseconds});
+
+  void run(VoidCallback action) {
+    _timer?.cancel();
+    _timer = Timer(Duration(milliseconds: milliseconds), action);
+  }
+
+  void cancel() {
+    _timer?.cancel();
+    _timer = null;
   }
 }

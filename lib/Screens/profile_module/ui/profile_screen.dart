@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,7 +19,7 @@ import '../profile_widgets/profile_widget.dart';
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({super.key});
 
-  final ProfileController controller = Get.put(ProfileController());
+  final ProfileController controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +34,10 @@ class ProfileScreen extends StatelessWidget {
                   name: controller.userDetails.value?.fullname ?? "Unknown",
                   phone: controller.userDetails.value?.phone ?? "-",
                   email: controller.userDetails.value?.email ?? "-",
-                  profileImage: (controller.userDetails.value?.profileImgUrl !=
-                              null &&
-                          controller
-                              .userDetails.value!.profileImgUrl!.isNotEmpty)
-                      ? "${Config.baseUrl}${controller.userDetails.value!.profileImgUrl}"
-                      : "",
+                  profileImage:
+                      (controller.userDetails.value?.profileImgUrl != null && controller.userDetails.value!.profileImgUrl!.isNotEmpty)
+                          ? "${Config.baseUrl}${controller.userDetails.value!.profileImgUrl}"
+                          : "",
                 )),
 
             /// Account Section
@@ -71,8 +67,7 @@ class ProfileScreen extends StatelessWidget {
                   title: "privacy_security".tr,
                   onTap: () async {
                     // For Privacy Policy
-                    await UrlLauncherHelper.openUrl(
-                        "https://quickcabpune.com/privacy-policy.html");
+                    await UrlLauncherHelper.openUrl("https://quickcabpune.com/privacy-policy.html");
                   },
                 ),
                 //For now as per client requirement it is hide, later on it will be uncomment
@@ -106,46 +101,35 @@ class ProfileScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(16),
                         decoration: const BoxDecoration(
                           color: Colors.white,
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(20)),
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text("choose_language".tr,
-                                style: TextHelper.h5.copyWith(
-                                    fontFamily: semiBoldFont,
-                                    color: ColorsForApp.blackColor)),
+                                style: TextHelper.h5.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                             const SizedBox(height: 16),
                             ListTile(
                               title: Text("English",
-                                  style: TextHelper.size19.copyWith(
-                                      fontFamily: semiBoldFont,
-                                      color: ColorsForApp.blackColor)),
+                                  style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("English");
-                                Get.updateLocale(
-                                    Locale('en', 'US')); // Switch to Hindi
+                                Get.updateLocale(Locale('en', 'US')); // Switch to Hindi
                                 Get.back();
                               },
                             ),
                             ListTile(
                               title: Text("हिंदी",
-                                  style: TextHelper.size19.copyWith(
-                                      fontFamily: semiBoldFont,
-                                      color: ColorsForApp.blackColor)),
+                                  style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("हिंदी");
-                                Get.updateLocale(
-                                    Locale('hi', 'IN')); // Switch to Hindi
+                                Get.updateLocale(Locale('hi', 'IN')); // Switch to Hindi
                                 Get.back();
                               },
                             ),
                             ListTile(
                               title: Text("मराठी",
-                                  style: TextHelper.size19.copyWith(
-                                      fontFamily: semiBoldFont,
-                                      color: ColorsForApp.blackColor)),
+                                  style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                               onTap: () {
                                 controller.changeLanguage("मराठी");
                                 Get.updateLocale(Locale('mr', 'IN'));
@@ -162,8 +146,7 @@ class ProfileScreen extends StatelessWidget {
                               ),
                               onTap: () {
                                 controller.changeLanguage("ಕನ್ನಡ");
-                                Get.updateLocale(
-                                    Locale('kn', 'IN')); // Kannada locale code
+                                Get.updateLocale(Locale('kn', 'IN')); // Kannada locale code
                                 Get.back();
                               },
                             ),
@@ -262,13 +245,11 @@ class ProfileScreen extends StatelessWidget {
           elevation: 4,
           title: Text(
             'Logout',
-            style: TextHelper.h7
-                .copyWith(fontFamily: boldFont, color: ColorsForApp.blackColor),
+            style: TextHelper.h7.copyWith(fontFamily: boldFont, color: ColorsForApp.blackColor),
           ),
           content: Text(
             'Are you sure you want to logout?',
-            style: TextHelper.size19.copyWith(
-                color: ColorsForApp.blackColor, fontFamily: regularFont),
+            style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
           ),
           actions: [
             Row(
@@ -280,8 +261,7 @@ class ProfileScreen extends StatelessWidget {
                     Get.back();
                   },
                   splashColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
-                  highlightColor:
-                      ColorsForApp.primaryColor.withValues(alpha: 0.2),
+                  highlightColor: ColorsForApp.primaryColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(100),
                   child: Text(
                     'Cancel',
@@ -297,8 +277,7 @@ class ProfileScreen extends StatelessWidget {
                     logout();
                   },
                   splashColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
-                  highlightColor:
-                      ColorsForApp.primaryColor.withValues(alpha: 0.2),
+                  highlightColor: ColorsForApp.primaryColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(100),
                   child: Text(
                     'Confirm',
