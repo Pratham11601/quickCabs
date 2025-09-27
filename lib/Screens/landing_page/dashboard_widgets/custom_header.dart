@@ -125,6 +125,13 @@ class CustomHeader extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 0.1.h),
+                Text(
+                  "Recently booked by customers",
+                  style: TextHelper.size17.copyWith(
+                    color: Colors.white,
+                    fontFamily: semiBoldFont,
+                  ),
+                ),
               ],
             ),
           ),

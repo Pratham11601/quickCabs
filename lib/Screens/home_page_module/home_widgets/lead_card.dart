@@ -34,7 +34,7 @@ class LeadCard extends StatelessWidget {
         /// ---------------- Card Content ----------------
         Card(
           elevation: 4,
-          margin: const EdgeInsets.all(4),
+          margin: const EdgeInsets.all(2),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Padding(
             padding: const EdgeInsets.all(12),

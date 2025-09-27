@@ -2,6 +2,7 @@ import 'package:QuickCab/Screens/home_page_module/model/banner_model.dart';
 import 'package:QuickCab/Screens/home_page_module/model/live_lead_model.dart';
 
 import '../../../api/api_manager.dart';
+import '../../history_module/lead_history_model.dart';
 import '../model/active_lead_model.dart';
 import '../model/all_live_lead_model.dart';
 
@@ -18,11 +19,11 @@ class ActiveLeadRepository {
     return response;
   }
 
-  Future<ActiveLeadModel> leadHistoryApiCall(dynamic pageNumber, String? fromLoaction, String? toLoacation) async {
+  Future<LeadHistoryModel> leadHistoryApiCall(dynamic pageNumber, String? fromLoaction, String? toLoacation) async {
     var jsonData = await apiManager.getAPICall(
-      url: '/leads/get_all',
+      url: '/leads/all?page=$pageNumber&pageSize=10',
     );
-    var response = ActiveLeadModel.fromJson(jsonData);
+    var response = LeadHistoryModel.fromJson(jsonData);
     return response;
   }
 

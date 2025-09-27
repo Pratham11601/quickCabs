@@ -1,3 +1,4 @@
+import 'package:QuickCab/Screens/history_module/lead_history_model.dart';
 import 'package:QuickCab/Screens/home_page_module/model/check_profile_completion_model.dart';
 import 'package:QuickCab/Screens/home_page_module/model/driver_availability_model.dart';
 import 'package:QuickCab/Screens/home_page_module/model/live_lead_model.dart';
@@ -274,7 +275,7 @@ class HomeController extends GetxController {
 
   ///active api logic method and variables
   RxList<Post> activeLeads = <Post>[].obs;
-  RxList<Post> leadsHistory = <Post>[].obs;
+  RxList<Leads> leadsHistory = <Leads>[].obs;
 
   Future<ActiveLeadModel> fetchActiveLeads(dynamic pageNumber) async {
     try {
@@ -294,19 +295,20 @@ class HomeController extends GetxController {
     }
   }
 
-  Future<ActiveLeadModel> fetchLeadsHistory(dynamic pageNumber) async {
+  Future<LeadHistoryModel> fetchLeadsHistory(dynamic pageNumber) async {
     try {
       isLoadingActiveLeads.value = true;
       errorMsg.value = '';
 
       final response = await activeLeadRepository.leadHistoryApiCall(pageNumber, fromLocationController.text, toLocationController.text);
-      debugPrint('Fetched leads count: ${response.posts.length}');
-      leadsHistory.assignAll(response.posts);
+      debugPrint('History leads count: ${response.leads?.length}');
+
+      leadsHistory.assignAll(response.leads!);
       return response;
     } catch (e) {
       errorMsg.value = 'Failed to load active leads';
       debugPrint('Error fetching leads: $e');
-      return ActiveLeadModel(posts: []);
+      return LeadHistoryModel(leads: []);
     } finally {
       isLoadingActiveLeads.value = false;
     }

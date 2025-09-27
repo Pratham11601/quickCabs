@@ -404,7 +404,7 @@ class _HomeScreenState extends State<HomeScreen> {
           itemBuilder: (context, item, index) {
             final lead = item;
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
               child: LeadCard(
                 lead: {
                   'name': lead.vendorName,
