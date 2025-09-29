@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../widgets/common_widgets.dart';
+import '../../home_page_module/home_widgets/blinking_text_widget.dart';
 import '../controller/help_support_controller.dart';
 import '../model/help_support_model.dart';
 import '../profile_widgets/contact_card.dart';
@@ -45,6 +46,9 @@ class HelpSupportScreen extends GetView<HelpSupportController> {
                     Text("Email - quickcabsservices@gmail.com",
                         textAlign: TextAlign.center,
                         style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont)),
+                    SizedBox(height: 4),
+                    BlinkingText("Office Time - Everyday - 9:00 AM - 6:00 PM",
+                        color: ColorsForApp.red, style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont)),
                   ],
                 ),
               ),

@@ -87,7 +87,7 @@ class UserRegistrationScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-                SizedBox(height: 2.h),
+                SizedBox(height: 1.h),
                 Text("Gender",
                     style: TextHelper.size19.copyWith(
                       fontFamily: semiBoldFont,
@@ -120,7 +120,7 @@ class UserRegistrationScreen extends StatelessWidget {
                         if (value != null) controller.setGender(value);
                       },
                     )),
-                SizedBox(height: 2.h),
+                SizedBox(height: 1.h),
                 Text("Aadhaar Number",
                     style: TextHelper.size19.copyWith(
                       fontFamily: semiBoldFont,
@@ -157,7 +157,7 @@ class UserRegistrationScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-                SizedBox(height: 2.h),
+                SizedBox(height: 1.h),
                 Text("Car Number",
                     style: TextHelper.size19.copyWith(
                       fontFamily: semiBoldFont,
@@ -169,6 +169,7 @@ class UserRegistrationScreen extends StatelessWidget {
                   style: TextHelper.size18.copyWith(
                     fontFamily: regularFont,
                   ),
+                  textCapitalization: TextCapitalization.characters,
                   decoration: InputDecoration(
                     prefixIcon: Icon(
                       Icons.credit_card,
@@ -184,17 +185,20 @@ class UserRegistrationScreen extends StatelessWidget {
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
                   ),
                   validator: (value) {
-                    final vehicleRegExp = RegExp(r'^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$');
+                    final trimmedValue = value?.trimRight();
 
-                    if (value == null || value.isEmpty) {
+                    // final vehicleRegExp = RegExp(r'^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$');
+
+                    if (trimmedValue == null || trimmedValue.isEmpty) {
                       return 'Please enter your car number';
-                    } else if (!vehicleRegExp.hasMatch(value.toUpperCase())) {
-                      return 'Please enter a valid car number';
                     }
+                    // else if (!vehicleRegExp.hasMatch(trimmedValue.toUpperCase())) {
+                    //   return 'Please enter a valid car number';
+                    // }
                     return null;
                   },
                 ),
-                SizedBox(height: 2.h),
+                SizedBox(height: 1.h),
                 Text("Business Name",
                     style: TextHelper.size19.copyWith(
                       fontFamily: semiBoldFont,
@@ -295,7 +299,7 @@ class UserRegistrationScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-                SizedBox(height: 2.h),
+                SizedBox(height: 1.h),
                 Text("Current Address",
                     style: TextHelper.size19.copyWith(
                       fontFamily: semiBoldFont,
@@ -331,7 +335,7 @@ class UserRegistrationScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-                SizedBox(height: 2.h),
+                SizedBox(height: 1.h),
                 Text("Email Address",
                     style: TextHelper.size19.copyWith(
                       fontFamily: semiBoldFont,
@@ -381,10 +385,16 @@ class UserRegistrationScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 1.h),
-                Obx(() => ListView.builder(
+                Obx(() => GridView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemCount: controller.serviceTypes.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 2.w,
+                        mainAxisSpacing: 1.5.h,
+                        childAspectRatio: 1,
+                      ),
                       itemBuilder: (context, index) {
                         final type = controller.serviceTypes[index];
                         return Obx(() {
@@ -404,10 +414,12 @@ class UserRegistrationScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(9),
                                 ),
                                 child: ListTile(
-                                  title: Text(type,
-                                      style: TextHelper.size18.copyWith(
-                                          fontFamily: regularFont, color: isSelected && type == 'None' ? Colors.orange : Colors.black)),
-                                  trailing: Icon(Icons.chevron_right, color: Colors.grey),
+                                  title: Center(
+                                    child: Text(type,
+                                        style: TextHelper.size18.copyWith(
+                                            fontFamily: regularFont, color: isSelected && type == 'None' ? Colors.orange : Colors.black)),
+                                  ),
+                                  // trailing: Icon(Icons.chevron_right, color: Colors.grey),
                                   contentPadding: EdgeInsets.symmetric(horizontal: 2.w),
                                 ),
                               ),

@@ -12,15 +12,13 @@ import '../../../utils/app_colors.dart';
 import '../../../widgets/snackbar.dart';
 import '../../document_verification_module/model/docItemModel.dart';
 import '../../document_verification_module/model/upload_source.dart';
-import '../../document_verification_module/ui/uploadSheet.dart'
-    show UploadSheet;
+import '../../document_verification_module/ui/uploadSheet.dart' show UploadSheet;
 import '../repository/auth_repository.dart';
 
 class UserRegistrationController extends GetxController {
   AuthRepository authRepository = AuthRepository(APIManager());
 
-  final RxList<String> genders =
-      <String>['Male', 'Female', 'Other', 'Prefer Not to say'].obs;
+  final RxList<String> genders = <String>['Male', 'Female', 'Other', 'Prefer Not to say'].obs;
   final RxString selectedGender = ''.obs;
 
   TextEditingController emailController = TextEditingController();
@@ -57,8 +55,7 @@ class UserRegistrationController extends GetxController {
     final file = File(path);
     if (await file.exists()) {
       final dir = await getApplicationDocumentsDirectory();
-      final newPath =
-          "${dir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
+      final newPath = "${dir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
       final newFile = await file.copy(newPath);
       return newFile.path;
     }
@@ -100,8 +97,7 @@ class UserRegistrationController extends GetxController {
       /// Helper: compress image and add to byteFiles
       Future<void> addCompressedByteFile(String key, String? path) async {
         if (path != null && path.isNotEmpty) {
-          final localPath =
-              await saveFileToLocalDir(path); // ✅ always permanent
+          final localPath = await saveFileToLocalDir(path); // ✅ always permanent
           if (localPath != null) {
             final file = File(localPath);
             if (await file.exists()) {
@@ -117,6 +113,10 @@ class UserRegistrationController extends GetxController {
       await addCompressedByteFile(
         'documentImage',
         docs.firstWhereOrNull((d) => d.title == "Aadhar Card")?.filePath,
+      );
+      await addCompressedByteFile(
+        'vehicleImgUrl',
+        docs.firstWhereOrNull((d) => d.title == "Aadhar Card Back")?.filePath,
       );
       await addCompressedByteFile(
         'profileImgUrl',
@@ -166,17 +166,8 @@ class UserRegistrationController extends GetxController {
   }
 
 // Service types
-  final RxList<String> serviceTypes = <String>[
-    'Cab',
-    'Towing',
-    'Repairing',
-    'Puncture',
-    'Drivers',
-    'Fuel',
-    'Restaurant',
-    'Hospital',
-    'Car Sell'
-  ].obs;
+  final RxList<String> serviceTypes =
+      <String>['Cab', 'Towing', 'Repairing', 'Puncture', 'Drivers', 'Fuel', 'Restaurant', 'Hospital', 'Car Sell'].obs;
 
 // Selected service - only one at a time
   final RxString selectedService = ''.obs;
@@ -208,13 +199,13 @@ class UserRegistrationController extends GetxController {
       ),
       DocItem(
         title: 'Aadhar Card',
-        subtitle: 'Valid aadhaar photo',
+        subtitle: 'Valid aadhaar front photo',
         required: true,
       ),
       DocItem(
-        title: 'Vehicle RC',
-        subtitle: 'Vehicle registration certificate',
-        required: false,
+        title: 'Aadhar Card Back',
+        subtitle: 'Valid aadhaar back photo',
+        required: true,
       ),
       DocItem(
         title: 'Vehicle Photo',
@@ -231,6 +222,11 @@ class UserRegistrationController extends GetxController {
       DocItem(
         title: 'Aadhar Card',
         subtitle: 'Valid aadhaar photo',
+        required: true,
+      ),
+      DocItem(
+        title: 'Aadhar Card Back',
+        subtitle: 'Valid aadhaar back photo',
         required: true,
       ),
       DocItem(
@@ -251,6 +247,11 @@ class UserRegistrationController extends GetxController {
         required: true,
       ),
       DocItem(
+        title: 'Aadhar Card Back',
+        subtitle: 'Valid aadhaar back photo',
+        required: true,
+      ),
+      DocItem(
         title: 'Shop Act License',
         subtitle: 'Valid shop act license',
         required: true,
@@ -265,6 +266,11 @@ class UserRegistrationController extends GetxController {
       DocItem(
         title: 'Aadhar Card',
         subtitle: 'Valid aadhar photo',
+        required: true,
+      ),
+      DocItem(
+        title: 'Aadhar Card Back',
+        subtitle: 'Valid aadhaar back photo',
         required: true,
       ),
       DocItem(
@@ -285,6 +291,11 @@ class UserRegistrationController extends GetxController {
         required: true,
       ),
       DocItem(
+        title: 'Aadhar Card Back',
+        subtitle: 'Valid aadhaar back photo',
+        required: true,
+      ),
+      DocItem(
         title: 'Shop Photo',
         subtitle: 'Clear photo of your shop',
         required: true,
@@ -299,6 +310,11 @@ class UserRegistrationController extends GetxController {
       DocItem(
         title: 'Aadhar Card',
         subtitle: 'Valid aadhar photo',
+        required: true,
+      ),
+      DocItem(
+        title: 'Aadhar Card Back',
+        subtitle: 'Valid aadhaar back photo',
         required: true,
       ),
       DocItem(
@@ -319,6 +335,11 @@ class UserRegistrationController extends GetxController {
         required: true,
       ),
       DocItem(
+        title: 'Aadhar Card Back',
+        subtitle: 'Valid aadhaar back photo',
+        required: true,
+      ),
+      DocItem(
         title: 'Shop Photo',
         subtitle: 'Clear photo of your shop',
         required: true,
@@ -336,6 +357,11 @@ class UserRegistrationController extends GetxController {
         required: true,
       ),
       DocItem(
+        title: 'Aadhar Card Back',
+        subtitle: 'Valid aadhaar back photo',
+        required: true,
+      ),
+      DocItem(
         title: 'Shop Photo',
         subtitle: 'Clear photo of your shop',
         required: true,
@@ -350,6 +376,11 @@ class UserRegistrationController extends GetxController {
       DocItem(
         title: 'Aadhar Card',
         subtitle: 'Valid aadhar photo',
+        required: true,
+      ),
+      DocItem(
+        title: 'Aadhar Card Back',
+        subtitle: 'Valid aadhaar back photo',
         required: true,
       ),
       DocItem(
@@ -410,8 +441,7 @@ class UserRegistrationController extends GetxController {
 
       // Use pickedFile.path directly instead of savedPath
       final filePath = pickedFile.path;
-      final fileName =
-          pickedFile.name; // requires image_picker 1.0.0+ (supports .name)
+      final fileName = pickedFile.name; // requires image_picker 1.0.0+ (supports .name)
 
       // ✅ Update your model safely
       docs[index] = docs[index].copyWith(
@@ -432,8 +462,7 @@ class UserRegistrationController extends GetxController {
   /// Per-document uploading flags so UI can show loader only on that doc card
   final Map<int, RxBool> docUploading = {};
 
-  void replaceDoc(int index, bool isOnlysSelfie) =>
-      openUploadSheet(index, isOnlysSelfie);
+  void replaceDoc(int index, bool isOnlysSelfie) => openUploadSheet(index, isOnlysSelfie);
 
   void deleteDoc(int index) {
     final i = docs[index];
@@ -447,15 +476,13 @@ class UserRegistrationController extends GetxController {
 
   void recomputeProgress() {
     final totalRequired = docs.where((d) => d.required).length;
-    final doneRequired =
-        docs.where((d) => d.required && d.status != DocStatus.empty).length;
+    final doneRequired = docs.where((d) => d.required && d.status != DocStatus.empty).length;
     progress.value = totalRequired == 0 ? 0 : doneRequired / totalRequired;
   }
 
   int remainingRequiredCount() {
     final totalRequired = docs.where((d) => d.required).length;
-    final doneRequired =
-        docs.where((d) => d.required && d.status != DocStatus.empty).length;
+    final doneRequired = docs.where((d) => d.required && d.status != DocStatus.empty).length;
     return (totalRequired - doneRequired).clamp(0, totalRequired);
   }
 

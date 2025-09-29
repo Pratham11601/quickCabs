@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
         showCommonMessageDialog(
           Get.context!,
           'KYC Submitted',
-          'Please wait or contact to Administrator..!',
+          'Please wait 24 hours, and then contact the administrator if needed...!',
           () {
             Get.toNamed(Routes.HELP_PAGE);
           },
