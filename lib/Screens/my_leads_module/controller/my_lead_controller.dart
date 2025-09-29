@@ -168,7 +168,6 @@ class MyLeadsController extends GetxController {
     vendorMobile.value = lead.vendorContact ?? '';
     // Parse date string safely
     // For date
-    selectedDate.value = lead.date; // already a DateTime
 
     // For time (assuming lead.time is String like "14:30")
     if (lead.time != null && lead.time!.isNotEmpty) {
@@ -273,6 +272,20 @@ class MyLeadsController extends GetxController {
     final minute = time.minute.toString().padLeft(2, '0');
     final period = time.period == DayPeriod.am ? "AM" : "PM";
     return "$hour:$minute $period";
+  }
+
+  String convertStringToFormattedDate(String dateString, {String inputPattern = "yyyy-MM-dd", String outputPattern = "dd MMM yyyy"}) {
+    try {
+      // Parse input string to DateTime
+      final inputFormat = DateFormat(inputPattern);
+      DateTime dateTime = inputFormat.parse(dateString);
+
+      // Format DateTime to desired output
+      final outputFormat = DateFormat(outputPattern);
+      return outputFormat.format(dateTime);
+    } catch (e) {
+      return "Invalid date";
+    }
   }
 
 // Pick a date

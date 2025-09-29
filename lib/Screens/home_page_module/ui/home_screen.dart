@@ -413,7 +413,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   'price': lead.fare,
                   'car': lead.carModel,
                   'distance': lead.toLocationArea,
-                  'date': lead.date,
+                  'date': homeController.formatDateTime(lead.date!),
                   // homeController.formatDateTime(lead.date!),
                   'time': lead.time,
                   'phone': lead.vendorContact,

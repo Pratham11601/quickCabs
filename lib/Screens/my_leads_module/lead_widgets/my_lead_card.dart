@@ -224,7 +224,9 @@
 //   }
 // }
 
+import 'package:QuickCab/Screens/my_leads_module/controller/my_lead_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../utils/app_colors.dart';
@@ -247,6 +249,7 @@ class LeadCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    MyLeadsController myLeadsController = Get.find();
     return Card(
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -386,9 +389,7 @@ class LeadCard extends StatelessWidget {
                     SizedBox(width: 6),
                     Text(
                       // ignore: unnecessary_null_comparison
-                      lead.date != null
-                          ? "${lead.date.year.toString().padLeft(4, '0')}-${lead.date.month.toString().padLeft(2, '0')}-${lead.date.day.toString().padLeft(2, '0')}"
-                          : '',
+                      lead.date != null ? myLeadsController.convertStringToFormattedDate(lead.date!) : '_',
                       style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                       overflow: TextOverflow.ellipsis,
                     ),

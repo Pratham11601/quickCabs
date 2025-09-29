@@ -8,8 +8,7 @@ class MyLeadRepository {
 
   //My lead api
   Future<MyLeadModel> myLeadApicall() async {
-    var jsonData =
-        await apiManager.getAPICall(url: '/leads/my-leads?page=1&pageSize=100');
+    var jsonData = await apiManager.getAPICall(url: '/leads/my-leads?page=1&pageSize=1000');
     var response = MyLeadModel.fromJson(jsonData);
     return response;
   }

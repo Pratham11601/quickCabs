@@ -1,9 +1,8 @@
 import 'dart:convert';
 
-MyLeadModel myleadModelFromJson(String str) =>
-    MyLeadModel.fromJson(json.decode(str));
+MyLeadModel myLeadModelFromJson(String str) => MyLeadModel.fromJson(json.decode(str));
 
-String myleadModelToJson(MyLeadModel data) => json.encode(data.toJson());
+String myLeadModelToJson(MyLeadModel data) => json.encode(data.toJson());
 
 class MyLeadModel {
   bool? status;
@@ -55,7 +54,7 @@ class MyLeadModel {
 
 class Lead {
   int? id;
-  DateTime date;
+  String? date;
   int? vendorId;
   String? vendorName;
   String? locationFrom;
@@ -101,7 +100,7 @@ class Lead {
 
   factory Lead.fromJson(Map<String, dynamic> json) => Lead(
         id: json["id"],
-        date: DateTime.parse(json["date"]),
+        date: json["date"],
         vendorId: json["vendor_id"],
         vendorName: json["vendor_name"],
         locationFrom: json["location_from"],
@@ -124,8 +123,7 @@ class Lead {
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "date":
-            "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+        "date": date,
         "vendor_id": vendorId,
         "vendor_name": vendorName,
         "location_from": locationFrom,
