@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:QuickCab/notificaton/notification_permission_handler.dart';
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:QuickCab/utils/text_styles.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -27,7 +28,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> initNotifications() async {
-    final granted = await NotificationPermissionHelper.requestNotificationPermission();
+    final granted =
+        await NotificationPermissionHelper.requestNotificationPermission();
 
     if (granted) {
       await NotificationService.setNotificationEnabled(true);
@@ -103,7 +105,9 @@ class PhoneNumberContainer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text('Enter Mobile Number',
-                textAlign: TextAlign.center, style: TextHelper.h4.copyWith(color: ColorsForApp.headline, fontFamily: semiBoldFont)),
+                textAlign: TextAlign.center,
+                style: TextHelper.h7.copyWith(
+                    color: ColorsForApp.headline, fontFamily: semiBoldFont)),
 
             const SizedBox(height: 12),
             const PhoneTextField(),
@@ -124,7 +128,9 @@ class PhoneNumberContainer extends StatelessWidget {
                         ),
                         Text(
                           "Remember Me",
-                          style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                          style: TextHelper.size18.copyWith(
+                              color: ColorsForApp.blackColor,
+                              fontFamily: regularFont),
                         ),
                       ],
                     ),
@@ -134,11 +140,14 @@ class PhoneNumberContainer extends StatelessWidget {
                       },
                       child: Row(
                         children: [
-                          Icon(Icons.lock_outline, color: ColorsForApp.primaryColor),
+                          Icon(Icons.lock_outline,
+                              color: ColorsForApp.primaryColor),
                           SizedBox(width: 5),
                           Text(
                             "Forgot Password",
-                            style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                            style: TextHelper.size18.copyWith(
+                                color: ColorsForApp.blackColor,
+                                fontFamily: regularFont),
                           ),
                         ],
                       ),
@@ -153,7 +162,8 @@ class PhoneNumberContainer extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () async {
                       if (loginController.isValidNumber.value) {
-                        if (loginController.loginFormKey.currentState!.validate()) {
+                        if (loginController.loginFormKey.currentState!
+                            .validate()) {
                           bool result = await loginController.loginAPI();
                           if (result) {
                             Get.offAllNamed(Routes.DASHBOARD_PAGE);
@@ -162,7 +172,9 @@ class PhoneNumberContainer extends StatelessWidget {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: loginController.isValidNumber.value ? ColorsForApp.primaryColor : ColorsForApp.cta,
+                      backgroundColor: loginController.isValidNumber.value
+                          ? ColorsForApp.primaryColor
+                          : ColorsForApp.cta,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -198,7 +210,9 @@ class PhoneNumberContainer extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
                     "New to Quick Cabs?",
-                    style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
+                    style: TextHelper.size19.copyWith(
+                        color: ColorsForApp.blackColor,
+                        fontFamily: regularFont),
                   ),
                 ),
                 Expanded(child: Divider(thickness: 1)),
@@ -214,7 +228,8 @@ class PhoneNumberContainer extends StatelessWidget {
                 Get.toNamed(Routes.SIGNUP_SCREEN);
               },
               style: ButtonStyle(
-                minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50)),
+                minimumSize:
+                    WidgetStateProperty.all(const Size(double.infinity, 50)),
                 shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(0),
@@ -229,10 +244,66 @@ class PhoneNumberContainer extends StatelessWidget {
                   },
                 ),
                 side: WidgetStateProperty.all(
-                  BorderSide(color: ColorsForApp.blackColor.withValues(alpha: 0.2)),
+                  BorderSide(
+                      color: ColorsForApp.blackColor.withValues(alpha: 0.2)),
                 ),
               ),
-              child: Text("Create New Account", style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+              child: Text("Create New Account",
+                  style: TextHelper.h7.copyWith(
+                      color: ColorsForApp.blackColor,
+                      fontFamily: semiBoldFont)),
+            ),
+            const SizedBox(height: 15),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'By signing up, you agree to our ',
+                      style: TextHelper.size17.copyWith(
+                        color: ColorsForApp.blackColor,
+                        fontFamily: regularFont,
+                      ),
+                      children: [
+                        TextSpan(
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () async {
+                              await UrlLauncherHelper.openUrl(
+                                  "https://quickcabpune.com/terms-conditions.html");
+                            },
+                          text: 'terms & conditions',
+                          style: TextHelper.size18.copyWith(
+                            fontFamily: semiBoldFont,
+                            color: ColorsForApp.primaryColor,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' and ',
+                          style: TextHelper.size17.copyWith(
+                            color: ColorsForApp.blackColor,
+                            fontFamily: regularFont,
+                          ),
+                        ),
+                        TextSpan(
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () async {
+                              await UrlLauncherHelper.openUrl(
+                                  "https://quickcabpune.com/privacy-policy.html");
+                            },
+                          text: 'privacy policy.',
+                          style: TextHelper.size18.copyWith(
+                            color: ColorsForApp.primaryColor,
+                            fontFamily: semiBoldFont,
+                          ),
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -253,7 +324,9 @@ class PhoneTextField extends StatelessWidget {
           child: Row(
             children: [
               const SizedBox(width: 10),
-              const Icon(Icons.call_outlined, color: ColorsForApp.primaryColor, size: 20), // smaller to match
+              const Icon(Icons.call_outlined,
+                  color: ColorsForApp.primaryColor,
+                  size: 20), // smaller to match
               const SizedBox(width: 10),
               Text(
                 '+91',
@@ -282,7 +355,8 @@ class PhoneTextField extends StatelessWidget {
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     hintText: 'Enter 10-digit mobile number',
-                    hintStyle: TextHelper.size19.copyWith(color: ColorsForApp.subtle),
+                    hintStyle:
+                        TextHelper.size19.copyWith(color: ColorsForApp.subtle),
                   ),
                   style: TextHelper.size19.copyWith(
                     color: ColorsForApp.blackColor,
@@ -307,7 +381,9 @@ class PasswordTextField extends StatelessWidget {
           child: Row(
             children: [
               const SizedBox(width: 10),
-              const Icon(Icons.password, color: ColorsForApp.primaryColor, size: 20), // smaller to match
+              const Icon(Icons.password,
+                  color: ColorsForApp.primaryColor,
+                  size: 20), // smaller to match
               const SizedBox(width: 10),
               Container(width: 1, height: 24, color: Colors.grey.shade300),
               const SizedBox(width: 10),
@@ -316,7 +392,8 @@ class PasswordTextField extends StatelessWidget {
                   () => TextField(
                     controller: loginController.passwordController,
                     focusNode: loginController.passwordFocusNode,
-                    obscureText: !loginController.isPasswordVisible.value, // hide if false
+                    obscureText: !loginController
+                        .isPasswordVisible.value, // hide if false
                     keyboardType: TextInputType.visiblePassword,
                     textInputAction: TextInputAction.done,
 
@@ -324,16 +401,20 @@ class PasswordTextField extends StatelessWidget {
                       counterText: '',
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10, // keeps it comfortable, not too tall/short
+                        vertical:
+                            10, // keeps it comfortable, not too tall/short
                       ),
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       hintText: 'Enter password',
-                      hintStyle: TextHelper.size19.copyWith(color: ColorsForApp.subtle),
+                      hintStyle: TextHelper.size19
+                          .copyWith(color: ColorsForApp.subtle),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          loginController.isPasswordVisible.value ? Icons.visibility : Icons.visibility_off,
+                          loginController.isPasswordVisible.value
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: ColorsForApp.subtle,
                         ),
                         onPressed: () {
