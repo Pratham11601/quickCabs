@@ -32,28 +32,28 @@ class ActiveLeadModel {
   });
 
   factory ActiveLeadModel.fromJson(Map<String, dynamic> json) => ActiveLeadModel(
-    status: json["status"],
-    message: json["message"],
-    totalItems: json["totalItems"],
-    totalPages: json["totalPages"],
-    currentPage: json["currentPage"],
-    pageSize: json["pageSize"],
-    isNext: json["isNext"],
-    isPrev: json["isPrev"],
-    posts: List<Post>.from(json["posts"].map((x) => Post.fromJson(x))),
-  );
+        status: json["status"],
+        message: json["message"],
+        totalItems: json["totalItems"],
+        totalPages: json["totalPages"],
+        currentPage: json["currentPage"],
+        pageSize: json["pageSize"],
+        isNext: json["isNext"],
+        isPrev: json["isPrev"],
+        posts: List<Post>.from(json["posts"].map((x) => Post.fromJson(x))),
+      );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
-    "message": message,
-    "totalItems": totalItems,
-    "totalPages": totalPages,
-    "currentPage": currentPage,
-    "pageSize": pageSize,
-    "isNext": isNext,
-    "isPrev": isPrev,
-    "posts": List<dynamic>.from(posts.map((x) => x.toJson())),
-  };
+        "status": status,
+        "message": message,
+        "totalItems": totalItems,
+        "totalPages": totalPages,
+        "currentPage": currentPage,
+        "pageSize": pageSize,
+        "isNext": isNext,
+        "isPrev": isPrev,
+        "posts": List<dynamic>.from(posts.map((x) => x.toJson())),
+      };
 }
 
 class Post {
@@ -82,6 +82,8 @@ class Post {
   String? vendorEmail;
   String? vendorCity;
   String? profileImgUrl;
+  String? acceptedByFullname;
+  String? acceptedByEmail;
 
   Post({
     this.id,
@@ -109,72 +111,74 @@ class Post {
     this.vendorEmail,
     this.vendorCity,
     this.profileImgUrl,
+    this.acceptedByFullname,
+    this.acceptedByEmail,
   });
 
   factory Post.fromJson(Map<String, dynamic> json) => Post(
-    id: json["id"],
-    date: json["date"],
-    vendorId: json["vendor_id"],
-    vendorName: json["vendor_name"],
-    locationFrom: json["location_from"],
-    locationFromArea: json["location_from_area"],
-    carModel: json["car_model"],
-    addOn: json["add_on"],
-    fare: json["fare"],
-    toLocation: json["to_location"],
-    toLocationArea: json["to_location_area"],
-    time: json["time"],
-    isActive: json["is_active"],
-    leadStatus: json["lead_status"],
-    vendorContact: json["vendor_contact"],
-    vendorCat: vendorCatValues.map[json["vendor_cat"]],
-    createdAt: DateTime.parse(json["createdAt"]),
-    updatedAt: DateTime.parse(json["updatedAt"]),
-    tripType: json["trip_type"],
-    acceptedById: json["acceptedById"],
-    otp: json["otp"],
-    vendorFullname: json["vendor_fullname"],
-    vendorEmail: json["vendor_email"],
-    vendorCity: json["vendor_city"],
-    profileImgUrl: json["profileImgUrl"],
-  );
+        id: json["id"],
+        date: json["date"],
+        vendorId: json["vendor_id"],
+        vendorName: json["vendor_name"],
+        locationFrom: json["location_from"],
+        locationFromArea: json["location_from_area"],
+        carModel: json["car_model"],
+        addOn: json["add_on"],
+        fare: json["fare"],
+        toLocation: json["to_location"],
+        toLocationArea: json["to_location_area"],
+        time: json["time"],
+        isActive: json["is_active"],
+        leadStatus: json["lead_status"],
+        vendorContact: json["vendor_contact"],
+        vendorCat: vendorCatValues.map[json["vendor_cat"]],
+        createdAt: DateTime.parse(json["createdAt"]),
+        updatedAt: DateTime.parse(json["updatedAt"]),
+        tripType: json["trip_type"],
+        acceptedById: json["acceptedById"],
+        otp: json["otp"],
+        vendorFullname: json["vendor_fullname"],
+        vendorEmail: json["vendor_email"],
+        vendorCity: json["vendor_city"],
+        profileImgUrl: json["profileImgUrl"],
+        acceptedByFullname: json["acceptedBy_fullname"],
+        acceptedByEmail: json["acceptedBy_email"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "date": date,
-    "vendor_id": vendorId,
-    "vendor_name": vendorName,
-    "location_from": locationFrom,
-    "location_from_area": locationFromArea,
-    "car_model": carModel,
-    "add_on": addOn,
-    "fare": fare,
-    "to_location": toLocation,
-    "to_location_area": toLocationArea,
-    "time": time,
-    "is_active": isActive,
-    "lead_status": leadStatus,
-    "vendor_contact": vendorContact,
-    "vendor_cat": vendorCatValues.reverse[vendorCat],
-    "createdAt": createdAt.toIso8601String(),
-    "updatedAt": updatedAt.toIso8601String(),
-    "trip_type": tripType,
-    "acceptedById": acceptedById,
-    "otp": otp,
-    "vendor_fullname": vendorFullname,
-    "vendor_email": vendorEmail,
-    "vendor_city": vendorCity,
-    "profileImgUrl": profileImgUrl,
-  };
+        "id": id,
+        "date": date,
+        "vendor_id": vendorId,
+        "vendor_name": vendorName,
+        "location_from": locationFrom,
+        "location_from_area": locationFromArea,
+        "car_model": carModel,
+        "add_on": addOn,
+        "fare": fare,
+        "to_location": toLocation,
+        "to_location_area": toLocationArea,
+        "time": time,
+        "is_active": isActive,
+        "lead_status": leadStatus,
+        "vendor_contact": vendorContact,
+        "vendor_cat": vendorCatValues.reverse[vendorCat],
+        "createdAt": createdAt.toIso8601String(),
+        "updatedAt": updatedAt.toIso8601String(),
+        "trip_type": tripType,
+        "acceptedById": acceptedById,
+        "otp": otp,
+        "vendor_fullname": vendorFullname,
+        "vendor_email": vendorEmail,
+        "vendor_city": vendorCity,
+        "profileImgUrl": profileImgUrl,
+        "acceptedBy_fullname": acceptedByFullname,
+        "acceptedBy_email": acceptedByEmail,
+      };
 }
 
-enum VendorCat {
-  CAB
-}
+enum VendorCat { CAB }
 
-final vendorCatValues = EnumValues({
-  "Cab": VendorCat.CAB
-});
+final vendorCatValues = EnumValues({"Cab": VendorCat.CAB});
 
 class EnumValues<T> {
   Map<String, T> map;

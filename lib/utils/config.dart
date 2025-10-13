@@ -10,5 +10,7 @@ class Config {
 
   // Live
   static const String domainUrl = 'https://quickcabpune.com/dev/api';
+
+  /// Base url is for image upload ///
   static String baseUrl = "$domainUrl/";
 }

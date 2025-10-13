@@ -9,7 +9,10 @@ class DocumentCard extends StatelessWidget {
   final String docName;
   final String docStatus;
   final IconData icon;
-  final String? documentImageUrl; // ✅ Image of document
+  final String? documentImageUrl;
+  final String? reason;
+  final int? docStatusCode; // e.g. 0=pending, 1=verified, 2=rejected
+  final VoidCallback? onReupload; // ✅ Image of document
 
   const DocumentCard({
     super.key,
@@ -17,6 +20,9 @@ class DocumentCard extends StatelessWidget {
     required this.docStatus,
     required this.icon,
     required this.documentImageUrl,
+    required this.reason,
+    this.docStatusCode,
+    this.onReupload,
   });
 
   @override
@@ -63,55 +69,84 @@ class DocumentCard extends StatelessWidget {
           ),
           // ✅ Document Image instead of View button
           SizedBox(
-            width: 80, // fix width for image container
-            height: 80,
-            child: GestureDetector(
-              onTap: () {
-                showImagePreview(context, documentImageUrl!);
-              },
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: ColorsForApp.colorBlue.withValues(alpha: 0.2),
-                      width: 1.2,
-                    ),
+            width: 90,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    if (documentImageUrl != null && documentImageUrl!.isNotEmpty) {
+                      showImagePreview(context, documentImageUrl!);
+                    }
+                  },
+                  child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Image.network(
-                    documentImageUrl ?? "",
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 80, // radius 40 * 2
-                        height: 80,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            colors: [
-                              ColorsForApp.blackColor,
-                              ColorsForApp.subTitleColor,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: ColorsForApp.colorBlue.withValues(alpha: 0.2),
+                          width: 1.2,
                         ),
-                        child: CircleAvatar(
-                          radius: 40,
-                          backgroundColor: Colors.transparent, // make avatar background transparent
-                          child: Image.asset(
-                            Assets.iconsLogo,
-                            height: 40,
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      );
-                    },
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Image.network(
+                        documentImageUrl ?? "",
+                        fit: BoxFit.contain,
+                        height: 70,
+                        width: 70,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: 70,
+                            height: 70,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                colors: [
+                                  ColorsForApp.blackColor,
+                                  ColorsForApp.subTitleColor,
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 35,
+                              backgroundColor: Colors.transparent,
+                              child: Image.asset(
+                                Assets.iconsLogo,
+                                height: 40,
+                                fit: BoxFit.fill,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ),
-              ),
+
+                const SizedBox(height: 6),
+
+                // ✅ Show reupload button if rejected (status = 2)
+                if (docStatusCode == 2)
+                  ElevatedButton(
+                    onPressed: onReupload,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ColorsForApp.orange,
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      "Re-upload",
+                      style: TextHelper.size16.copyWith(
+                        color: Colors.white,
+                        fontFamily: semiBoldFont,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ],

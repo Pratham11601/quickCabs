@@ -52,7 +52,6 @@ class _LeadHistoryScreenState extends State<LeadHistoryScreen> {
                 },
                 itemBuilder: (context, item, index) {
                   final lead = item;
-
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: LeadCard(
@@ -71,6 +70,7 @@ class _LeadHistoryScreenState extends State<LeadHistoryScreen> {
                         'lead_status': lead.leadStatus,
                         'id': lead.id,
                         'trip_type': lead.tripType,
+                        'acceptedBy': lead.acceptedBy,
                       },
                     ),
                   );

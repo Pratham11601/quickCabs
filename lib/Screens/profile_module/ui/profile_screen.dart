@@ -59,7 +59,7 @@ class ProfileScreen extends StatelessWidget {
                   toggleValue: Config.isNotificationEnabled,
                   onToggle: (val) async {
                     await controller.toggleNotifications(val);
-                    print("✅ Notifications toggled to $val");
+                    debugPrint("✅ Notifications toggled to $val");
                   },
                 ),
                 SettingItem(
@@ -154,6 +154,13 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                     );
+                  },
+                ),
+                SettingItem(
+                  icon: Icons.share_outlined,
+                  title: "Share App",
+                  onTap: () {
+                    controller.shareAppLink();
                   },
                 ),
               ],

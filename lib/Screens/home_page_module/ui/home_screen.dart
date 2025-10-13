@@ -86,6 +86,15 @@ class _HomeScreenState extends State<HomeScreen> {
             Get.toNamed(Routes.HELP_PAGE);
           },
         );
+      } else if (profileController.userDetails.value!.status == 2) {
+        showCommonMessageDialog(
+          Get.context!,
+          'KYC Rejected',
+          profileController.userDetails.value!.rejectMessage.toString(),
+          () {
+            Get.toNamed(Routes.MY_DOCUMENTS);
+          },
+        );
       }
     } catch (e) {
       debugPrint("Error in callAsyncAPI: $e");
@@ -421,10 +430,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   'lead_status': lead.leadStatus,
                   'id': lead.id,
                   'trip_type': lead.tripType,
+                  'acceptedBy_fullname': lead.acceptedByFullname,
                 },
                 onAccept: () => homeController.acceptLead(lead),
                 onWhatsApp: (phone) => homeController.openWhatsApp(phone),
                 onCall: (phone) => homeController.makeCall(phone),
+                onShare: () => homeController.shareLead(lead),
               ),
             );
           },

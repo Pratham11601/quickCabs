@@ -139,6 +139,28 @@ class HomeController extends GetxController {
     }
   }
 
+  // Share a Lead
+  void shareLead(Post lead) async {
+    final message = Uri.encodeComponent(
+      '🚖 *QuickCab Lead Details*\n\n'
+      '👤 *Name*: ${lead.vendorName ?? '-'}\n\n'
+      '📅 *Date*: ${formatDateTime(lead.date!) ?? '-'} | ${lead.time}\n\n'
+      '📍 *From*: ${lead.locationFrom ?? '-'}\n\n'
+      '🏁 *To*: ${lead.toLocationArea ?? '-'}\n\n'
+      '🚗 *Car*: ${lead.carModel ?? '-'}\n\n'
+      '💰 *Amount*: ₹${lead.fare ?? '-'}\n\n'
+      '📞 *Contact*: ${lead.vendorContact ?? '-'}',
+    );
+
+    final whatsappUrl = Uri.parse('https://wa.me/?text=$message');
+
+    if (await canLaunchUrl(whatsappUrl)) {
+      await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
+    } else {
+      debugPrint("⚠️ Could not open WhatsApp");
+    }
+  }
+
   // Banners api
   // Banners api
   RxList<FormattedAdvertisements> banners = <FormattedAdvertisements>[].obs; // ✅ correct type

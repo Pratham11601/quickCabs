@@ -112,10 +112,10 @@ class UserRegistrationController extends GetxController {
       // 3️⃣ Add all docs
       await addCompressedByteFile(
         'documentImage',
-        docs.firstWhereOrNull((d) => d.title == "Aadhar Card")?.filePath,
+        docs.firstWhereOrNull((d) => d.title == "Aadhar Card Front")?.filePath,
       );
       await addCompressedByteFile(
-        'vehicleImgUrl',
+        'documentImageBack',
         docs.firstWhereOrNull((d) => d.title == "Aadhar Card Back")?.filePath,
       );
       await addCompressedByteFile(
@@ -198,7 +198,7 @@ class UserRegistrationController extends GetxController {
         required: true,
       ),
       DocItem(
-        title: 'Aadhar Card',
+        title: 'Aadhar Card Front',
         subtitle: 'Valid aadhaar front photo',
         required: true,
       ),
@@ -220,7 +220,7 @@ class UserRegistrationController extends GetxController {
         required: true,
       ),
       DocItem(
-        title: 'Aadhar Card',
+        title: 'Aadhar Card Front',
         subtitle: 'Valid aadhaar photo',
         required: true,
       ),
@@ -242,7 +242,7 @@ class UserRegistrationController extends GetxController {
         required: true,
       ),
       DocItem(
-        title: 'Aadhar Card',
+        title: 'Aadhar Card Front',
         subtitle: 'Valid aadhar photo',
         required: true,
       ),
@@ -264,7 +264,7 @@ class UserRegistrationController extends GetxController {
         required: true,
       ),
       DocItem(
-        title: 'Aadhar Card',
+        title: 'Aadhar Card Front',
         subtitle: 'Valid aadhar photo',
         required: true,
       ),
@@ -286,7 +286,7 @@ class UserRegistrationController extends GetxController {
         required: true,
       ),
       DocItem(
-        title: 'Aadhar Card',
+        title: 'Aadhar Card Front',
         subtitle: 'Valid aadhar photo',
         required: true,
       ),
@@ -308,7 +308,7 @@ class UserRegistrationController extends GetxController {
         required: true,
       ),
       DocItem(
-        title: 'Aadhar Card',
+        title: 'Aadhar Card Front',
         subtitle: 'Valid aadhar photo',
         required: true,
       ),
@@ -330,7 +330,7 @@ class UserRegistrationController extends GetxController {
         required: true,
       ),
       DocItem(
-        title: 'Aadhar Card',
+        title: 'Aadhar Card Front',
         subtitle: 'Valid aadhar photo',
         required: true,
       ),
@@ -352,7 +352,7 @@ class UserRegistrationController extends GetxController {
         required: true,
       ),
       DocItem(
-        title: 'Aadhar Card',
+        title: 'Aadhar Card Front',
         subtitle: 'Valid aadhar photo',
         required: true,
       ),

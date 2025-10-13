@@ -23,7 +23,7 @@ class Vendor {
   int? id;
   String? fullname;
   String? phone;
-String? aadhaarNumber;
+  String? aadhaarNumber;
   String? email;
   String? password;
   int? status;
@@ -35,6 +35,7 @@ String? aadhaarNumber;
   String? vehicleImgUrl;
   String? shopImgUrl;
   String? documentImgUrl;
+  String? documentImgUrlBack;
   String? licenseImgUrl;
   String? currentAddress;
   String? pinCode;
@@ -47,6 +48,7 @@ String? aadhaarNumber;
   int? referredBy;
   String? createdAt;
   String? updatedAt;
+  String? rejectMessage;
 
   Vendor(
       {this.id,
@@ -64,6 +66,7 @@ String? aadhaarNumber;
       this.vehicleImgUrl,
       this.shopImgUrl,
       this.documentImgUrl,
+      this.documentImgUrlBack,
       this.licenseImgUrl,
       this.currentAddress,
       this.pinCode,
@@ -75,6 +78,7 @@ String? aadhaarNumber;
       this.fcmToken,
       this.referredBy,
       this.createdAt,
+      this.rejectMessage,
       this.updatedAt});
 
   Vendor.fromJson(Map<String, dynamic> json) {
@@ -93,6 +97,7 @@ String? aadhaarNumber;
     vehicleImgUrl = json['vehicleImgUrl'];
     shopImgUrl = json['shopImgUrl'];
     documentImgUrl = json['documentImgUrl'];
+    documentImgUrlBack = json['documentImgUrlBack'];
     licenseImgUrl = json['licenseImgUrl'];
     currentAddress = json['currentAddress'];
     pinCode = json['pin_code'];
@@ -105,6 +110,7 @@ String? aadhaarNumber;
     referredBy = json['referred_by'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
+    rejectMessage = json['reject_message'];
   }
 
   Map<String, dynamic> toJson() {
@@ -124,6 +130,7 @@ String? aadhaarNumber;
     data['vehicleImgUrl'] = vehicleImgUrl;
     data['shopImgUrl'] = shopImgUrl;
     data['documentImgUrl'] = documentImgUrl;
+    data['documentImgUrlBack'] = documentImgUrlBack;
     data['licenseImgUrl'] = licenseImgUrl;
     data['currentAddress'] = currentAddress;
     data['pin_code'] = pinCode;
@@ -136,6 +143,7 @@ String? aadhaarNumber;
     data['referred_by'] = referredBy;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
+    data['reject_message'] = rejectMessage;
     return data;
   }
 }

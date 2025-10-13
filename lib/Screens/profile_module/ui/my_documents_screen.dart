@@ -7,6 +7,7 @@ import '../../../routes/routes.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
 import '../../../widgets/common_widgets.dart';
+import '../../login_signup_module/controller/user_registration_controller.dart';
 import '../profile_widgets/document_card.dart';
 import '../profile_widgets/my_document_card_shimmer.dart';
 
@@ -16,7 +17,8 @@ class MyDocumentsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ProfileController controller = Get.find<ProfileController>();
-
+    final UserRegistrationController userRegistrationController =
+        Get.find<UserRegistrationController>(); // or whichever controller defines serviceDocs
     // Fetch profile details after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.getProfileDetails();
@@ -38,50 +40,63 @@ class MyDocumentsPage extends StatelessWidget {
           );
         }
 
+        // 🔹 Vendor info
         final vendor = controller.userDetails.value;
 
-        // 🔹 No vendor/profile data
         if (vendor == null) {
           return const Center(child: Text("No documents found"));
         }
 
-        // 🔹 Build documents list dynamically
+// 🔹 Determine vendor category
+        final vendorCat = vendor.vendorCat ?? '';
+        final base = Config.baseUrl;
+
+// 🔹 Get required docs list for that category
+        final requiredDocs = userRegistrationController.serviceDocs[vendorCat] ?? [];
+
+// 🔹 Map doc title → actual field and icon
+        final Map<String, Map<String, dynamic> Function()> documentFieldMap = {
+          'Driving License': () => {
+                'url': vendor.licenseImgUrl,
+                'icon': Icons.badge,
+              },
+          'Aadhar Card Front': () => {
+                'url': vendor.documentImgUrl,
+                'icon': Icons.credit_card,
+              },
+          'Aadhar Card Back': () => {
+                'url': vendor.documentImgUrlBack,
+                'icon': Icons.credit_card,
+              },
+          'Vehicle Photo': () => {
+                'url': vendor.vehicleImgUrl,
+                'icon': Icons.directions_car,
+              },
+          'Shop Act License': () => {
+                'url': vendor.shopImgUrl,
+                'icon': Icons.store,
+              },
+          'Shop Photo': () => {
+                'url': vendor.shopImgUrl,
+                'icon': Icons.store,
+              },
+        };
+
+// 🔹 Build uploaded docs list dynamically
         final docs = <Map<String, dynamic>>[];
 
-        if (vendor.documentImgUrl?.isNotEmpty ?? false) {
-          docs.add({
-            "name": "Aadhar Card",
-            "status": "Uploaded",
-            "icon": Icons.credit_card,
-            "url": "${Config.baseUrl}${vendor.documentImgUrl!}",
-          });
-        }
+        for (final doc in requiredDocs) {
+          final mapping = documentFieldMap[doc.title]?.call();
+          final url = mapping?['url'];
 
-        if (vendor.licenseImgUrl?.isNotEmpty ?? false) {
-          docs.add({
-            "name": "License",
-            "status": "Uploaded",
-            "icon": Icons.badge,
-            "url": "${Config.baseUrl}${vendor.licenseImgUrl!}",
-          });
-        }
-
-        if (vendor.shopImgUrl?.isNotEmpty ?? false) {
-          docs.add({
-            "name": "Shop",
-            "status": "Uploaded",
-            "icon": Icons.store,
-            "url": "${Config.baseUrl}${vendor.shopImgUrl!}",
-          });
-        }
-
-        if (vendor.vehicleImgUrl?.isNotEmpty ?? false) {
-          docs.add({
-            "name": "Vehicle",
-            "status": "Uploaded",
-            "icon": Icons.directions_car,
-            "url": "${Config.baseUrl}${vendor.vehicleImgUrl!}",
-          });
+          if (url != null && url.isNotEmpty) {
+            docs.add({
+              "name": doc.title,
+              "status": "Uploaded",
+              "icon": mapping!['icon'],
+              "url": "$base$url",
+            });
+          }
         }
 
         return Column(
@@ -101,6 +116,11 @@ class MyDocumentsPage extends StatelessWidget {
                           docStatus: doc["status"] as String,
                           icon: doc["icon"] as IconData,
                           documentImageUrl: doc["url"] as String,
+                          reason: '',
+                          docStatusCode: vendor.status,
+                          onReupload: () {
+                            // controller.pickAndUploadDocument(doc["name"]); // 👈 Your upload logic
+                          },
                         );
                       },
                     ),
@@ -114,8 +134,7 @@ class MyDocumentsPage extends StatelessWidget {
               decoration: BoxDecoration(
                 color: ColorsForApp.orange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                    color: ColorsForApp.colorBlue.withValues(alpha: 0.2)),
+                border: Border.all(color: ColorsForApp.colorBlue.withValues(alpha: 0.2)),
               ),
               child: Column(
                 children: [

@@ -168,6 +168,11 @@ class MyLeadsController extends GetxController {
     vendorMobile.value = lead.vendorContact ?? '';
     // Parse date string safely
     // For date
+    if (lead.date != null && lead.date!.isNotEmpty) {
+      selectedDate.value = DateTime.parse(lead.date!);
+    } else {
+      selectedDate.value = null;
+    }
 
     // For time (assuming lead.time is String like "14:30")
     if (lead.time != null && lead.time!.isNotEmpty) {
@@ -398,7 +403,9 @@ class MyLeadsController extends GetxController {
 
   Future<bool> deleteRideLead({bool isLoaderShow = true}) async {
     final params = {
-      "date": DateFormat('yyyy-MM-dd').format(selectedDate.value!),
+      "date": selectedDate.value != null
+          ? DateFormat('yyyy-MM-dd').format(selectedDate.value!)
+          : DateFormat('yyyy-MM-dd').format(DateTime.now()),
       "time": selectedTime.value?.format(Get.context!),
       "locationFrom": fromLocationController.text, // ✅ use debounce if user typed new value
       "location_from_area": "",

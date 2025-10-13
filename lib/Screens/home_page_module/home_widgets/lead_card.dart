@@ -18,13 +18,14 @@ class LeadCard extends StatelessWidget {
   final VoidCallback? onAccept; // Callback when "Accept" button is pressed
   final void Function(String phone)? onWhatsApp; // WhatsApp button callback
   final void Function(String phone)? onCall; // Call button callback
-
+  final VoidCallback? onShare;
   const LeadCard({
     super.key,
     required this.lead,
     this.onAccept,
     this.onWhatsApp,
     this.onCall,
+    this.onShare,
   });
 
   @override
@@ -263,6 +264,50 @@ class LeadCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
 
+                Visibility(
+                  visible: (lead['lead_status'] == 'booked'),
+                  child: Text(
+                    "Accepted By - ${(() {
+                      final acceptedBy = lead['acceptedBy'];
+                      final acceptedByFullname = lead['acceptedBy_fullname'];
+
+                      // ✅ Case 1: Simple string (Post model)
+                      if (acceptedByFullname != null && acceptedByFullname is String && acceptedByFullname.trim().isNotEmpty) {
+                        return acceptedByFullname;
+                      }
+
+                      // ✅ Case 2: Nested Map (Leads model)
+                      if (acceptedBy != null) {
+                        if (acceptedBy is Map && acceptedBy['fullname'] != null) {
+                          return acceptedBy['fullname'];
+                        }
+
+                        // ✅ Case 3: AcceptedBy is a Dart object (not a Map)
+                        try {
+                          // Handle case where lead['acceptedBy'] is an instance of AcceptedBy
+                          final fullname = acceptedBy.fullname;
+                          if (fullname != null && fullname.toString().trim().isNotEmpty) {
+                            return fullname.toString();
+                          }
+                        } catch (_) {
+                          // ignore errors
+                        }
+                      }
+                      // ✅ Fallback
+                      return 'NA';
+                    })()}",
+                    style: TextHelper.size18.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: ColorsForApp.blackColor,
+                      fontFamily: semiBoldFont,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
                 /// ---------------- WhatsApp / Call ----------------
                 Visibility(
                   visible: (lead['lead_status'] != 'booked'),
@@ -271,14 +316,9 @@ class LeadCard extends StatelessWidget {
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorsForApp.green,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
-                        icon: Icon(
-                          FontAwesomeIcons.whatsapp,
-                          color: ColorsForApp.whiteColor,
-                        ),
+                        icon: Icon(FontAwesomeIcons.whatsapp, color: ColorsForApp.whiteColor),
                         label: Text(
                           "WhatsApp",
                           style: TextHelper.size18.copyWith(
@@ -292,14 +332,9 @@ class LeadCard extends StatelessWidget {
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorsForApp.subTitleColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
-                        icon: Icon(
-                          Icons.call_outlined,
-                          color: ColorsForApp.whiteColor,
-                        ),
+                        icon: Icon(Icons.call_outlined, color: ColorsForApp.whiteColor),
                         label: Text(
                           "Call",
                           style: TextHelper.size18.copyWith(
@@ -308,6 +343,22 @@ class LeadCard extends StatelessWidget {
                           ),
                         ),
                         onPressed: () => onCall?.call(lead['phone']),
+                      ),
+
+                      // 👇 Pushes the Share icon to the right
+                      const Spacer(),
+
+                      // Share icon button
+                      Container(
+                        decoration: BoxDecoration(
+                          color: ColorsForApp.primaryDarkColor,
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: IconButton(
+                          onPressed: onShare,
+                          icon: const Icon(Icons.share_outlined, color: Colors.white),
+                          tooltip: "Share Lead",
+                        ),
                       ),
                     ],
                   ),

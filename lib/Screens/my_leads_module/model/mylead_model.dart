@@ -67,7 +67,6 @@ class Lead {
   String? time;
   bool? isActive;
   String? leadStatus;
-
   String? vendorContact;
   String? vendorCat;
   String? otp;

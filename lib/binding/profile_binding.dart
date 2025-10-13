@@ -1,3 +1,4 @@
+import 'package:QuickCab/Screens/login_signup_module/controller/user_registration_controller.dart';
 import 'package:get/get.dart';
 
 import '../Screens/profile_module/controller/help_support_controller.dart';
@@ -10,5 +11,6 @@ class ProfileBinding extends Bindings {
     Get.lazyPut<HelpSupportController>(() => HelpSupportController());
     Get.lazyPut<SubscriptionController>(() => SubscriptionController());
     Get.lazyPut<ProfileController>(() => ProfileController());
+    Get.lazyPut<UserRegistrationController>(() => UserRegistrationController());
   }
 }

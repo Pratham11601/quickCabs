@@ -1,20 +1,17 @@
 import 'dart:developer';
 
 import 'package:QuickCab/Screens/profile_module/model/profile_details_model.dart';
-import 'package:QuickCab/widgets/snackbar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../api/api_manager.dart';
-import '../../../notificaton/notification_permission_handler.dart';
 import '../../../notificaton/notifications_services.dart';
-import '../../../routes/routes.dart';
 import '../../../utils/config.dart';
-import '../../../utils/storage_config.dart';
 import '../repository/profile_repository.dart';
 
 class ProfileController extends GetxController {
@@ -37,8 +34,7 @@ class ProfileController extends GetxController {
   }
 
   Future<void> loadNotificationPreference() async {
-    Config.isNotificationEnabled.value =
-        await NotificationService.areNotificationsEnabled();
+    Config.isNotificationEnabled.value = await NotificationService.areNotificationsEnabled();
   }
 
   Future<void> toggleNotifications(bool value) async {
@@ -59,21 +55,16 @@ class ProfileController extends GetxController {
           granted = false;
         }
       } else if (GetPlatform.isIOS) {
-        final settings =
-            await FirebaseMessaging.instance.getNotificationSettings();
+        final settings = await FirebaseMessaging.instance.getNotificationSettings();
 
         if (settings.authorizationStatus == AuthorizationStatus.authorized) {
           granted = true;
-        } else if (settings.authorizationStatus ==
-            AuthorizationStatus.notDetermined) {
-          final newSettings =
-              await FirebaseMessaging.instance.requestPermission();
-          granted =
-              newSettings.authorizationStatus == AuthorizationStatus.authorized;
+        } else if (settings.authorizationStatus == AuthorizationStatus.notDetermined) {
+          final newSettings = await FirebaseMessaging.instance.requestPermission();
+          granted = newSettings.authorizationStatus == AuthorizationStatus.authorized;
         } else if (settings.authorizationStatus == AuthorizationStatus.denied) {
           // Show dialog to open settings
-          Get.snackbar("Permission Denied",
-              "Please enable notifications from Settings.");
+          Get.snackbar("Permission Denied", "Please enable notifications from Settings.");
           granted = false;
         }
       }
@@ -90,7 +81,6 @@ class ProfileController extends GetxController {
     }
   }
 
-
   @override
   void onInit() {
     super.onInit();
@@ -106,8 +96,7 @@ class ProfileController extends GetxController {
   Future<void> getProfileDetails() async {
     try {
       isLoading.value = true;
-      ProfileDetailsModel model =
-          await profileRepository.getProfileDetailsApiCall();
+      ProfileDetailsModel model = await profileRepository.getProfileDetailsApiCall();
 
       if (model.status == true && model.vendor != null) {
         userDetails.value = model.vendor; // ✅ assign to the reactive variable
@@ -120,5 +109,23 @@ class ProfileController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  /// App link share via...
+  void shareAppLink() async {
+    final info = await PackageInfo.fromPlatform();
+    final packageName = info.packageName; // 👈 e.g. com.quickcab.app
+
+    final appLink = 'https://play.google.com/store/apps/details?id=$packageName';
+    final message = '''
+🚖 *QuickCab App*  
+
+Book your cab rides instantly! 🚗💨  
+
+Download now from Play Store 👇  
+$appLink
+''';
+
+    Share.share(message);
   }
 }
