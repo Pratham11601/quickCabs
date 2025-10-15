@@ -24,7 +24,7 @@ import '../../document_verification_module/model/upload_source.dart';
 import '../../document_verification_module/ui/uploadSheet.dart';
 import '../repository/profile_repository.dart';
 
-  class ProfileController extends GetxController {
+class ProfileController extends GetxController {
   ProfileRepository profileRepository = ProfileRepository(APIManager());
 
   /// Account Section
@@ -44,8 +44,7 @@ import '../repository/profile_repository.dart';
   }
 
   Future<void> loadNotificationPreference() async {
-    Config.isNotificationEnabled.value =
-        await NotificationService.areNotificationsEnabled();
+    Config.isNotificationEnabled.value = await NotificationService.areNotificationsEnabled();
   }
 
   Future<void> toggleNotifications(bool value) async {
@@ -66,21 +65,16 @@ import '../repository/profile_repository.dart';
           granted = false;
         }
       } else if (GetPlatform.isIOS) {
-        final settings =
-            await FirebaseMessaging.instance.getNotificationSettings();
+        final settings = await FirebaseMessaging.instance.getNotificationSettings();
 
         if (settings.authorizationStatus == AuthorizationStatus.authorized) {
           granted = true;
-        } else if (settings.authorizationStatus ==
-            AuthorizationStatus.notDetermined) {
-          final newSettings =
-              await FirebaseMessaging.instance.requestPermission();
-          granted =
-              newSettings.authorizationStatus == AuthorizationStatus.authorized;
+        } else if (settings.authorizationStatus == AuthorizationStatus.notDetermined) {
+          final newSettings = await FirebaseMessaging.instance.requestPermission();
+          granted = newSettings.authorizationStatus == AuthorizationStatus.authorized;
         } else if (settings.authorizationStatus == AuthorizationStatus.denied) {
           // Show dialog to open settings
-          Get.snackbar("Permission Denied",
-              "Please enable notifications from Settings.");
+          Get.snackbar("Permission Denied", "Please enable notifications from Settings.");
           granted = false;
         }
       }
@@ -112,8 +106,7 @@ import '../repository/profile_repository.dart';
   Future<void> getProfileDetails() async {
     try {
       isLoading.value = true;
-      ProfileDetailsModel model =
-          await profileRepository.getProfileDetailsApiCall();
+      ProfileDetailsModel model = await profileRepository.getProfileDetailsApiCall();
 
       if (model.status == true && model.vendor != null) {
         userDetails.value = model.vendor; // ✅ assign to the reactive variable
@@ -159,8 +152,7 @@ import '../repository/profile_repository.dart';
 
       // Use pickedFile.path directly instead of savedPath
       final filePath = pickedFile.path;
-      final fileName =
-          pickedFile.name; // requires image_picker 1.0.0+ (supports .name)
+      final fileName = pickedFile.name; // requires image_picker 1.0.0+ (supports .name)
 
       // ✅ Update your model safely
       reUploadDocs[index] = reUploadDocs[index].copyWith(
@@ -193,14 +185,12 @@ import '../repository/profile_repository.dart';
     );
   }
 
-    Future<bool> reuploadDocumentsApi() async {
+  Future<bool> reuploadDocumentsApi() async {
     try {
       isLoading.value = true;
 
       // 1️⃣ Prepare text params
-      final Map<String, dynamic> params = {
-
-      };
+      final Map<String, dynamic> params = {};
 
       // 2️⃣ Prepare byteFiles map
       final byteFiles = <String, List<int>>{};
@@ -208,8 +198,7 @@ import '../repository/profile_repository.dart';
       /// Helper: compress image and add to byteFiles
       Future<void> addCompressedByteFile(String key, String? path) async {
         if (path != null && path.isNotEmpty) {
-          final localPath =
-              await saveFileToLocalDir(path); // ✅ always permanent
+          final localPath = await saveFileToLocalDir(path); // ✅ always permanent
           if (localPath != null) {
             final file = File(localPath);
             if (await file.exists()) {
@@ -224,18 +213,15 @@ import '../repository/profile_repository.dart';
       // 3️⃣ Add all docs
       await addCompressedByteFile(
         'documentImage',
-        reUploadDocs
-            .firstWhereOrNull((d) => d.title == "Aadhar Card Front")?.filePath,
+        reUploadDocs.firstWhereOrNull((d) => d.title == "Aadhar Card Front")?.filePath,
       );
       await addCompressedByteFile(
         'documentImageBack',
-        reUploadDocs
-            .firstWhereOrNull((d) => d.title == "Aadhar Card Back")?.filePath,
+        reUploadDocs.firstWhereOrNull((d) => d.title == "Aadhar Card Back")?.filePath,
       );
       await addCompressedByteFile(
         'profileImgUrl',
-        reUploadDocs
-            .firstWhereOrNull((d) => d.title == "Selfie Photo")?.filePath,
+        reUploadDocs.firstWhereOrNull((d) => d.title == "Selfie Photo")?.filePath,
       );
       await addCompressedByteFile(
         'shopImgUrl',
@@ -243,13 +229,11 @@ import '../repository/profile_repository.dart';
       );
       await addCompressedByteFile(
         'vehicleImgUrl',
-        reUploadDocs
-            .firstWhereOrNull((d) => d.title == "Vehicle Photo")?.filePath,
+        reUploadDocs.firstWhereOrNull((d) => d.title == "Vehicle Photo")?.filePath,
       );
       await addCompressedByteFile(
         'licenseImgUrl',
-        reUploadDocs
-            .firstWhereOrNull((d) => d.title == "Driving License")?.filePath,
+        reUploadDocs.firstWhereOrNull((d) => d.title == "Driving License")?.filePath,
       );
 
       // 4️⃣ Debug prints
@@ -281,13 +265,13 @@ import '../repository/profile_repository.dart';
       isLoading.value = false;
     }
   }
-    /// Helper: save picked file to local dir
+
+  /// Helper: save picked file to local dir
   Future<String?> saveFileToLocalDir(String path) async {
     final file = File(path);
     if (await file.exists()) {
       final dir = await getApplicationDocumentsDirectory();
-      final newPath =
-          "${dir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
+      final newPath = "${dir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
       final newFile = await file.copy(newPath);
       return newFile.path;
     }
@@ -306,8 +290,7 @@ import '../repository/profile_repository.dart';
     final info = await PackageInfo.fromPlatform();
     final packageName = info.packageName; // 👈 e.g. com.quickcab.app
 
-    final appLink =
-        'https://play.google.com/store/apps/details?id=$packageName';
+    final appLink = 'https://play.google.com/store/apps/details?id=$packageName';
     final message = '''
 🚖 *QuickCab App*  
 

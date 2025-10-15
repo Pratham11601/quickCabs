@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (profileController.userDetails.value!.status == 0) {
         showCommonMessageDialog(
           Get.context!,
-          'KYC Submitted',
+          'Documents Submitted',
           'Please wait 24 hours, and then contact the administrator if needed...!',
           () {
             Get.toNamed(Routes.HELP_PAGE);
@@ -89,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
       } else if (profileController.userDetails.value!.status == 2) {
         showCommonMessageDialog(
           Get.context!,
-          'KYC Rejected',
+          'Documents Rejected',
           profileController.userDetails.value!.rejectMessage.toString(),
           () {
             Get.toNamed(Routes.MY_DOCUMENTS);

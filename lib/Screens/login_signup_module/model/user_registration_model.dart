@@ -9,8 +9,7 @@ class UserRegistrationModel {
 
   UserRegistrationModel.fromJson(Map<String, dynamic> json) {
     message = json['message'];
-    vendor =
-        json['vendor'] != null ? new Vendor.fromJson(json['vendor']) : null;
+    vendor = json['vendor'] != null ? new Vendor.fromJson(json['vendor']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -29,7 +28,7 @@ class Vendor {
   int? id;
   String? fullname;
   String? phone;
-  String? referredBy;
+  dynamic referredBy;
   String? email;
   String? password;
   String? vendorCat;
