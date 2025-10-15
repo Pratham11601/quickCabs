@@ -66,11 +66,17 @@ class PostController extends GetxController {
     ],
   };
 
-  RxString selectedTollType="".obs;
+  RxString selectedTollType = "".obs;
 
-  RxList<String> tollTypeList = <String>[].obs;
+  RxList<String> tollTypeList = <String>['Included', 'Excluded'].obs;
 
-  
+  RxList<String> rentalDurationList = <String>[
+    '4 hours 40 km',
+    '8 hours 80 km',
+    '12 hours 120 km',
+  ].obs;
+
+  RxString selectedRentalDuration = ''.obs;
 
   /// Select a main vehicle
   void selectVehicle(int index) {
@@ -519,13 +525,17 @@ class PostController extends GetxController {
       "add_on": "",
       "fare": int.tryParse(fareController.text.trim()) ?? 0,
       "cab_number": "",
-      "toll_tax": "Included",
-      "start_date": selectedStartDate.value,
-      "end_date": selectedEndDate.value,
-      "rental_duration": "4 hours 40 KM",
+      "toll_tax":
+          selectedTollType.value.isNotEmpty ? selectedTollType.value : '',
+      "start_date": selectedStartDate.value ?? '',
+      "end_date": selectedEndDate.value ?? '',
+      "rental_duration": selectedRentalDuration.value.isNotEmpty
+          ? selectedRentalDuration.value
+          : '',
       "vendor_contact": "",
       "trip_type": tripType.value,
     };
+    print("-------------------------------->${params}");
 
     try {
       isLoading.value = true;
