@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:QuickCab/utils/text_styles.dart';
 import 'package:flutter/material.dart';
 
@@ -11,8 +13,8 @@ class DocumentCard extends StatelessWidget {
   final IconData icon;
   final String? documentImageUrl;
   final String? reason;
-  final int? docStatusCode; // e.g. 0=pending, 1=verified, 2=rejected
-  final VoidCallback? onReupload; // ✅ Image of document
+  final int? docStatusCode; // 0=pending, 1=verified, 2=rejected
+  final VoidCallback? onReupload;
 
   const DocumentCard({
     super.key,
@@ -25,6 +27,12 @@ class DocumentCard extends StatelessWidget {
     this.onReupload,
   });
 
+  bool get isLocalImage {
+    if (documentImageUrl == null) return false;
+    return documentImageUrl!.startsWith("/") ||
+        documentImageUrl!.startsWith("file://");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -33,7 +41,8 @@ class DocumentCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: ColorsForApp.whiteColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: ColorsForApp.subTitleColor.withValues(alpha: 0.3)),
+        border: Border.all(
+            color: ColorsForApp.subTitleColor.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
             color: ColorsForApp.blackColor.withOpacity(0.05),
@@ -56,18 +65,26 @@ class DocumentCard extends StatelessWidget {
               children: [
                 Text(
                   docName,
-                  style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+                  style: TextHelper.size20.copyWith(
+                    color: ColorsForApp.blackColor,
+                    fontFamily: semiBoldFont,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   docStatus,
-                  style: TextHelper.size17
-                      .copyWith(color: docStatus == "Verified" ? ColorsForApp.green : ColorsForApp.orange, fontFamily: semiBoldFont),
+                  style: TextHelper.size17.copyWith(
+                    color: docStatus == "Verified"
+                        ? ColorsForApp.green
+                        : ColorsForApp.orange,
+                    fontFamily: semiBoldFont,
+                  ),
                 ),
               ],
             ),
           ),
-          // ✅ Document Image instead of View button
+
+          // ✅ Image + Re-upload section
           SizedBox(
             width: 90,
             child: Column(
@@ -75,7 +92,8 @@ class DocumentCard extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    if (documentImageUrl != null && documentImageUrl!.isNotEmpty) {
+                    if (documentImageUrl != null &&
+                        documentImageUrl!.isNotEmpty) {
                       showImagePreview(context, documentImageUrl!);
                     }
                   },
@@ -90,52 +108,63 @@ class DocumentCard extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Image.network(
-                        documentImageUrl ?? "",
-                        fit: BoxFit.contain,
-                        height: 70,
-                        width: 70,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            width: 70,
-                            height: 70,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: LinearGradient(
-                                colors: [
-                                  ColorsForApp.blackColor,
-                                  ColorsForApp.subTitleColor,
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
+
+                      // ✅ Choose between local or network image
+                      child: isLocalImage
+                          ? Image.file(
+                              File(documentImageUrl!),
+                              fit: BoxFit.cover,
+                              height: 70,
+                              width: 70,
+                            )
+                          : Image.network(
+                              documentImageUrl ?? "",
+                              fit: BoxFit.cover,
+                              height: 70,
+                              width: 70,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  width: 70,
+                                  height: 70,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        ColorsForApp.blackColor,
+                                        ColorsForApp.subTitleColor,
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 35,
+                                    backgroundColor: Colors.transparent,
+                                    child: Image.asset(
+                                      Assets.iconsLogo,
+                                      height: 40,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
-                            child: CircleAvatar(
-                              radius: 35,
-                              backgroundColor: Colors.transparent,
-                              child: Image.asset(
-                                Assets.iconsLogo,
-                                height: 40,
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
                     ),
                   ),
                 ),
 
                 const SizedBox(height: 6),
 
-                // ✅ Show reupload button if rejected (status = 2)
+                // ✅ Show re-upload button for rejected documents
                 if (docStatusCode == 2)
                   ElevatedButton(
                     onPressed: onReupload,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorsForApp.orange,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
                       elevation: 0,
                     ),
                     child: Text(
@@ -154,32 +183,26 @@ class DocumentCard extends StatelessWidget {
     );
   }
 
-  // ✅ Full screen image preview
-  void showImagePreview(BuildContext context, String? url) {
-    final displayUrl = (url != null && url.isNotEmpty) ? url : null;
+  // ✅ Full-screen preview
+  void showImagePreview(BuildContext context, String imageUrl) {
+    final isLocal = imageUrl.startsWith("/") || imageUrl.startsWith("file://");
 
     showDialog(
       context: context,
       builder: (_) => Dialog(
-        insetPadding: const EdgeInsets.all(16), // Prevents fullscreen overflow
+        insetPadding: const EdgeInsets.all(16),
         child: InteractiveViewer(
           child: SizedBox(
             width: MediaQuery.of(context).size.width * 0.8,
             height: MediaQuery.of(context).size.height * 0.6,
-            child: displayUrl != null
-                ? Image.network(
-                    displayUrl,
+            child: isLocal
+                ? Image.file(File(imageUrl), fit: BoxFit.contain)
+                : Image.network(
+                    imageUrl,
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) {
-                      return Image.asset(
-                        Assets.imagesQuickcabLogo,
-                        fit: BoxFit.contain,
-                      );
+                      return Image.asset(Assets.imagesQuickcabLogo);
                     },
-                  )
-                : Image.asset(
-                    Assets.imagesQuickcabLogo,
-                    fit: BoxFit.contain,
                   ),
           ),
         ),

@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:QuickCab/Screens/profile_module/model/help_support_model.dart';
 
 import '../../../api/api_manager.dart';
+import '../../login_signup_module/model/user_registration_model.dart';
 import '../model/create_order_model.dart';
 import '../model/packages_model.dart';
 import '../model/profile_details_model.dart';
@@ -53,5 +56,19 @@ class ProfileRepository {
     var jsonData = await apiManager.getAPICall(url: '/contact-support/get-all');
     var response = HelpSupportModel.fromJson(jsonData);
     return response;
+  }
+
+    Future<UserRegistrationModel> reuploadDocuments({
+    required Map<String, dynamic> params,
+    Map<String, File>? files,
+    Map<String, List<int>>? byteFiles,
+  }) async {
+    var jsonData = await apiManager.multipartPost2APICall(
+      url: "/vendorDetails/upload-images",
+      params: params,
+      byteFiles: byteFiles,
+    );
+
+    return UserRegistrationModel.fromJson(jsonData);
   }
 }

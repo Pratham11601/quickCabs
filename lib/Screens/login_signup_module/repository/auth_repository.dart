@@ -15,9 +15,9 @@ class AuthRepository {
   AuthRepository(this.apiManager);
 
   //Login api
-  Future<LoginModel> loginApiCall({required var params, bool isLoaderShow = true}) async {
+  Future<LoginModel> loginApiCall({required var params, bool isLoaderShow = true}) async { 
     var jsonData = await apiManager.postAPICall(
-      url: '/vendorDetails/login',
+      url: '/vendorDetails/login', 
       params: params,
     );
     var response = LoginModel.fromJson(jsonData);
