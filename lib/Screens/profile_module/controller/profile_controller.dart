@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:QuickCab/Screens/profile_module/model/logout_model.dart';
 import 'package:QuickCab/Screens/profile_module/model/profile_details_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,7 +25,7 @@ import '../../document_verification_module/model/upload_source.dart';
 import '../../document_verification_module/ui/uploadSheet.dart';
 import '../repository/profile_repository.dart';
 
-  class ProfileController extends GetxController {
+class ProfileController extends GetxController {
   ProfileRepository profileRepository = ProfileRepository(APIManager());
 
   /// Account Section
@@ -193,14 +194,12 @@ import '../repository/profile_repository.dart';
     );
   }
 
-    Future<bool> reuploadDocumentsApi() async {
+  Future<bool> reuploadDocumentsApi() async {
     try {
       isLoading.value = true;
 
       // 1️⃣ Prepare text params
-      final Map<String, dynamic> params = {
-
-      };
+      final Map<String, dynamic> params = {};
 
       // 2️⃣ Prepare byteFiles map
       final byteFiles = <String, List<int>>{};
@@ -225,17 +224,20 @@ import '../repository/profile_repository.dart';
       await addCompressedByteFile(
         'documentImage',
         reUploadDocs
-            .firstWhereOrNull((d) => d.title == "Aadhar Card Front")?.filePath,
+            .firstWhereOrNull((d) => d.title == "Aadhar Card Front")
+            ?.filePath,
       );
       await addCompressedByteFile(
         'documentImageBack',
         reUploadDocs
-            .firstWhereOrNull((d) => d.title == "Aadhar Card Back")?.filePath,
+            .firstWhereOrNull((d) => d.title == "Aadhar Card Back")
+            ?.filePath,
       );
       await addCompressedByteFile(
         'profileImgUrl',
         reUploadDocs
-            .firstWhereOrNull((d) => d.title == "Selfie Photo")?.filePath,
+            .firstWhereOrNull((d) => d.title == "Selfie Photo")
+            ?.filePath,
       );
       await addCompressedByteFile(
         'shopImgUrl',
@@ -244,12 +246,14 @@ import '../repository/profile_repository.dart';
       await addCompressedByteFile(
         'vehicleImgUrl',
         reUploadDocs
-            .firstWhereOrNull((d) => d.title == "Vehicle Photo")?.filePath,
+            .firstWhereOrNull((d) => d.title == "Vehicle Photo")
+            ?.filePath,
       );
       await addCompressedByteFile(
         'licenseImgUrl',
         reUploadDocs
-            .firstWhereOrNull((d) => d.title == "Driving License")?.filePath,
+            .firstWhereOrNull((d) => d.title == "Driving License")
+            ?.filePath,
       );
 
       // 4️⃣ Debug prints
@@ -281,7 +285,8 @@ import '../repository/profile_repository.dart';
       isLoading.value = false;
     }
   }
-    /// Helper: save picked file to local dir
+
+  /// Helper: save picked file to local dir
   Future<String?> saveFileToLocalDir(String path) async {
     final file = File(path);
     if (await file.exists()) {
@@ -318,5 +323,30 @@ $appLink
 ''';
 
     Share.share(message);
+  }
+
+  // Login  api
+  Rx<LogoutModel> logoutModelResponse = LogoutModel().obs;
+
+  Future<bool> logoutAPI({bool isLoaderShow = true}) async {
+    try {
+      isLoading.value = true;
+      LogoutModel logoutModel = await profileRepository.logoutApiCall(
+          isLoaderShow: isLoaderShow,
+          params: {'userId': userDetails.value!.id});
+      if (logoutModel.status != null && logoutModel.status == true) {
+        
+        return true;
+      } else {
+        isLoading.value = false;
+        ShowSnackBar.info(
+            message: logoutModel.message.toString(), title: 'Alert');
+        return false;
+      }
+    } catch (e) {
+      isLoading.value = false;
+      ShowSnackBar.error(message: e.toString());
+      return false;
+    }
   }
 }

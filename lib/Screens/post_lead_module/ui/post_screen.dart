@@ -464,17 +464,86 @@ class PostScreen extends StatelessWidget {
             children: [
               Text(
                 'Toll Type',
-                style: TextHelper.size20.copyWith(
-                  color: ColorsForApp.blackColor,
-                  fontFamily: semiBoldFont,
-                ),
+                style: TextHelper.size19.copyWith(
+                    color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
               ),
               const SizedBox(height: 10),
               Obx(() {
                 return DropdownButtonFormField<String>(
-                    value: controller.tollTypeList.firstWhereOrNull(
-                      (item) => item == controller.selectedTollType.value,
+                  value: controller.selectedTollType.value.isNotEmpty
+                      ? controller.selectedTollType.value
+                      : null, // ✅ fix null safety
+                  icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 14),
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: ColorsForApp.blackColor.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
                     ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(
+                          color: ColorsForApp.orange, width: 1),
+                    ),
+                  ),
+                  style: TextHelper.size19.copyWith(
+                    color: ColorsForApp.blackColor,
+                    fontFamily: semiBoldFont,
+                  ),
+                  hint: Text(
+                    'Select Toll Type',
+                    style: TextHelper.size19.copyWith(
+                      color: ColorsForApp.subTitleColor,
+                      fontFamily: semiBoldFont,
+                    ),
+                  ),
+                  items: controller.tollTypeList
+                      .map(
+                        (item) => DropdownMenuItem<String>(
+                          value: item,
+                          child: Text(
+                            item,
+                            style: TextHelper.size18
+                                .copyWith(color: ColorsForApp.blackColor),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (v) {
+                    if (v != null) {
+                      controller.selectedTollType.value = v;
+                      debugPrint(
+                          "Selected toll type: ${controller.selectedTollType.value}");
+                    }
+                  },
+                );
+              }),
+            ],
+          ),
+          Visibility(
+            visible: controller.tripType.value == 2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                Text(
+                  'Rental Duration',
+                  style: TextHelper.size19.copyWith(
+                      color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+                ),
+                const SizedBox(height: 10),
+                Obx(() {
+                  return DropdownButtonFormField<String>(
+                    value: controller.selectedRentalDuration.value.isNotEmpty
+                        ? controller.selectedRentalDuration.value
+                        : null, // ✅ fix null safety
                     icon: const Icon(Icons.keyboard_arrow_down_rounded),
                     decoration: InputDecoration(
                       isDense: true,
@@ -500,16 +569,16 @@ class PostScreen extends StatelessWidget {
                       fontFamily: semiBoldFont,
                     ),
                     hint: Text(
-                      'Select Toll Type',
+                      'Select Rental Duration',
                       style: TextHelper.size19.copyWith(
                         color: ColorsForApp.subTitleColor,
                         fontFamily: semiBoldFont,
                       ),
                     ),
-                    items: controller.tollTypeList
+                    items: controller.rentalDurationList
                         .map(
                           (item) => DropdownMenuItem<String>(
-                            value: item, // depends on your API model field
+                            value: item,
                             child: Text(
                               item,
                               style: TextHelper.size18
@@ -519,12 +588,16 @@ class PostScreen extends StatelessWidget {
                         )
                         .toList(),
                     onChanged: (v) {
-                      controller.selectedTollType.value = v.toString();
-                      debugPrint(
-                          "Selected toll type: ${controller.selectedTollType.value}");
-                    });
-              }),
-            ],
+                      if (v != null) {
+                        controller.selectedRentalDuration.value = v;
+                        debugPrint(
+                            "Selected Duration type: ${controller.selectedRentalDuration.value}");
+                      }
+                    },
+                  );
+                }),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
 

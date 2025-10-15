@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:QuickCab/Screens/profile_module/model/help_support_model.dart';
+import 'package:QuickCab/Screens/profile_module/model/logout_model.dart';
 
 import '../../../api/api_manager.dart';
 import '../../login_signup_module/model/user_registration_model.dart';
@@ -70,5 +71,15 @@ class ProfileRepository {
     );
 
     return UserRegistrationModel.fromJson(jsonData);
+  }
+
+    Future<LogoutModel> logoutApiCall(
+      {required var params, bool isLoaderShow = true}) async {
+    var jsonData = await apiManager.postAPICall(
+      url: '/vendorDetails/logout',
+      params: params,
+    );
+    var response = LogoutModel.fromJson(jsonData);
+    return response;
   }
 }
