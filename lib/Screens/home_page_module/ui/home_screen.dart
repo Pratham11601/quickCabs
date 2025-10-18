@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
     fetchPage: (int pageKey) async {
       final response = await homeController.fetchActiveLeads(pageKey);
       final items = response.posts;
-      return items;
+      return items ?? [];
     },
   );
 
@@ -76,14 +76,73 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       // Profile check
       // await homeController.checkProfileCompletion();
+
       await profileController.getProfileDetails();
+      homeController.userId.value = profileController.userDetails.value!.id!;
       if (profileController.userDetails.value!.status == 0) {
-        showCommonMessageDialog(
-          Get.context!,
-          'Documents Submitted',
-          'Please wait 24 hours, and then contact the administrator if needed...!',
-          () {
-            Get.toNamed(Routes.HELP_PAGE);
+        final updatedAt = profileController.userDetails.value!.updatedAt;
+        // Start reactive countdown from controller (see logic below)
+        homeController.start24HourCountdown(updatedAt!);
+
+        // Show live updating dialog
+        showDialog(
+          context: Get.context!,
+          barrierDismissible: false,
+          builder: (_) {
+            return PopScope(
+              canPop: false,
+              child: Obx(() {
+                final isCompleted = homeController.is24hrsCompleted.value;
+                final timeLeft = homeController.remainingTimeText.value;
+
+                return AlertDialog(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  title: Text(
+                    isCompleted ? 'verification_completed_title'.tr : 'documents_submitted_title'.tr,
+                    style: TextHelper.h7.copyWith(fontFamily: boldFont),
+                  ),
+                  content: RichText(
+                    text: TextSpan(
+                      style: TextHelper.size18.copyWith(
+                        color: ColorsForApp.blackColor.withValues(alpha: 0.7),
+                        fontFamily: regularFont,
+                        height: 1.5,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: isCompleted ? 'verification_completed_message'.tr : 'documents_submitted_message'.tr,
+                        ),
+                        if (!isCompleted)
+                          TextSpan(
+                            text: timeLeft,
+                            style: TextHelper.size19.copyWith(
+                              fontFamily: boldFont,
+                              color: ColorsForApp.blackColor,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: isCompleted
+                          ? () {
+                              Get.back();
+                              Get.toNamed(Routes.HELP_PAGE);
+                            }
+                          : null,
+                      child: Text(
+                        isCompleted ? 'proceed'.tr : 'waiting'.tr,
+                        style: TextHelper.size18.copyWith(
+                          fontFamily: semiBoldFont,
+                          color: ColorsForApp.primaryColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }),
+            );
           },
         );
       } else if (profileController.userDetails.value!.status == 2) {
@@ -421,21 +480,76 @@ class _HomeScreenState extends State<HomeScreen> {
                   'to': lead.toLocation,
                   'price': lead.fare,
                   'car': lead.carModel,
+                  'fromDistance': lead.locationFromArea,
                   'distance': lead.toLocationArea,
-                  'date': homeController.formatDateTime(lead.date!),
-                  // homeController.formatDateTime(lead.date!),
+                  'date': homeController.formatDateTime(lead.date),
                   'time': lead.time,
+                  'start_date': homeController.formatDateTime(lead.startDate),
+                  'end_date': homeController.formatDateTime(lead.endDate),
+                  'days': homeController.calculateDays(
+                    homeController.formatDateTime(lead.startDate),
+                    homeController.formatDateTime(lead.endDate),
+                  ),
                   'phone': lead.vendorContact,
                   'note': lead.addOn,
                   'lead_status': lead.leadStatus,
                   'id': lead.id,
+                  'vendor_id': lead.vendorId,
+                  'userId': homeController.userId.value,
                   'trip_type': lead.tripType,
+                  'rental_duration': lead.rentalDuration,
+                  'toll_tax': lead.tollTax,
                   'acceptedBy_fullname': lead.acceptedByFullname,
                 },
-                onAccept: () => homeController.acceptLead(lead),
+                // ✅ Accept button logic (subscription-checked)
+                onAccept: () async {
+                  await dashboardController.checkSubscriptionStatus();
+                  if (dashboardController.isSubscribed.value) {
+                    homeController.acceptLead(lead);
+                  } else {
+                    showSubscriptionAlertDialog(
+                      Get.context!,
+                      'Subscription Required',
+                      'Your subscription is not active. Please subscribe to post a lead.',
+                      () => Get.toNamed(Routes.SUBSCRIPTION),
+                    );
+                  }
+                },
+
+                // ✅ WhatsApp & Call handled directly (subscription checked inside LeadCard)
                 onWhatsApp: (phone) => homeController.openWhatsApp(phone),
                 onCall: (phone) => homeController.makeCall(phone),
-                onShare: () => homeController.shareLead(lead),
+
+                // ✅ Share button logic (subscription-checked)
+                onShare: () async {
+                  await dashboardController.checkSubscriptionStatus();
+                  if (dashboardController.isSubscribed.value) {
+                    homeController.shareLead(lead);
+                  } else {
+                    showSubscriptionAlertDialog(
+                      Get.context!,
+                      'Subscription Required',
+                      'Your subscription is not active. Please subscribe to post a lead.',
+                      () => Get.toNamed(Routes.SUBSCRIPTION),
+                    );
+                  }
+                },
+
+                // ✅ Generic subscription check (used by WhatsApp/Call buttons)
+                onCheckSubscription: () async {
+                  await dashboardController.checkSubscriptionStatus();
+                  return dashboardController.isSubscribed.value;
+                },
+
+                // ✅ Common subscription alert callback
+                onSubscriptionRequired: () {
+                  showSubscriptionAlertDialog(
+                    Get.context!,
+                    'Subscription Required',
+                    'Your subscription is not active. Please subscribe to use this feature.',
+                    () => Get.toNamed(Routes.SUBSCRIPTION),
+                  );
+                },
               ),
             );
           },

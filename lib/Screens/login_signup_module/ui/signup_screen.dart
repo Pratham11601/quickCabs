@@ -294,7 +294,7 @@ class SignupCard extends StatelessWidget {
                       Obx(() => CommonElevatedButton(
                           isLoading: signupController.isLoading.value,
                           text: 'Create Account',
-                          enabled: signupController.phoneCtrl.text.length == 10,
+                          enabled: signupController.phoneText.value.length == 10,
                           icon: Icons.arrow_right_alt_rounded,
                           onPressed: () async {
                             if (signupController.canSubmit) {

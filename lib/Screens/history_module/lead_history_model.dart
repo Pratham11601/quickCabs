@@ -123,36 +123,36 @@ class Leads {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['date'] = this.date;
-    data['vendor_id'] = this.vendorId;
-    data['vendor_name'] = this.vendorName;
-    data['location_from'] = this.locationFrom;
-    data['location_from_area'] = this.locationFromArea;
-    data['to_location'] = this.toLocation;
-    data['to_location_area'] = this.toLocationArea;
-    data['car_model'] = this.carModel;
-    data['add_on'] = this.addOn;
-    data['fare'] = this.fare;
-    data['time'] = this.time;
-    data['is_active'] = this.isActive;
-    data['vendor_contact'] = this.vendorContact;
-    data['vendor_cat'] = this.vendorCat;
-    data['trip_type'] = this.tripType;
-    data['otp'] = this.otp;
-    data['acceptedById'] = this.acceptedById;
-    data['lead_status'] = this.leadStatus;
-    data['rental_duration'] = this.rentalDuration;
-    data['toll_tax'] = this.tollTax;
-    data['start_date'] = this.startDate;
-    data['end_date'] = this.endDate;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
-    if (this.creator != null) {
-      data['creator'] = this.creator!.toJson();
+    data['id'] = id;
+    data['date'] = date;
+    data['vendor_id'] = vendorId;
+    data['vendor_name'] = vendorName;
+    data['location_from'] = locationFrom;
+    data['location_from_area'] = locationFromArea;
+    data['to_location'] = toLocation;
+    data['to_location_area'] = toLocationArea;
+    data['car_model'] = carModel;
+    data['add_on'] = addOn;
+    data['fare'] = fare;
+    data['time'] = time;
+    data['is_active'] = isActive;
+    data['vendor_contact'] = vendorContact;
+    data['vendor_cat'] = vendorCat;
+    data['trip_type'] = tripType;
+    data['otp'] = otp;
+    data['acceptedById'] = acceptedById;
+    data['lead_status'] = leadStatus;
+    data['rental_duration'] = rentalDuration;
+    data['toll_tax'] = tollTax;
+    data['start_date'] = startDate;
+    data['end_date'] = endDate;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
+    if (creator != null) {
+      data['creator'] = creator!.toJson();
     }
-    if (this.acceptedBy != null) {
-      data['acceptedBy'] = this.acceptedBy!.toJson();
+    if (acceptedBy != null) {
+      data['acceptedBy'] = acceptedBy!.toJson();
     }
     return data;
   }
@@ -175,10 +175,10 @@ class Creator {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['fullname'] = this.fullname;
-    data['email'] = this.email;
-    data['city'] = this.city;
-    data['profileImgUrl'] = this.profileImgUrl;
+    data['fullname'] = fullname;
+    data['email'] = email;
+    data['city'] = city;
+    data['profileImgUrl'] = profileImgUrl;
     return data;
   }
 }
@@ -198,9 +198,9 @@ class AcceptedBy {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['fullname'] = this.fullname;
-    data['phone'] = this.phone;
+    data['id'] = id;
+    data['fullname'] = fullname;
+    data['phone'] = phone;
     return data;
   }
 }

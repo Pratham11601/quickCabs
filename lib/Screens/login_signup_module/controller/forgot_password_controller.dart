@@ -169,7 +169,7 @@ class ForgotPasswordController extends GetxController {
       if (model.status == true) {
         ShowSnackBar.success(message: model.message!);
         isLoading.value = false;
-        Get.toNamed(Routes.LOGIN_SCREEN);
+        Get.offAllNamed(Routes.LOGIN_SCREEN);
 
         return true;
       } else {

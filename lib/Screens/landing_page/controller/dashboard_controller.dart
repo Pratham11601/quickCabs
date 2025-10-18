@@ -22,6 +22,9 @@ class DashboardController extends GetxController {
 
   RxBool isSubscribed = false.obs;
   Rx<SubscriptionStatusModel> subscriptionStatusModel = SubscriptionStatusModel().obs;
+  RxString subscriptionPlan = "".obs;
+  RxString planStartDate = "".obs;
+  RxString planEndDate = "".obs;
 
   Future<void> checkSubscriptionStatus() async {
     try {
@@ -34,6 +37,9 @@ class DashboardController extends GetxController {
         bool active = response.isSubscribtionActive == true || (response.subscription?.isActive == true);
 
         isSubscribed.value = active;
+        subscriptionPlan.value = response.subscription?.plan ?? "";
+        planStartDate.value = response.subscription?.lastRechargedDate ?? "";
+        planEndDate.value = response.subscription?.endDate ?? "";
       } else {
         isSubscribed.value = false;
       }

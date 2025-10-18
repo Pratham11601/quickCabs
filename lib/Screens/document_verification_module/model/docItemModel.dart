@@ -3,8 +3,8 @@ enum DocStatus { empty, uploaded, verified }
 class DocItem {
   DocItem({
     required this.title,
-    required this.subtitle,
-    required this.required,
+    this.subtitle,
+    this.isRequired, // renamed from “required” keyword conflict
     this.filePath,
     this.fileName,
     this.status = DocStatus.empty,
@@ -12,8 +12,8 @@ class DocItem {
   });
 
   final String title;
-  final String subtitle;
-  final bool required;
+  final String? subtitle; // nullable now
+  final bool? isRequired; // nullable + renamed
 
   String? filePath;
   String? fileName;
@@ -26,7 +26,7 @@ class DocItem {
   DocItem copyWith({
     String? title,
     String? subtitle,
-    bool? required,
+    bool? isRequired,
     String? filePath,
     String? fileName,
     DocStatus? status,
@@ -35,7 +35,7 @@ class DocItem {
     return DocItem(
       title: title ?? this.title,
       subtitle: subtitle ?? this.subtitle,
-      required: required ?? this.required,
+      isRequired: isRequired ?? this.isRequired,
       filePath: filePath ?? this.filePath,
       fileName: fileName ?? this.fileName,
       status: status ?? this.status,

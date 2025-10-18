@@ -1,12 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:QuickCab/Screens/login_signup_module/model/lead_by_model.dart';
 import 'package:QuickCab/Screens/login_signup_module/model/sign_in_otp_model.dart';
 import 'package:QuickCab/Screens/login_signup_module/model/verify_sign_in_otp_model.dart';
-import 'package:QuickCab/routes/routes.dart';
 import 'package:QuickCab/widgets/snackbar.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../api/api_manager.dart';
 import '../repository/auth_repository.dart';
@@ -19,7 +18,7 @@ class SignupController extends GetxController {
   final passCtrl = TextEditingController();
   final confirmCtrl = TextEditingController();
   final TextEditingController otpController = TextEditingController();
-
+  var phoneText = ''.obs; // 👈 reactive variable
   Timer? _timer;
 
   // Focus
@@ -66,8 +65,7 @@ class SignupController extends GetxController {
 
     phoneFocus.addListener(() => isPhoneFocused.value = phoneFocus.hasFocus);
     passFocus.addListener(() => isPassFocused.value = passFocus.hasFocus);
-    confirmFocus
-        .addListener(() => isConfirmFocused.value = confirmFocus.hasFocus);
+    confirmFocus.addListener(() => isConfirmFocused.value = confirmFocus.hasFocus);
     _initializeListeners();
   }
 
@@ -77,6 +75,7 @@ class SignupController extends GetxController {
 
   void validatePhone() {
     // India 10-digit mobile without country code
+    phoneText.value = phoneCtrl.text; // 👈 updates whenever user types
     isValidPhone.value = RegExp(r'^\d{10}$').hasMatch(phoneCtrl.text);
   }
 
@@ -88,16 +87,14 @@ class SignupController extends GetxController {
     final hasNumber = RegExp(r'\d').hasMatch(pass);
     isValidPass.value = lengthOk && hasLetter && hasNumber;
 
-    isConfirmMatch.value =
-        confirmCtrl.text.isNotEmpty && confirmCtrl.text == passCtrl.text;
+    isConfirmMatch.value = confirmCtrl.text.isNotEmpty && confirmCtrl.text == passCtrl.text;
   }
 
   // Generate mobile otp
   Future<bool> generateRegistrationOtp({bool isLoaderShow = true}) async {
     isLoading.value = true;
     try {
-      SignInOtpModel model =
-          await authRepository.generateRegistrationOtpApiCall(params: {
+      SignInOtpModel model = await authRepository.generateRegistrationOtpApiCall(params: {
         "phone": phoneCtrl.text.trim(),
       });
       if (model.status == true) {
@@ -121,8 +118,7 @@ class SignupController extends GetxController {
   Future<bool> verifyRegistrationOtp({bool isLoaderShow = true}) async {
     isLoading.value = true;
     try {
-      VerifySignInOtpModel model =
-          await authRepository.verifyRegistrationOtpApiCall(params: {
+      VerifySignInOtpModel model = await authRepository.verifyRegistrationOtpApiCall(params: {
         "phone": phoneCtrl.text.trim(),
         "otp": otpController.text.trim(),
       });
@@ -206,8 +202,7 @@ class SignupController extends GetxController {
   RxList<LeadByListData> leadByList = <LeadByListData>[].obs;
   Future<bool> getLeadByList() async {
     try {
-      LeadByListModel leadByListModel =
-          await authRepository.getLeadByListApiCall();
+      LeadByListModel leadByListModel = await authRepository.getLeadByListApiCall();
       if (leadByListModel.status == 1) {
         leadByList.addAll(leadByListModel.data!);
         return true;

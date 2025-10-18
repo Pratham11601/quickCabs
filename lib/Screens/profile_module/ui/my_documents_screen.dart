@@ -17,8 +17,8 @@ class MyDocumentsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ProfileController controller = Get.find<ProfileController>();
-    final UserRegistrationController userRegistrationController = Get.find<
-        UserRegistrationController>(); // or whichever controller defines serviceDocs
+    final UserRegistrationController userRegistrationController =
+        Get.find<UserRegistrationController>(); // or whichever controller defines serviceDocs
     // Fetch profile details after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.getProfileDetails();
@@ -52,8 +52,7 @@ class MyDocumentsPage extends StatelessWidget {
         final base = Config.baseUrl;
 
 // 🔹 Get required docs list for that category
-        final requiredDocs =
-            userRegistrationController.serviceDocs[vendorCat] ?? [];
+        final requiredDocs = userRegistrationController.serviceDocs[vendorCat] ?? [];
 
 // 🔹 Map doc title → actual field and icon
         final Map<String, Map<String, dynamic> Function()> documentFieldMap = {
@@ -126,45 +125,41 @@ class MyDocumentsPage extends StatelessWidget {
                       },
                     ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: InkWell(
-                onTap: () async {
-                  bool result = await controller.reuploadDocumentsApi();
-                  if (result) {
-                    Get.offNamed(Routes.DASHBOARD_PAGE);
-                  }
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  decoration: BoxDecoration(
-                    color: ColorsForApp.primaryColor,
-                    // toggle background
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.check_circle_outline_rounded,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Proceed',
-                        style: TextHelper.size19.copyWith(
-                          color: Colors.white,
-                          fontFamily: semiBoldFont,
+// ✅ Show Proceed button only when KYC is rejected
+            if (vendor.status == 2) // assuming 2 = rejected
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: InkWell(
+                  onTap: () async {
+                    bool result = await controller.reuploadDocumentsApi();
+                    if (result) {
+                      Get.offNamed(Routes.DASHBOARD_PAGE);
+                    }
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: ColorsForApp.primaryColor,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.check_circle_outline_rounded, color: Colors.white),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Proceed',
+                          style: TextHelper.size19.copyWith(
+                            color: Colors.white,
+                            fontFamily: semiBoldFont,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-            // 🔹 Help Section
+              ), // 🔹 Help Section
             Container(
               width: double.infinity,
               margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -172,8 +167,7 @@ class MyDocumentsPage extends StatelessWidget {
               decoration: BoxDecoration(
                 color: ColorsForApp.orange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                    color: ColorsForApp.colorBlue.withValues(alpha: 0.2)),
+                border: Border.all(color: ColorsForApp.colorBlue.withValues(alpha: 0.2)),
               ),
               child: Column(
                 children: [

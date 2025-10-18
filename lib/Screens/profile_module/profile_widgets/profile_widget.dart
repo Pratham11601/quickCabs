@@ -1,12 +1,12 @@
 import 'package:QuickCab/Screens/profile_module/controller/profile_controller.dart';
-import 'package:QuickCab/notificaton/notifications_services.dart';
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:QuickCab/utils/text_styles.dart';
 import 'package:QuickCab/widgets/cache_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
+
+import '../../../routes/routes.dart';
 
 /// Profile Info Card
 
@@ -15,6 +15,7 @@ class ProfileInfoCard extends StatelessWidget {
   final String phone;
   final String email;
   final String profileImage;
+  final String subscriptionStatus;
 
   const ProfileInfoCard({
     super.key,
@@ -22,6 +23,7 @@ class ProfileInfoCard extends StatelessWidget {
     required this.phone,
     required this.email,
     required this.profileImage,
+    required this.subscriptionStatus,
   });
 
   @override
@@ -70,32 +72,30 @@ class ProfileInfoCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name,
-                    style: TextHelper.h6.copyWith(
-                        color: ColorsForApp.blackColor,
-                        fontFamily: semiBoldFont)),
+                Text(name, style: TextHelper.h6.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.phone_outlined,
-                        size: 18, color: ColorsForApp.subtitle),
+                    Icon(Icons.phone_outlined, size: 18, color: ColorsForApp.subtitle),
                     const SizedBox(width: 6),
-                    Text(phone,
-                        style: TextHelper.size17.copyWith(
-                            color: ColorsForApp.subtitle,
-                            fontFamily: semiBoldFont)),
+                    Text(phone, style: TextHelper.size17.copyWith(color: ColorsForApp.subtitle, fontFamily: semiBoldFont)),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.email_outlined,
-                        size: 18, color: ColorsForApp.subtitle),
+                    Icon(Icons.email_outlined, size: 18, color: ColorsForApp.subtitle),
                     const SizedBox(width: 6),
-                    Text(email,
-                        style: TextHelper.size17.copyWith(
-                            color: ColorsForApp.subtitle,
-                            fontFamily: semiBoldFont)),
+                    Text(email, style: TextHelper.size17.copyWith(color: ColorsForApp.subtitle, fontFamily: semiBoldFont)),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(Icons.workspace_premium_outlined, size: 18, color: ColorsForApp.subtitle),
+                    const SizedBox(width: 6),
+                    Text("Subscription - $subscriptionStatus",
+                        style: TextHelper.size17.copyWith(color: ColorsForApp.subtitle, fontFamily: semiBoldFont)),
                   ],
                 ),
               ],
@@ -119,7 +119,7 @@ class SettingItem {
   final RxBool? toggleValue;
   final Widget? trailing;
   final Future<void> Function(bool)? onToggle; // ✅ NEW CALLBACK
-
+  final Widget? expandedContent;
   SettingItem({
     required this.icon,
     required this.title,
@@ -131,6 +131,7 @@ class SettingItem {
     this.trailing,
     this.onToggle,
     this.isLanguage = false,
+    this.expandedContent,
   });
 }
 
@@ -150,6 +151,11 @@ class SettingsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ensure controller exists (safe-guard in case)
+    if (!Get.isRegistered<ProfileController>()) {
+      Get.put(ProfileController());
+    }
+
     return Card(
       margin: const EdgeInsets.all(12),
       shape: RoundedRectangleBorder(
@@ -158,136 +164,175 @@ class SettingsCard extends StatelessWidget {
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// Section Title
-            ///
-            Text(
-              sectionTitle,
-              style: TextHelper.size20.copyWith(
-                color: ColorsForApp.blackColor,
-                fontFamily: semiBoldFont,
+        child: Obx(
+          () => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// Section Title
+              ///
+              Text(
+                sectionTitle,
+                style: TextHelper.size20.copyWith(
+                  color: ColorsForApp.blackColor,
+                  fontFamily: semiBoldFont,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            /// Items List
-            Column(
-              children: List.generate(items.length, (index) {
-                final item = items[index];
-                return Column(
-                  children: [
-                    InkWell(
-                      splashColor:
-                          ColorsForApp.subTitleColor.withValues(alpha: 0.1),
-                      onTap: item.hasSwitch ? null : item.onTap,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Row(
-                          children: [
-                            Icon(item.icon,
-                                size: 23, color: ColorsForApp.primaryDarkColor),
-                            const SizedBox(width: 16),
+              /// Items List
+              Column(
+                children: List.generate(items.length, (index) {
+                  final item = items[index];
+                  final isExpanded = controller.expandedIndex.value == index;
 
-                            /// Title
-                            Expanded(
-                              child: Text(
-                                item.title,
-                                style: TextHelper.size19.copyWith(
-                                  color: ColorsForApp.blackColor,
-                                  fontFamily: semiBoldFont,
-                                ),
-                              ),
-                            ),
+                  return Column(
+                    children: [
+                      InkWell(
+                        splashColor: ColorsForApp.subTitleColor.withValues(alpha: 0.1),
+                        onTap: () {
+                          // if item has expandable content -> toggle using controller
+                          if (item.expandedContent != null) {
+                            // Check if this item is "Subscription"
+                            if (item.title.toLowerCase().contains("subscription")) {
+                              final isSubscribed = controller.dashboardController.isSubscribed.value;
+                              final start = controller.dashboardController.planStartDate.value;
+                              final end = controller.dashboardController.planEndDate.value;
 
-                            /// Label (optional)
-                            if (item.label != null)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFFFF4D6),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
+                              final remainingDays = controller.calculateRemainingDays(start, end);
+                              final remainingHours = controller.calculateRemainingHours(end);
+
+                              if (!isSubscribed || (remainingDays == 0 && remainingHours == 0)) {
+                                // 🔁 Redirect instead of expanding
+                                Get.toNamed(Routes.SUBSCRIPTION);
+                                return;
+                              }
+                            }
+
+                            // ✅ Toggle expansion normally
+                            controller.toggleExpansion(index);
+                          } else if (!item.hasSwitch) {
+                            item.onTap?.call();
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Row(
+                            children: [
+                              Icon(item.icon, size: 23, color: ColorsForApp.primaryDarkColor),
+                              const SizedBox(width: 16),
+
+                              /// Title
+                              Expanded(
                                 child: Text(
-                                  item.label!,
-                                  style: TextHelper.size18.copyWith(
+                                  item.title,
+                                  style: TextHelper.size19.copyWith(
                                     color: ColorsForApp.blackColor,
                                     fontFamily: semiBoldFont,
                                   ),
                                 ),
                               ),
 
-                            /// Trailing Widget or Switch
-                            if (item.hasSwitch)
-                              item.toggleValue != null
-                                  ? Obx(() => Switch(
-                                        value: item.toggleValue!.value,
-                                        onChanged: (val) async {
-                                          item.toggleValue!.value = val;
-                                          if (item.onToggle != null) {
-                                            await item.onToggle!(val);
-                                          }
-                                        },
-                                        activeColor: Colors.white,
-                                        activeTrackColor: Colors.redAccent,
-                                      ))
-                                  : StatefulBuilder(
-                                      builder: (context, setState) => Switch(
-                                        value: item.switchValue,
-                                        onChanged: (val) async {
-                                          setState(() {
-                                            item.switchValue = val;
-                                          });
-                                          if (item.onToggle != null) {
-                                            await item.onToggle!(val);
-                                          }
-                                          print("Switch ${item.title} to $val");
-                                        },
-                                        activeColor: Colors.white,
-                                        activeTrackColor: Colors.redAccent,
-                                      ),
-                                    )
-                            else if (item.isLanguage)
-                              Obx(
-                                () => Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      controller.selectedLanguage.value,
-                                      style: TextHelper.size18.copyWith(
-                                        color: ColorsForApp.blackColor,
-                                        fontFamily: semiBoldFont,
-                                      ),
+                              /// Label (optional)
+                              if (item.label != null)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFFF4D6),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    item.label!,
+                                    style: TextHelper.size18.copyWith(
+                                      color: ColorsForApp.blackColor,
+                                      fontFamily: semiBoldFont,
                                     ),
-                                    const SizedBox(width: 8),
-                                    const Icon(Icons.chevron_right,
-                                        color: Colors.black45),
-                                  ],
+                                  ),
                                 ),
-                              )
-                            else
-                              item.trailing ??
-                                  const Icon(Icons.chevron_right,
-                                      color: Colors.black45),
-                          ],
+
+                              /// Trailing Widget or Switch
+                              if (item.hasSwitch)
+                                item.toggleValue != null
+                                    ? Obx(() => Switch(
+                                          value: item.toggleValue!.value,
+                                          onChanged: (val) async {
+                                            item.toggleValue!.value = val;
+                                            if (item.onToggle != null) {
+                                              await item.onToggle!(val);
+                                            }
+                                          },
+                                          activeColor: Colors.white,
+                                          activeTrackColor: Colors.redAccent,
+                                        ))
+                                    : StatefulBuilder(
+                                        builder: (context, setState) => Switch(
+                                          value: item.switchValue,
+                                          onChanged: (val) async {
+                                            setState(() {
+                                              item.switchValue = val;
+                                            });
+                                            if (item.onToggle != null) {
+                                              await item.onToggle!(val);
+                                            }
+                                            print("Switch ${item.title} to $val");
+                                          },
+                                          activeColor: Colors.white,
+                                          activeTrackColor: Colors.redAccent,
+                                        ),
+                                      )
+                              else if (item.isLanguage)
+                                Obx(
+                                  () => Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        controller.selectedLanguage.value,
+                                        style: TextHelper.size18.copyWith(
+                                          color: ColorsForApp.blackColor,
+                                          fontFamily: semiBoldFont,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      const Icon(Icons.chevron_right, color: Colors.black45),
+                                    ],
+                                  ),
+                                )
+                              else if (item.expandedContent != null)
+                                Icon(
+                                  isExpanded ? Icons.keyboard_arrow_down : Icons.chevron_right,
+                                  color: Colors.black45,
+                                )
+                              else
+                                item.trailing ?? const Icon(Icons.chevron_right, color: Colors.black45),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
 
-                    /// Divider except last item
-                    if (index != items.length - 1)
-                      const Divider(
-                        height: 1,
-                        thickness: 0.6,
-                        color: Colors.black12,
+                      // Expandable content animated
+                      AnimatedSize(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
+                        child: isExpanded
+                            ? Padding(
+                                padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 12.0),
+                                child: item.expandedContent,
+                              )
+                            : const SizedBox.shrink(),
                       ),
-                  ],
-                );
-              }),
-            )
-          ],
+
+                      /// Divider except last item
+                      if (index != items.length - 1)
+                        const Divider(
+                          height: 1,
+                          thickness: 0.6,
+                          color: Colors.black12,
+                        ),
+                    ],
+                  );
+                }),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -313,8 +358,7 @@ class LogoutButton extends StatelessWidget {
         leading: const Icon(Icons.logout, size: 30, color: ColorsForApp.red),
         title: Text(
           "Logout",
-          style: TextHelper.h6
-              .copyWith(color: ColorsForApp.red, fontFamily: semiBoldFont),
+          style: TextHelper.h6.copyWith(color: ColorsForApp.red, fontFamily: semiBoldFont),
         ),
         onTap: onLogout,
       ),

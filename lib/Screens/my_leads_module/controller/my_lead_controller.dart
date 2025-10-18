@@ -246,10 +246,10 @@ class MyLeadsController extends GetxController {
       final response = await repository.myLeadApicall();
 
       activeLeads.assignAll(
-        response.leads.where((lead) => lead.leadStatus == "pending" && lead.isActive == true).toList(),
+        response.leads!.where((lead) => lead.leadStatus == "pending" && lead.isActive == true).toList(),
       );
       completedLeads.assignAll(
-        response.leads.where((lead) => lead.leadStatus == "booked").toList(),
+        response.leads!.where((lead) => lead.leadStatus == "booked").toList(),
       );
 
       filteredActiveLeads.assignAll(activeLeads);
@@ -290,6 +290,23 @@ class MyLeadsController extends GetxController {
       return outputFormat.format(dateTime);
     } catch (e) {
       return "Invalid date";
+    }
+  }
+
+  String formatDateTime(String? dateTimeString) {
+    if (dateTimeString == null || dateTimeString.trim().isEmpty) return '-';
+    try {
+      final dateTime = DateTime.parse(dateTimeString);
+      return DateFormat('dd MMM, yyyy').format(dateTime);
+    } catch (e) {
+      try {
+        final inputFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+        final dateTime = inputFormat.parse(dateTimeString);
+        return DateFormat('dd MMM, yyyy').format(dateTime);
+      } catch (e) {
+        debugPrint('⚠️ Invalid date format: $dateTimeString');
+        return '-';
+      }
     }
   }
 

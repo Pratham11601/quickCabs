@@ -15,6 +15,7 @@ class DocumentCard extends StatelessWidget {
   final String? reason;
   final int? docStatusCode; // 0=pending, 1=verified, 2=rejected
   final VoidCallback? onReupload;
+  final bool isLocalImage; // ✅ only keep this (no getter)
 
   const DocumentCard({
     super.key,
@@ -22,16 +23,11 @@ class DocumentCard extends StatelessWidget {
     required this.docStatus,
     required this.icon,
     required this.documentImageUrl,
+    this.isLocalImage = false, // ✅ default false
     required this.reason,
     this.docStatusCode,
     this.onReupload,
   });
-
-  bool get isLocalImage {
-    if (documentImageUrl == null) return false;
-    return documentImageUrl!.startsWith("/") ||
-        documentImageUrl!.startsWith("file://");
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +37,7 @@ class DocumentCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: ColorsForApp.whiteColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-            color: ColorsForApp.subTitleColor.withValues(alpha: 0.3)),
+        border: Border.all(color: ColorsForApp.subTitleColor.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
             color: ColorsForApp.blackColor.withOpacity(0.05),
@@ -52,13 +47,17 @@ class DocumentCard extends StatelessWidget {
         ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // 🟣 Left-side icon
           CircleAvatar(
             radius: 30,
             backgroundColor: Colors.orange.shade100,
             child: Icon(icon, size: 30, color: ColorsForApp.primaryDarkColor),
           ),
           const SizedBox(width: 16),
+
+          // 🟣 Center: document info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,9 +73,7 @@ class DocumentCard extends StatelessWidget {
                 Text(
                   docStatus,
                   style: TextHelper.size17.copyWith(
-                    color: docStatus == "Verified"
-                        ? ColorsForApp.green
-                        : ColorsForApp.orange,
+                    color: docStatus == "Verified" ? ColorsForApp.green : ColorsForApp.orange,
                     fontFamily: semiBoldFont,
                   ),
                 ),
@@ -84,16 +81,16 @@ class DocumentCard extends StatelessWidget {
             ),
           ),
 
-          // ✅ Image + Re-upload section
+          // 🟣 Right-side: image + reupload button
           SizedBox(
             width: 90,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // ✅ Image preview thumbnail
                 GestureDetector(
                   onTap: () {
-                    if (documentImageUrl != null &&
-                        documentImageUrl!.isNotEmpty) {
+                    if (documentImageUrl != null && documentImageUrl!.isNotEmpty) {
                       showImagePreview(context, documentImageUrl!);
                     }
                   },
@@ -108,8 +105,6 @@ class DocumentCard extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(8),
                       ),
-
-                      // ✅ Choose between local or network image
                       child: isLocalImage
                           ? Image.file(
                               File(documentImageUrl!),
@@ -155,16 +150,19 @@ class DocumentCard extends StatelessWidget {
 
                 const SizedBox(height: 6),
 
-                // ✅ Show re-upload button for rejected documents
+                // ✅ Show re-upload button only for rejected docs
                 if (docStatusCode == 2)
                   ElevatedButton(
                     onPressed: onReupload,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorsForApp.orange,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       elevation: 0,
                     ),
                     child: Text(
@@ -183,7 +181,7 @@ class DocumentCard extends StatelessWidget {
     );
   }
 
-  // ✅ Full-screen preview
+  // ✅ Full-screen image preview dialog
   void showImagePreview(BuildContext context, String imageUrl) {
     final isLocal = imageUrl.startsWith("/") || imageUrl.startsWith("file://");
 

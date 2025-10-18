@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
+import '../../../routes/routes.dart';
 import '../../../utils/app_colors.dart';
 import '../../../widgets/common_widgets.dart';
 import '../../../widgets/constant_widgets.dart';
@@ -120,15 +121,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     // Post Lead (restricted)
                     GestureDetector(
                       onTap: () async {
-                        controller.currentIndex.value = 2; // navigate to Post Lead
-
-                        //For now as per client requirement it is hide, later on it will be uncomment
-
-                        /*await controller.checkSubscriptionStatus();
+                        // Check subscription status before navigating
+                        await controller.checkSubscriptionStatus();
 
                         if (controller.isSubscribed.value) {
-                          controller.currentIndex.value = 2; // navigate to Post Lead
+                          // Navigate to Post Lead if subscribed
+                          controller.currentIndex.value = 2;
                         } else {
+                          // Show alert dialog if not subscribed
                           showSubscriptionAlertDialog(
                             Get.context!,
                             'Subscription Required',
@@ -137,7 +137,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               Get.toNamed(Routes.SUBSCRIPTION);
                             },
                           );
-                        }*/
+                        }
                       },
                       child: buildNavItem(
                         icon: Icons.add_circle_outline,

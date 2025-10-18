@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -23,10 +24,16 @@ import '../../../widgets/snackbar.dart';
 import '../../document_verification_module/model/docItemModel.dart';
 import '../../document_verification_module/model/upload_source.dart';
 import '../../document_verification_module/ui/uploadSheet.dart';
+import '../../landing_page/controller/dashboard_controller.dart';
 import '../repository/profile_repository.dart';
 
 class ProfileController extends GetxController {
   ProfileRepository profileRepository = ProfileRepository(APIManager());
+  final DashboardController dashboardController = Get.find();
+
+  /// Subscription
+  RxInt expandedIndex = (-1).obs;
+  void toggleExpansion(int index) => expandedIndex.value = (expandedIndex.value == index ? -1 : index);
 
   /// Account Section
   var documentsStatus = "Incomplete".obs;
@@ -92,11 +99,50 @@ class ProfileController extends GetxController {
     }
   }
 
+// Format date to readable string (keep your existing if you already have)
+  String formatDateTime(String? isoString) {
+    if (isoString == null || isoString.isEmpty) return '-';
+    try {
+      final dateTime = DateTime.parse(isoString).toLocal(); // convert to local time zone
+      return DateFormat('dd MMM yyyy, hh:mm a').format(dateTime);
+    } catch (e) {
+      return '-';
+    }
+  }
+
+// Calculate remaining days between two dates
+  int calculateRemainingDays(String startIso, String endIso) {
+    try {
+      final start = DateTime.parse(startIso);
+      final end = DateTime.parse(endIso);
+      final now = DateTime.now();
+
+      if (now.isAfter(end)) return 0; // expired
+      return end.difference(now).inDays;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+// Calculate remaining hours (for when days == 0)
+  int calculateRemainingHours(String endIso) {
+    try {
+      final end = DateTime.parse(endIso);
+      final now = DateTime.now();
+
+      if (now.isAfter(end)) return 0; // expired
+      return end.difference(now).inHours;
+    } catch (_) {
+      return 0;
+    }
+  }
+
   @override
   void onInit() {
     super.onInit();
     // Load saved language if exists
     getProfileDetails();
+    dashboardController.checkSubscriptionStatus();
     final savedLang = GetStorage().read("selectedLanguage");
     if (savedLang != null) {
       selectedLanguage.value = savedLang;

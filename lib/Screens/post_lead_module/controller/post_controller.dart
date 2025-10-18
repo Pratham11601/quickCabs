@@ -109,15 +109,11 @@ class PostController extends GetxController {
 
     final vehicle = vehicles[selectedVehicleIndex.value!];
     final vehicleName = vehicle["name"] as String;
-    final seat = selectedSeatConfig.value != null
-        ? " ${selectedSeatConfig.value} Seater"
-        : "";
+    final seat = selectedSeatConfig.value != null ? " ${selectedSeatConfig.value} Seater" : "";
 
     // Check if subtype selected
-    if (selectedSubTypeIndex.value != null &&
-        vehicleSubTypes.containsKey(vehicleName)) {
-      final subType = vehicleSubTypes[vehicleName]![selectedSubTypeIndex.value!]
-          ["name"] as String;
+    if (selectedSubTypeIndex.value != null && vehicleSubTypes.containsKey(vehicleName)) {
+      final subType = vehicleSubTypes[vehicleName]![selectedSubTypeIndex.value!]["name"] as String;
       return "$vehicleName - $subType$seat";
     }
 
@@ -132,18 +128,12 @@ class PostController extends GetxController {
   final Rxn<DateTime> selectedEndDate = Rxn<DateTime>();
   final Rxn<TimeOfDay> selectedTime = Rxn<TimeOfDay>();
 
-  String get formattedDate => selectedDate.value == null
-      ? "dd/mm/yyyy"
-      : DateFormat("dd/MM/yyyy").format(selectedDate.value!);
-  String get formattedStartDate => selectedStartDate.value == null
-      ? "dd/mm/yyyy"
-      : DateFormat("dd/MM/yyyy").format(selectedStartDate.value!);
-  String get formattedEndDate => selectedEndDate.value == null
-      ? "dd/mm/yyyy"
-      : DateFormat("dd/MM/yyyy").format(selectedEndDate.value!);
+  String get formattedDate => selectedDate.value == null ? "dd/mm/yyyy" : DateFormat("dd/MM/yyyy").format(selectedDate.value!);
+  String get formattedStartDate =>
+      selectedStartDate.value == null ? "dd/mm/yyyy" : DateFormat("dd/MM/yyyy").format(selectedStartDate.value!);
+  String get formattedEndDate => selectedEndDate.value == null ? "dd/mm/yyyy" : DateFormat("dd/MM/yyyy").format(selectedEndDate.value!);
 
-  String formattedTime(BuildContext ctx) =>
-      selectedTime.value == null ? "--:--" : selectedTime.value!.format(ctx);
+  String formattedTime(BuildContext ctx) => selectedTime.value == null ? "--:--" : selectedTime.value!.format(ctx);
 
   String formatTime12Hour(TimeOfDay time) {
     final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
@@ -169,8 +159,7 @@ class PostController extends GetxController {
   }
 
   void validateForm() {
-    isFormValid.value =
-        pickupController.text.isNotEmpty && dropController.text.isNotEmpty;
+    isFormValid.value = pickupController.text.isNotEmpty && dropController.text.isNotEmpty;
   }
 
   Future<void> selectFromDate(BuildContext context) async {
@@ -217,10 +206,14 @@ class PostController extends GetxController {
   }
 
   var currentStep = 0.obs;
-  var isFormValid =
-      false.obs; // this will control the Next button enabled/disabled
+  var isFormValid = false.obs; // this will control the Next button enabled/disabled
 
   bool validateTripInformation() {
+    if (selectedTollType.value.isEmpty) {
+      ShowSnackBar.info(title: 'Toll', message: "Please select a Toll Type");
+      return false;
+    }
+
     if (tripType.value == 0 || tripType.value == 2) {
       // Validate Date
       if (selectedDate.value == null) {
@@ -232,18 +225,25 @@ class PostController extends GetxController {
         ShowSnackBar.info(title: 'Time', message: "Please select a time");
         return false;
       }
+
+      if (tripType.value == 2) {
+        // Validate rental duration
+        if (selectedRentalDuration.value.isEmpty) {
+          ShowSnackBar.info(title: 'Rental Duration', message: "Please select rental duration");
+          return false;
+        }
+      }
     }
 
     if (tripType.value == 1) {
       // Validate start Date
       if (selectedStartDate.value == null) {
-        ShowSnackBar.info(title: 'Date', message: "Please select Start date");
+        ShowSnackBar.info(title: 'Start Date', message: "Please select Start date");
         return false;
       }
-
       // Validate end date
       if (selectedEndDate.value == null) {
-        ShowSnackBar.info(title: 'Time', message: "Please select End Date");
+        ShowSnackBar.info(title: 'End Date', message: "Please select End Date");
         return false;
       }
     }
@@ -252,9 +252,7 @@ class PostController extends GetxController {
     final int? idx = selectedVehicleIndex.value;
     if (idx != null && vehicles[idx]["seatConfig"] == true) {
       if (selectedSeatConfig.value == null) {
-        ShowSnackBar.info(
-            title: 'Select Seat',
-            message: "Please select a Seat Configuration");
+        ShowSnackBar.info(title: 'Select Seat', message: "Please select a Seat Configuration");
 
         return false;
       }
@@ -459,8 +457,7 @@ class PostController extends GetxController {
       } else {
         isLoadingDrop.value = true;
       }
-      final response =
-          await postLeadRepository.fetchLocationForPost(location: query);
+      final response = await postLeadRepository.fetchLocationForPost(location: query);
       final results = response.results ?? [];
 
       final suggestions = results.map<Map<String, String>>((item) {
@@ -489,8 +486,7 @@ class PostController extends GetxController {
   }
 
   /// call this to set text and clear suggestions when user picks an item
-  void selectSuggestion(
-      {required bool isPickup, required String name, required String address}) {
+  void selectSuggestion({required bool isPickup, required String name, required String address}) {
     if (isPickup) {
       pickupController.text = name;
       pickupAreaController.text = address;
@@ -506,17 +502,12 @@ class PostController extends GetxController {
     }
   }
 
-  final PostLeadRepository postLeadRepository =
-      PostLeadRepository(APIManager());
+  final PostLeadRepository postLeadRepository = PostLeadRepository(APIManager());
 
   Future<void> submitRideLead({bool isLoaderShow = true}) async {
     final params = {
-      "date": selectedDate.value == null
-          ? ""
-          : DateFormat('yyyy-MM-dd').format(selectedDate.value!),
-      "time": selectedTime.value == null
-          ? ""
-          : formatTime12Hour(selectedTime.value!),
+      "date": selectedDate.value == null ? '' : DateFormat('yyyy-MM-dd').format(selectedDate.value!),
+      "time": selectedTime.value == null ? '' : formatTime12Hour(selectedTime.value!),
       "location_from": pickupController.text.trim(),
       "location_from_area": pickupAreaController.text,
       "to_location": dropController.text.trim(),
@@ -525,13 +516,10 @@ class PostController extends GetxController {
       "add_on": "",
       "fare": int.tryParse(fareController.text.trim()) ?? 0,
       "cab_number": "",
-      "toll_tax":
-          selectedTollType.value.isNotEmpty ? selectedTollType.value : '',
-      "start_date": selectedStartDate.value ?? '',
-      "end_date": selectedEndDate.value ?? '',
-      "rental_duration": selectedRentalDuration.value.isNotEmpty
-          ? selectedRentalDuration.value
-          : '',
+      "toll_tax": selectedTollType.value.isNotEmpty ? selectedTollType.value : '',
+      "start_date": selectedStartDate.value == null ? null : DateFormat('yyyy-MM-dd').format(selectedStartDate.value!),
+      "end_date": selectedEndDate.value == null ? null : DateFormat('yyyy-MM-dd').format(selectedEndDate.value!),
+      "rental_duration": selectedRentalDuration.value.isNotEmpty ? selectedRentalDuration.value : '',
       "vendor_contact": "",
       "trip_type": tripType.value,
     };
@@ -539,17 +527,13 @@ class PostController extends GetxController {
 
     try {
       isLoading.value = true;
-      final response = await postLeadRepository.postLeadApiCall(
-          isLoaderShow: isLoaderShow, params: params);
+      final response = await postLeadRepository.postLeadApiCall(isLoaderShow: isLoaderShow, params: params);
       if (response.status == true) {
         await SendNotificationService.sendNotificationUsingApi(
-            pickupAreaController.text,
-            dropAreaController.text,
-            "${int.tryParse(fareController.text) ?? 00}");
+            pickupAreaController.text, dropAreaController.text, "${int.tryParse(fareController.text) ?? 00}");
         showAppDialog(
           title: 'Lead Shared Successfully',
-          message:
-              'Your ride lead has been shared with the driver network. Other drivers can now see and contact you for this trip.',
+          message: 'Your ride lead has been shared with the driver network. Other drivers can now see and contact you for this trip.',
           icon: Icons.check_circle_rounded,
           buttonText: 'OK',
           onConfirm: () {
@@ -558,9 +542,7 @@ class PostController extends GetxController {
         );
       } else {
         isLoading.value = false;
-        ShowSnackBar.error(
-            title: 'Error',
-            message: response.message ?? 'Failed to share lead');
+        ShowSnackBar.error(title: 'Error', message: response.message ?? 'Failed to share lead');
       }
     } catch (e) {
       isLoading.value = false;
@@ -598,15 +580,13 @@ class PostController extends GetxController {
               const SizedBox(height: 20),
               Text(
                 title,
-                style: TextHelper.h7
-                    .copyWith(color: ColorsForApp.green, fontFamily: boldFont),
+                style: TextHelper.h7.copyWith(color: ColorsForApp.green, fontFamily: boldFont),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               Text(
                 message,
-                style: TextHelper.size17.copyWith(
-                    color: ColorsForApp.blackColor, fontFamily: regularFont),
+                style: TextHelper.size17.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
@@ -625,8 +605,7 @@ class PostController extends GetxController {
                 onPressed: onConfirm,
                 child: Text(
                   buttonText,
-                  style: TextHelper.size18.copyWith(
-                      color: ColorsForApp.whiteColor, fontFamily: boldFont),
+                  style: TextHelper.size18.copyWith(color: ColorsForApp.whiteColor, fontFamily: boldFont),
                 ),
               ),
             ],

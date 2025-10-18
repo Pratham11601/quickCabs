@@ -6,19 +6,18 @@ import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
 import '../../../widgets/constant_widgets.dart';
 
-/// LeadCard Widget
-/// ----------------
-/// A reusable card widget to display ride/lead information.
-/// Improvements:
-/// - Added "Booked" watermark for booked leads
-/// - Cleaned spacing & responsiveness
-/// - Used Expanded/Flexible for layout adjustments
 class LeadCard extends StatelessWidget {
-  final Map<String, dynamic> lead; // Lead details
-  final VoidCallback? onAccept; // Callback when "Accept" button is pressed
-  final void Function(String phone)? onWhatsApp; // WhatsApp button callback
-  final void Function(String phone)? onCall; // Call button callback
+  final Map<String, dynamic> lead;
+
+  final VoidCallback? onAccept;
+  final void Function(String phone)? onWhatsApp;
+  final void Function(String phone)? onCall;
   final VoidCallback? onShare;
+
+  // 👇 Added new callbacks for subscription checks
+  final Future<bool> Function()? onCheckSubscription;
+  final VoidCallback? onSubscriptionRequired;
+
   const LeadCard({
     super.key,
     required this.lead,
@@ -26,13 +25,14 @@ class LeadCard extends StatelessWidget {
     this.onWhatsApp,
     this.onCall,
     this.onShare,
+    this.onCheckSubscription,
+    this.onSubscriptionRequired,
   });
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        /// ---------------- Card Content ----------------
         Card(
           elevation: 4,
           margin: const EdgeInsets.all(2),
@@ -48,27 +48,17 @@ class LeadCard extends StatelessWidget {
                   children: [
                     /// Trip Type
                     Expanded(
-                      child: Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              lead['trip_type'] == 0
-                                  ? "ONEWAY TRIP"
-                                  : lead['trip_type'] == 1
-                                      ? "RETURN TRIP"
-                                      : lead['trip_type'] == 2
-                                          ? "RENTED TRIP"
-                                          : "OTHER TRIP",
-                              style: TextHelper.size18.copyWith(
-                                color: ColorsForApp.colorBlackShade,
-                                fontFamily: boldFont,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        _getTripType(lead['trip_type']),
+                        style: TextHelper.size18.copyWith(
+                          color: ColorsForApp.colorBlackShade,
+                          fontFamily: boldFont,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
+
+                    /// Booking ID
                     Expanded(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -87,7 +77,6 @@ class LeadCard extends StatelessWidget {
                                 color: ColorsForApp.blackColor,
                                 fontFamily: boldFont,
                               ),
-                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -102,18 +91,14 @@ class LeadCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    /// Avatar + Name
+                    /// Name
                     Expanded(
                       child: Row(
                         children: [
                           CircleAvatar(
                             radius: 16,
                             backgroundColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
-                            child: Icon(
-                              Icons.handshake,
-                              color: ColorsForApp.primaryColor,
-                              size: 22,
-                            ),
+                            child: Icon(Icons.handshake, color: ColorsForApp.primaryColor, size: 22),
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -124,14 +109,13 @@ class LeadCard extends StatelessWidget {
                                 fontFamily: boldFont,
                               ),
                               overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
                             ),
                           ),
                         ],
                       ),
                     ),
 
-                    /// Accept button (hidden when booked)
+                    /// Accept button
                     if (lead['lead_status'] != 'booked')
                       ElevatedButton(
                         onPressed: onAccept,
@@ -157,230 +141,85 @@ class LeadCard extends StatelessWidget {
                 height(1.h),
 
                 /// ---------------- Route Info ----------------
-                Row(
-                  children: [
-                    Icon(Icons.navigation_outlined, color: ColorsForApp.green),
-                    width(0.5.w),
-
-                    /// From → To
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              lead['from'],
-                              style: TextHelper.size18.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: ColorsForApp.blackColor,
-                                fontFamily: semiBoldFont,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          width(1.w),
-                          const Icon(Icons.arrow_right_alt, color: Colors.black),
-                          width(1.w),
-                          Flexible(
-                            child: Text(
-                              lead['to'],
-                              style: TextHelper.size18.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: ColorsForApp.blackColor,
-                                fontFamily: semiBoldFont,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    /// Price
-                    Text(
-                      "₹ ${lead['price']}",
-                      style: TextHelper.size20.copyWith(
-                        color: ColorsForApp.green,
-                        fontFamily: boldFont,
-                      ),
-                    ),
-                  ],
-                ),
-
+                _buildRouteInfo(),
                 const SizedBox(height: 6),
 
                 /// ---------------- Car Info ----------------
-                Row(
-                  children: [
-                    const Icon(Icons.directions_car_outlined, color: Colors.red),
-                    width(1.w),
-                    Expanded(
-                      child: Text(
-                        lead['car'],
-                        style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                      ),
-                    ),
-                  ],
-                ),
+                _buildCarInfo(),
                 height(1.h),
 
                 /// ---------------- Distance ----------------
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.location_on_outlined, color: Colors.red),
-                    width(1.w),
-                    Expanded(
-                      child: Text(
-                        lead['distance'] ?? " - ",
-                        style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
-                      ),
-                    ),
-                  ],
-                ),
+                _buildDistanceInfo(),
+                height(1.h),
+
+                /// ---------------- Toll Tax & Rental Duration ----------------
+                _buildTollInfo(),
                 height(1.h),
 
                 /// ---------------- Date & Time ----------------
-                Row(
-                  children: [
-                    Icon(Icons.calendar_today, size: 16, color: ColorsForApp.blackColor),
-                    width(1.w),
-                    Text(
-                      lead['date'],
-                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
-                    ),
-                    const SizedBox(width: 8),
-                    Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
-                    width(1.w),
-                    Text(
-                      lead['time'],
-                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
+                _buildDateTime(),
+                height(1.h),
 
-                Visibility(
-                  visible: (lead['lead_status'] == 'booked'),
-                  child: Text(
-                    "Accepted By - ${(() {
-                      final acceptedBy = lead['acceptedBy'];
-                      final acceptedByFullname = lead['acceptedBy_fullname'];
-
-                      // ✅ Case 1: Simple string (Post model)
-                      if (acceptedByFullname != null && acceptedByFullname is String && acceptedByFullname.trim().isNotEmpty) {
-                        return acceptedByFullname;
-                      }
-
-                      // ✅ Case 2: Nested Map (Leads model)
-                      if (acceptedBy != null) {
-                        if (acceptedBy is Map && acceptedBy['fullname'] != null) {
-                          return acceptedBy['fullname'];
-                        }
-
-                        // ✅ Case 3: AcceptedBy is a Dart object (not a Map)
-                        try {
-                          // Handle case where lead['acceptedBy'] is an instance of AcceptedBy
-                          final fullname = acceptedBy.fullname;
-                          if (fullname != null && fullname.toString().trim().isNotEmpty) {
-                            return fullname.toString();
-                          }
-                        } catch (_) {
-                          // ignore errors
-                        }
-                      }
-                      // ✅ Fallback
-                      return 'NA';
-                    })()}",
+                /// ---------------- Booked By ----------------
+                if (lead['lead_status'] == 'booked')
+                  Text(
+                    "Booked By - ${_getBookedBy(lead)}",
                     style: TextHelper.size18.copyWith(
                       fontWeight: FontWeight.w600,
                       color: ColorsForApp.blackColor,
                       fontFamily: semiBoldFont,
                     ),
-                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                ),
+                height(1.h),
 
-                const SizedBox(height: 8),
-
-                /// ---------------- WhatsApp / Call ----------------
-                Visibility(
-                  visible: (lead['lead_status'] != 'booked'),
-                  child: Row(
+                /// ---------------- WhatsApp / Call / Share ----------------
+                if (lead['lead_status'] != 'booked')
+                  Row(
                     children: [
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorsForApp.green,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        ),
-                        icon: Icon(FontAwesomeIcons.whatsapp, color: ColorsForApp.whiteColor),
-                        label: Text(
-                          "WhatsApp",
-                          style: TextHelper.size18.copyWith(
-                            color: ColorsForApp.whiteColor,
-                            fontFamily: semiBoldFont,
-                          ),
-                        ),
-                        onPressed: () => onWhatsApp?.call(lead['phone']),
-                      ),
+                      _buildWhatsAppButton(),
                       const SizedBox(width: 8),
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorsForApp.subTitleColor,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        ),
-                        icon: Icon(Icons.call_outlined, color: ColorsForApp.whiteColor),
-                        label: Text(
-                          "Call",
-                          style: TextHelper.size18.copyWith(
-                            color: ColorsForApp.whiteColor,
-                            fontFamily: semiBoldFont,
+                      _buildCallButton(),
+                      const Spacer(),
+                      if ((lead['userId']) == (lead['vendor_id']))
+                        Container(
+                          decoration: BoxDecoration(
+                            color: ColorsForApp.primaryDarkColor,
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: IconButton(
+                            onPressed: onShare,
+                            icon: const Icon(Icons.share_outlined, color: Colors.white),
+                            tooltip: "Share Lead",
                           ),
                         ),
-                        onPressed: () => onCall?.call(lead['phone']),
-                      ),
-
-                      // 👇 Pushes the Share icon to the right
-                      const Spacer(),
-
-                      // Share icon button
-                      Container(
-                        decoration: BoxDecoration(
-                          color: ColorsForApp.primaryDarkColor,
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: IconButton(
-                          onPressed: onShare,
-                          icon: const Icon(Icons.share_outlined, color: Colors.white),
-                          tooltip: "Share Lead",
-                        ),
-                      ),
                     ],
                   ),
-                )
               ],
             ),
           ),
         ),
 
-        /// ---------------- Ribbon BOOKED ----------------
+        /// ---------------- BOOKED Ribbon ----------------
         if (lead['lead_status'] == 'booked')
           Positioned(
             top: 18,
-            left: -28, // shift to align ribbon
+            left: -28,
             child: Transform.rotate(
-              angle: -0.785, // -45 degrees
+              angle: -0.785,
               child: Container(
                 width: 120,
                 color: Colors.red,
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Center(
-                  child: Text("BOOKED", style: TextHelper.size17.copyWith(color: Colors.white, fontFamily: boldFont, letterSpacing: 1)),
+                  child: Text(
+                    "BOOKED",
+                    style: TextHelper.size17.copyWith(
+                      color: Colors.white,
+                      fontFamily: boldFont,
+                      letterSpacing: 1,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -388,4 +227,228 @@ class LeadCard extends StatelessWidget {
       ],
     );
   }
+
+  // 🔹 Helper methods for cleaner structure
+
+  String _getTripType(int? type) {
+    switch (type) {
+      case 0:
+        return "ONEWAY TRIP";
+      case 1:
+        return "RETURN TRIP";
+      case 2:
+        return "RENTED TRIP";
+      default:
+        return "OTHER TRIP";
+    }
+  }
+
+  String _getBookedBy(Map<String, dynamic> lead) {
+    final acceptedBy = lead['acceptedBy'];
+    final acceptedByFullname = lead['acceptedBy_fullname'];
+    if (acceptedByFullname is String && acceptedByFullname.trim().isNotEmpty) {
+      return acceptedByFullname;
+    }
+    if (acceptedBy is Map && acceptedBy['fullname'] != null) {
+      return acceptedBy['fullname'];
+    }
+    return 'NA';
+  }
+
+  Widget _buildRouteInfo() => Row(
+        children: [
+          Icon(Icons.navigation_outlined, size: 16, color: ColorsForApp.green),
+          width(1.w),
+          Expanded(
+            child: Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    lead['from'],
+                    style: TextHelper.size18.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: ColorsForApp.blackColor,
+                      fontFamily: semiBoldFont,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                width(1.w),
+                const Icon(Icons.arrow_right_alt, size: 16, color: Colors.black),
+                width(1.w),
+                Flexible(
+                  child: Text(
+                    lead['to'],
+                    style: TextHelper.size18.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: ColorsForApp.blackColor,
+                      fontFamily: semiBoldFont,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            "₹ ${lead['price']}",
+            style: TextHelper.size20.copyWith(
+              color: ColorsForApp.green,
+              fontFamily: boldFont,
+            ),
+          ),
+        ],
+      );
+
+  Widget _buildCarInfo() => Row(
+        children: [
+          const Icon(Icons.directions_car_outlined, size: 16, color: Colors.red),
+          width(1.w),
+          Expanded(
+            child: Text(
+              lead['car'],
+              style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      );
+
+  Widget _buildDistanceInfo() => Column(
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.location_on_outlined, size: 16, color: Colors.red),
+              width(1.w),
+              Expanded(
+                child: Text(
+                  "From - ${lead['fromDistance'] ?? '-'}",
+                  style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                ),
+              ),
+            ],
+          ),
+          height(1.h),
+          Row(
+            children: [
+              const Icon(Icons.location_on_outlined, size: 16, color: Colors.red),
+              width(1.w),
+              Expanded(
+                child: Text(
+                  "To - ${lead['distance'] ?? '-'}",
+                  style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+
+  Widget _buildTollInfo() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.toll_rounded, size: 16, color: ColorsForApp.blackColor),
+              width(1.w),
+              Expanded(
+                child: Text(
+                  "Toll Tax - ${lead['toll_tax'] ?? '-'}",
+                  style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                ),
+              ),
+            ],
+          ),
+          if ((lead['trip_type'] ?? -1) == 2) ...[
+            height(1.h),
+            Row(
+              children: [
+                Icon(Icons.timelapse, size: 16, color: ColorsForApp.blackColor),
+                width(1.w),
+                Expanded(
+                  child: Text(
+                    "Rental Duration - ${lead['rental_duration'] ?? '-'}",
+                    style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      );
+
+  Widget _buildDateTime() {
+    if (lead['trip_type'] == 1) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Start Date - ${lead['start_date'] ?? '-'}", style: TextHelper.size18),
+          height(1.h),
+          Text("End Date - ${lead['end_date'] ?? '-'}", style: TextHelper.size18),
+          height(1.h),
+          Text("Return Trip Days - ${lead['days'] ?? '-'}", style: TextHelper.size18),
+        ],
+      );
+    } else {
+      return Row(
+        children: [
+          Icon(Icons.calendar_month_outlined, size: 16, color: ColorsForApp.blackColor),
+          width(1.w),
+          Text(lead['date'] ?? '-', style: TextHelper.size18),
+          const SizedBox(width: 8),
+          Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
+          width(1.w),
+          Text(lead['time'] ?? '-', style: TextHelper.size18),
+        ],
+      );
+    }
+  }
+
+  Widget _buildWhatsAppButton() => ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ColorsForApp.green,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        icon: Icon(FontAwesomeIcons.whatsapp, color: ColorsForApp.whiteColor),
+        label: Text(
+          "WhatsApp",
+          style: TextHelper.size18.copyWith(color: ColorsForApp.whiteColor, fontFamily: semiBoldFont),
+        ),
+        onPressed: () async {
+          if (onCheckSubscription != null) {
+            final isSubscribed = await onCheckSubscription!();
+            if (isSubscribed) {
+              onWhatsApp?.call(lead['phone']);
+            } else {
+              onSubscriptionRequired?.call();
+            }
+          } else {
+            onWhatsApp?.call(lead['phone']);
+          }
+        },
+      );
+
+  Widget _buildCallButton() => ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ColorsForApp.subTitleColor,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        icon: Icon(Icons.call_outlined, color: ColorsForApp.whiteColor),
+        label: Text(
+          "Call",
+          style: TextHelper.size18.copyWith(color: ColorsForApp.whiteColor, fontFamily: semiBoldFont),
+        ),
+        onPressed: () async {
+          if (onCheckSubscription != null) {
+            final isSubscribed = await onCheckSubscription!();
+            if (isSubscribed) {
+              onCall?.call(lead['phone']);
+            } else {
+              onSubscriptionRequired?.call();
+            }
+          } else {
+            onCall?.call(lead['phone']);
+          }
+        },
+      );
 }

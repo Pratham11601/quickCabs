@@ -1,44 +1,36 @@
-// To parse this JSON data, do
-//
-//     final postLeadModel = postLeadModelFromJson(jsonString);
-
-import 'dart:convert';
-
-PostLeadModel postLeadModelFromJson(String str) => PostLeadModel.fromJson(json.decode(str));
-
-String postLeadModelToJson(PostLeadModel data) => json.encode(data.toJson());
-
 class PostLeadModel {
   bool? status;
   String? message;
-  Lead lead;
+  Lead? lead;
 
-  PostLeadModel({
-    this.status,
-    this.message,
-    required this.lead,
-  });
+  PostLeadModel({this.status, this.message, this.lead});
 
-  factory PostLeadModel.fromJson(Map<String, dynamic> json) => PostLeadModel(
-    status: json["status"],
-    message: json["message"],
-    lead: Lead.fromJson(json["lead"]),
-  );
+  PostLeadModel.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    message = json['message'];
+    lead = json['lead'] != null ? Lead.fromJson(json['lead']) : null;
+  }
 
-  Map<String, dynamic> toJson() => {
-    "status": status,
-    "message": message,
-    "lead": lead.toJson(),
-  };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
+    data['message'] = message;
+    if (lead != null) {
+      data['lead'] = lead!.toJson();
+    }
+    return data;
+  }
 }
 
 class Lead {
+  String? leadStatus;
   int? id;
   String? vendorName;
   int? vendorId;
   String? vendorCat;
   String? vendorContact;
-  DateTime date;
+  String? date;
+  int? tripType;
   String? time;
   String? locationFrom;
   String? locationFromArea;
@@ -49,69 +41,92 @@ class Lead {
   int? fare;
   int? otp;
   bool? isActive;
-  DateTime updatedAt;
-  DateTime createdAt;
+  String? rentalDuration;
+  String? tollTax;
+  String? startDate;
+  String? endDate;
+  String? updatedAt;
+  String? createdAt;
 
-  Lead({
-    this.id,
-    this.vendorName,
-    this.vendorId,
-    this.vendorCat,
-    this.vendorContact,
-    required this.date,
-    this.time,
-    this.locationFrom,
-    this.locationFromArea,
-    this.toLocation,
-    this.toLocationArea,
-    this.carModel,
-    this.addOn,
-    this.fare,
-    this.otp,
-    this.isActive,
-    required this.updatedAt,
-    required this.createdAt,
-  });
+  Lead(
+      {this.leadStatus,
+      this.id,
+      this.vendorName,
+      this.vendorId,
+      this.vendorCat,
+      this.vendorContact,
+      this.date,
+      this.tripType,
+      this.time,
+      this.locationFrom,
+      this.locationFromArea,
+      this.toLocation,
+      this.toLocationArea,
+      this.carModel,
+      this.addOn,
+      this.fare,
+      this.otp,
+      this.isActive,
+      this.rentalDuration,
+      this.tollTax,
+      this.startDate,
+      this.endDate,
+      this.updatedAt,
+      this.createdAt});
 
-  factory Lead.fromJson(Map<String, dynamic> json) => Lead(
-    id: json["id"],
-    vendorName: json["vendor_name"],
-    vendorId: json["vendor_id"],
-    vendorCat: json["vendor_cat"],
-    vendorContact: json["vendor_contact"],
-    date: DateTime.parse(json["date"]),
-    time: json["time"],
-    locationFrom: json["location_from"],
-    locationFromArea: json["location_from_area"],
-    toLocation: json["to_location"],
-    toLocationArea: json["to_location_area"],
-    carModel: json["car_model"],
-    addOn: json["add_on"],
-    fare: json["fare"],
-    otp: json["otp"],
-    isActive: json["is_active"],
-    updatedAt: DateTime.parse(json["updatedAt"]),
-    createdAt: DateTime.parse(json["createdAt"]),
-  );
+  Lead.fromJson(Map<String, dynamic> json) {
+    leadStatus = json['lead_status'];
+    id = json['id'];
+    vendorName = json['vendor_name'];
+    vendorId = json['vendor_id'];
+    vendorCat = json['vendor_cat'];
+    vendorContact = json['vendor_contact'];
+    date = json['date'];
+    tripType = json['trip_type'];
+    time = json['time'];
+    locationFrom = json['location_from'];
+    locationFromArea = json['location_from_area'];
+    toLocation = json['to_location'];
+    toLocationArea = json['to_location_area'];
+    carModel = json['car_model'];
+    addOn = json['add_on'];
+    fare = json['fare'];
+    otp = json['otp'];
+    isActive = json['is_active'];
+    rentalDuration = json['rental_duration'];
+    tollTax = json['toll_tax'];
+    startDate = json['start_date'];
+    endDate = json['end_date'];
+    updatedAt = json['updatedAt'];
+    createdAt = json['createdAt'];
+  }
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "vendor_name": vendorName,
-    "vendor_id": vendorId,
-    "vendor_cat": vendorCat,
-    "vendor_contact": vendorContact,
-    "date": "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
-    "time": time,
-    "location_from": locationFrom,
-    "location_from_area": locationFromArea,
-    "to_location": toLocation,
-    "to_location_area": toLocationArea,
-    "car_model": carModel,
-    "add_on": addOn,
-    "fare": fare,
-    "otp": otp,
-    "is_active": isActive,
-    "updatedAt": updatedAt.toIso8601String(),
-    "createdAt": createdAt.toIso8601String(),
-  };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['lead_status'] = leadStatus;
+    data['id'] = id;
+    data['vendor_name'] = vendorName;
+    data['vendor_id'] = vendorId;
+    data['vendor_cat'] = vendorCat;
+    data['vendor_contact'] = vendorContact;
+    data['date'] = date;
+    data['trip_type'] = tripType;
+    data['time'] = time;
+    data['location_from'] = locationFrom;
+    data['location_from_area'] = locationFromArea;
+    data['to_location'] = toLocation;
+    data['to_location_area'] = toLocationArea;
+    data['car_model'] = carModel;
+    data['add_on'] = addOn;
+    data['fare'] = fare;
+    data['otp'] = otp;
+    data['is_active'] = isActive;
+    data['rental_duration'] = rentalDuration;
+    data['toll_tax'] = tollTax;
+    data['start_date'] = startDate;
+    data['end_date'] = endDate;
+    data['updatedAt'] = updatedAt;
+    data['createdAt'] = createdAt;
+    return data;
+  }
 }

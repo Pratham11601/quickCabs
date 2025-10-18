@@ -190,203 +190,203 @@ class UserRegistrationController extends GetxController {
       DocItem(
         title: 'Selfie Photo',
         subtitle: 'Clear selfie photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Driving License',
         subtitle: 'Valid commercial driving license',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Front',
         subtitle: 'Valid aadhaar front photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Back',
         subtitle: 'Valid aadhaar back photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Vehicle Photo',
         subtitle: 'Clear photo of your vehicle',
-        required: true,
+        isRequired: true,
       ),
     ],
     'Drivers': [
       DocItem(
         title: 'Selfie Photo',
         subtitle: 'Clear selfie photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Front',
         subtitle: 'Valid aadhaar photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Back',
         subtitle: 'Valid aadhaar back photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Driving License',
         subtitle: 'Valid driving license',
-        required: true,
+        isRequired: true,
       ),
     ],
     'Puncture': [
       DocItem(
         title: 'Selfie Photo',
         subtitle: 'Clear selfie photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Front',
         subtitle: 'Valid aadhar photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Back',
         subtitle: 'Valid aadhaar back photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Shop Act License',
         subtitle: 'Valid shop act license',
-        required: true,
+        isRequired: true,
       ),
     ],
     'Fuel': [
       DocItem(
         title: 'Selfie Photo',
         subtitle: 'Clear selfie photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Front',
         subtitle: 'Valid aadhar photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Back',
         subtitle: 'Valid aadhaar back photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Shop Act License',
         subtitle: 'Valid shop act license',
-        required: true,
+        isRequired: true,
       ),
     ],
     'Towing': [
       DocItem(
         title: 'Selfie Photo',
         subtitle: 'Clear selfie photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Front',
         subtitle: 'Valid aadhar photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Back',
         subtitle: 'Valid aadhaar back photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Shop Photo',
         subtitle: 'Clear photo of your shop',
-        required: true,
+        isRequired: true,
       ),
     ],
     'Repairing': [
       DocItem(
         title: 'Selfie Photo',
         subtitle: 'Clear selfie photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Front',
         subtitle: 'Valid aadhar photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Back',
         subtitle: 'Valid aadhaar back photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Shop Photo',
         subtitle: 'Clear photo of your shop',
-        required: true,
+        isRequired: true,
       ),
     ],
     'Restaurant': [
       DocItem(
         title: 'Selfie Photo',
         subtitle: 'Clear selfie photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Front',
         subtitle: 'Valid aadhar photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Back',
         subtitle: 'Valid aadhaar back photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Shop Photo',
         subtitle: 'Clear photo of your shop',
-        required: true,
+        isRequired: true,
       ),
     ],
     'Hospital': [
       DocItem(
         title: 'Selfie Photo',
         subtitle: 'Clear selfie photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Front',
         subtitle: 'Valid aadhar photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Back',
         subtitle: 'Valid aadhaar back photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Shop Photo',
         subtitle: 'Clear photo of your shop',
-        required: true,
+        isRequired: true,
       ),
     ],
     'Car Sell': [
       DocItem(
         title: 'Selfie Photo',
         subtitle: 'Clear selfie photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card',
         subtitle: 'Valid aadhar photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Aadhar Card Back',
         subtitle: 'Valid aadhaar back photo',
-        required: true,
+        isRequired: true,
       ),
       DocItem(
         title: 'Shop Photo',
         subtitle: 'Clear photo of your shop',
-        required: true,
+        isRequired: true,
       ),
     ],
   };
@@ -475,14 +475,14 @@ class UserRegistrationController extends GetxController {
   }
 
   void recomputeProgress() {
-    final totalRequired = docs.where((d) => d.required).length;
-    final doneRequired = docs.where((d) => d.required && d.status != DocStatus.empty).length;
+    final totalRequired = docs.where((d) => (d.isRequired ?? false)).length;
+    final doneRequired = docs.where((d) => (d.isRequired ?? false) && d.status != DocStatus.empty).length;
     progress.value = totalRequired == 0 ? 0 : doneRequired / totalRequired;
   }
 
   int remainingRequiredCount() {
-    final totalRequired = docs.where((d) => d.required).length;
-    final doneRequired = docs.where((d) => d.required && d.status != DocStatus.empty).length;
+    final totalRequired = docs.where((d) => (d.isRequired ?? false)).length;
+    final doneRequired = docs.where((d) => (d.isRequired ?? false) && d.status != DocStatus.empty).length;
     return (totalRequired - doneRequired).clamp(0, totalRequired);
   }
 

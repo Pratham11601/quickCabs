@@ -512,7 +512,8 @@ class APIManager {
 
   void handleUnauthorized(dynamic data) {
     final message = data is Map<String, dynamic> && data.containsKey('message') ? data['message'] : data;
-    // errorSnackBar(message: '$message');
+    ShowSnackBar.info(message: 'Your session has been expired');
+    Get.offAllNamed(Routes.LOGIN_SCREEN);
     throw UnauthorizedException(message, 401);
   }
 

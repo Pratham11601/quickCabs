@@ -380,34 +380,70 @@ class LeadCard extends StatelessWidget {
             ),
             SizedBox(height: 8.sp),
             // Third Row: Date & Time
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.calendar_today, size: 16, color: ColorsForApp.blackColor),
-                    SizedBox(width: 6),
-                    Text(
-                      // ignore: unnecessary_null_comparison
-                      lead.date != null ? myLeadsController.convertStringToFormattedDate(lead.date!) : '_',
-                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
-                    SizedBox(width: 6),
-                    Text(
-                      lead.time ?? '',
-                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ],
+            Visibility(
+              visible: lead.tripType == 0 || lead.tripType == 2,
+              child: Row(
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_today, size: 16, color: ColorsForApp.blackColor),
+                      SizedBox(width: 6),
+                      Text(
+                        // ignore: unnecessary_null_comparison
+                        lead.date != null ? lead.date! : '-',
+                        style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                  SizedBox(width: 10.sp),
+                  Row(
+                    children: [
+                      Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
+                      SizedBox(width: 6),
+                      Text(
+                        lead.time ?? '',
+                        style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
+            Visibility(
+              visible: lead.tripType == 1,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_today, size: 16, color: ColorsForApp.blackColor),
+                      SizedBox(width: 6),
+                      Text(
+                        "Start Date - ${myLeadsController.formatDateTime(lead.startDate) ?? '-'}"
+                        // ignore: unnecessary_null_comparison
+                        ,
+                        style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10.sp),
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_today, size: 16, color: ColorsForApp.blackColor),
+                      SizedBox(width: 6),
+                      Text(
+                        "End Date - ${myLeadsController.formatDateTime(lead.endDate) ?? '-'}",
+                        style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
             SizedBox(height: 10.sp),
 
             // Fourth Row: Phone & PIN

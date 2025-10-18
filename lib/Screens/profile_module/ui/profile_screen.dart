@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../api/api_manager.dart';
 import '../../../routes/routes.dart';
 import '../../../utils/config.dart';
 import '../../../utils/storage_config.dart';
@@ -13,6 +12,7 @@ import '../../../widgets/app_version.dart';
 import '../../../widgets/common_widgets.dart';
 import '../../../widgets/constant_widgets.dart';
 import '../../../widgets/snackbar.dart';
+import '../../landing_page/controller/dashboard_controller.dart';
 import '../controller/profile_controller.dart';
 import '../profile_widgets/profile_widget.dart';
 
@@ -20,6 +20,7 @@ class ProfileScreen extends StatelessWidget {
   ProfileScreen({super.key});
 
   final ProfileController controller = Get.find();
+  final DashboardController dashboardController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -37,13 +38,11 @@ class ProfileScreen extends StatelessWidget {
                       name: controller.userDetails.value?.fullname ?? "Unknown",
                       phone: controller.userDetails.value?.phone ?? "-",
                       email: controller.userDetails.value?.email ?? "-",
-                      profileImage: (controller
-                                      .userDetails.value?.profileImgUrl !=
-                                  null &&
-                              controller
-                                  .userDetails.value!.profileImgUrl!.isNotEmpty)
-                          ? "${Config.baseUrl}${controller.userDetails.value!.profileImgUrl}"
-                          : "",
+                      subscriptionStatus: dashboardController.isSubscribed.value ? "Active ✅" : "Not Subscribed ❌",
+                      profileImage:
+                          (controller.userDetails.value?.profileImgUrl != null && controller.userDetails.value!.profileImgUrl!.isNotEmpty)
+                              ? "${Config.baseUrl}${controller.userDetails.value!.profileImgUrl}"
+                              : "",
                     )),
 
                 /// Account Section
@@ -56,6 +55,158 @@ class ProfileScreen extends StatelessWidget {
                       onTap: () {
                         Get.toNamed(Routes.MY_DOCUMENTS);
                       },
+                    ),
+                    SettingItem(
+                      icon: Icons.workspace_premium_outlined,
+                      title: "Subscription".tr,
+                      expandedContent: Obx(() {
+                        final isSubscribed = dashboardController.isSubscribed.value;
+                        final startDate = dashboardController.planStartDate.value;
+                        final endDate = dashboardController.planEndDate.value;
+
+                        final remainingDays = controller.calculateRemainingDays(startDate, endDate);
+                        final remainingHours = controller.calculateRemainingHours(endDate);
+
+                        final showHours = remainingDays == 0 && remainingHours > 0;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            /* // Status
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "Status - ",
+                                    style: TextHelper.size18.copyWith(
+                                      color: ColorsForApp.blackColor,
+                                      fontFamily: semiBoldFont,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: isSubscribed ? "Active ✅" : "Not Subscribed ❌",
+                                    style: TextHelper.size18.copyWith(
+                                      color: isSubscribed ? ColorsForApp.green : Colors.redAccent,
+                                      fontFamily: semiBoldFont,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            height(0.4.h),*/
+
+                            // Plan name
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "Active Plan - ",
+                                    style: TextHelper.size18.copyWith(
+                                      color: ColorsForApp.blackColor,
+                                      fontFamily: regularFont,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: dashboardController.subscriptionPlan.value,
+                                    style: TextHelper.size18.copyWith(
+                                      color: ColorsForApp.colorBlackShade,
+                                      fontFamily: semiBoldFont,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            height(0.4.h),
+
+                            // Start Date
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "Last Recharge Date - ",
+                                    style: TextHelper.size18.copyWith(
+                                      color: ColorsForApp.blackColor,
+                                      fontFamily: regularFont,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: controller.formatDateTime(startDate),
+                                    style: TextHelper.size18.copyWith(
+                                      color: ColorsForApp.colorBlackShade,
+                                      fontFamily: semiBoldFont,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            height(0.4.h),
+
+                            // End Date
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "End Recharge Date - ",
+                                    style: TextHelper.size18.copyWith(
+                                      color: ColorsForApp.blackColor,
+                                      fontFamily: regularFont,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: controller.formatDateTime(endDate),
+                                    style: TextHelper.size18.copyWith(
+                                      color: ColorsForApp.colorBlackShade,
+                                      fontFamily: semiBoldFont,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            height(0.4.h),
+
+                            // Remaining
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "Remaining - ",
+                                    style: TextHelper.size18.copyWith(
+                                      color: ColorsForApp.blackColor,
+                                      fontFamily: regularFont,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: showHours ? "$remainingHours hours" : "$remainingDays days",
+                                    style: TextHelper.size18.copyWith(
+                                      color: ColorsForApp.colorBlackShade,
+                                      fontFamily: semiBoldFont,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+
+                            // Manage / Subscribe button
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: ColorsForApp.primaryDarkColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              onPressed: () => Get.toNamed(Routes.SUBSCRIPTION),
+                              child: Text(
+                                isSubscribed ? "Manage Plan" : "Subscribe Now",
+                                style: TextHelper.size18.copyWith(
+                                  color: Colors.white,
+                                  fontFamily: semiBoldFont,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
                     ),
                     SettingItem(
                       icon: Icons.notifications_outlined,
@@ -73,12 +224,9 @@ class ProfileScreen extends StatelessWidget {
                       title: "privacy_security".tr,
                       onTap: () async {
                         // For Privacy Policy
-                        await UrlLauncherHelper.openUrl(
-                            "https://quickcabpune.com/privacy-policy.html");
+                        await UrlLauncherHelper.openUrl("https://quickcabpune.com/privacy-policy.html");
                       },
                     ),
-                    //For now as per client requirement it is hide, later on it will be uncomment
-                    //SettingItem(icon: FontAwesomeIcons.chessKing, title: "subscription_pro".tr, onTap: () => Get.toNamed(Routes.SUBSCRIPTION)),
                   ],
                 ),
 
@@ -108,46 +256,35 @@ class ProfileScreen extends StatelessWidget {
                             padding: const EdgeInsets.all(16),
                             decoration: const BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20)),
+                              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                             ),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text("choose_language".tr,
-                                    style: TextHelper.h5.copyWith(
-                                        fontFamily: semiBoldFont,
-                                        color: ColorsForApp.blackColor)),
+                                    style: TextHelper.h5.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                                 const SizedBox(height: 16),
                                 ListTile(
                                   title: Text("English",
-                                      style: TextHelper.size19.copyWith(
-                                          fontFamily: semiBoldFont,
-                                          color: ColorsForApp.blackColor)),
+                                      style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                                   onTap: () {
                                     controller.changeLanguage("English");
-                                    Get.updateLocale(
-                                        Locale('en', 'US')); // Switch to Hindi
+                                    Get.updateLocale(Locale('en', 'US')); // Switch to Hindi
                                     Get.back();
                                   },
                                 ),
                                 ListTile(
                                   title: Text("हिंदी",
-                                      style: TextHelper.size19.copyWith(
-                                          fontFamily: semiBoldFont,
-                                          color: ColorsForApp.blackColor)),
+                                      style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                                   onTap: () {
                                     controller.changeLanguage("हिंदी");
-                                    Get.updateLocale(
-                                        Locale('hi', 'IN')); // Switch to Hindi
+                                    Get.updateLocale(Locale('hi', 'IN')); // Switch to Hindi
                                     Get.back();
                                   },
                                 ),
                                 ListTile(
                                   title: Text("मराठी",
-                                      style: TextHelper.size19.copyWith(
-                                          fontFamily: semiBoldFont,
-                                          color: ColorsForApp.blackColor)),
+                                      style: TextHelper.size19.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor)),
                                   onTap: () {
                                     controller.changeLanguage("मराठी");
                                     Get.updateLocale(Locale('mr', 'IN'));
@@ -164,8 +301,7 @@ class ProfileScreen extends StatelessWidget {
                                   ),
                                   onTap: () {
                                     controller.changeLanguage("ಕನ್ನಡ");
-                                    Get.updateLocale(Locale(
-                                        'kn', 'IN')); // Kannada locale code
+                                    Get.updateLocale(Locale('kn', 'IN')); // Kannada locale code
                                     Get.back();
                                   },
                                 ),
@@ -240,13 +376,11 @@ class ProfileScreen extends StatelessWidget {
           elevation: 4,
           title: Text(
             'Logout',
-            style: TextHelper.h7
-                .copyWith(fontFamily: boldFont, color: ColorsForApp.blackColor),
+            style: TextHelper.h7.copyWith(fontFamily: boldFont, color: ColorsForApp.blackColor),
           ),
           content: Text(
             'Are you sure you want to logout?',
-            style: TextHelper.size19.copyWith(
-                color: ColorsForApp.blackColor, fontFamily: regularFont),
+            style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont),
           ),
           actions: [
             Row(
@@ -258,8 +392,7 @@ class ProfileScreen extends StatelessWidget {
                     Get.back();
                   },
                   splashColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
-                  highlightColor:
-                      ColorsForApp.primaryColor.withValues(alpha: 0.2),
+                  highlightColor: ColorsForApp.primaryColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(100),
                   child: Text(
                     'Cancel',
@@ -281,8 +414,7 @@ class ProfileScreen extends StatelessWidget {
                       await LocalStorage.erase();
                       final prefs = await SharedPreferences.getInstance();
                       await prefs.clear();
-                      debugPrint(
-                          "Prefs after clear: ${prefs.getKeys()}"); // debug
+                      debugPrint("Prefs after clear: ${prefs.getKeys()}"); // debug
 
                       ShowSnackBar.success(
                         title: "Logout",
@@ -296,8 +428,7 @@ class ProfileScreen extends StatelessWidget {
                     }
                   },
                   splashColor: ColorsForApp.primaryColor.withValues(alpha: 0.1),
-                  highlightColor:
-                      ColorsForApp.primaryColor.withValues(alpha: 0.2),
+                  highlightColor: ColorsForApp.primaryColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(100),
                   child: Text(
                     'Confirm',
@@ -312,6 +443,69 @@ class ProfileScreen extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+
+  Widget buildSubscriptionPlans() {
+    return Obx(() {
+      final isSubscribed = dashboardController.isSubscribed.value;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            isSubscribed ? "Your Subscription is Active ✅" : "No Active Subscription ❌",
+            style: TextHelper.size18.copyWith(
+              color: isSubscribed ? ColorsForApp.green : Colors.redAccent,
+              fontFamily: boldFont,
+            ),
+          ),
+          const SizedBox(height: 10),
+          if (!isSubscribed) ...[
+            _planTile("Basic Plan", "₹499 / month", "Access to basic features"),
+            _planTile("Pro Plan", "₹999 / month", "Access to all premium features"),
+            const SizedBox(height: 8),
+          ],
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorsForApp.primaryDarkColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () => Get.toNamed(Routes.SUBSCRIPTION),
+            child: Text(
+              isSubscribed ? "Manage Subscription" : "Subscribe Now",
+              style: TextHelper.size18.copyWith(
+                color: Colors.white,
+                fontFamily: semiBoldFont,
+              ),
+            ),
+          ),
+        ],
+      );
+    });
+  }
+
+  Widget _planTile(String name, String price, String desc) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: ColorsForApp.primaryColor.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(name, style: TextHelper.size18.copyWith(fontFamily: semiBoldFont)),
+              Text(desc, style: TextHelper.size16.copyWith(color: Colors.grey)),
+            ],
+          ),
+          Text(price, style: TextHelper.size18.copyWith(color: ColorsForApp.green)),
+        ],
+      ),
     );
   }
 }

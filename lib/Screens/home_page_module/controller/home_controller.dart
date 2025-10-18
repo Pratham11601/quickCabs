@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:QuickCab/Screens/history_module/lead_history_model.dart';
 import 'package:QuickCab/Screens/home_page_module/model/check_profile_completion_model.dart';
 import 'package:QuickCab/Screens/home_page_module/model/driver_availability_model.dart';
@@ -20,6 +22,41 @@ import '../repository/active_lead_repository.dart';
 class HomeController extends GetxController {
   HomeRepository authRepository = HomeRepository(APIManager());
   ActiveLeadRepository activeLeadRepository = ActiveLeadRepository(APIManager());
+  RxString remainingTimeText = ''.obs;
+  RxBool is24hrsCompleted = false.obs;
+  Timer? countdownTimer;
+
+  RxInt userId = 0.obs;
+
+  void start24HourCountdown(String updatedAt) {
+    final updatedAtTime = DateTime.parse(updatedAt).toLocal();
+    countdownTimer?.cancel(); // Cancel old timer if already running
+
+    countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final now = DateTime.now();
+      final elapsed = now.difference(updatedAtTime);
+      final remaining = const Duration(hours: 24) - elapsed;
+
+      if (remaining.isNegative) {
+        // ✅ Completed
+        is24hrsCompleted.value = true;
+        remainingTimeText.value = "Verification period completed.";
+        timer.cancel();
+      } else {
+        // ⏳ Still counting
+        final hours = remaining.inHours;
+        final minutes = remaining.inMinutes.remainder(60);
+        final seconds = remaining.inSeconds.remainder(60);
+        remainingTimeText.value = "${hours}h ${minutes}m ${seconds}s remaining";
+      }
+    });
+  }
+
+  @override
+  void onClose() {
+    countdownTimer?.cancel();
+    super.onClose();
+  }
 
   @override
   void onInit() {
@@ -84,10 +121,66 @@ class HomeController extends GetxController {
     fromLocationController.clear();
   }
 
-  String formatDateTime(String dateTimeString) {
-    final DateTime dateTime = DateTime.parse(dateTimeString);
-    final DateFormat formatter = DateFormat('dd MMM, yyyy');
-    return formatter.format(dateTime);
+  // String formatDateTime(String? dateTimeString) {
+  //   if (dateTimeString == null || dateTimeString.trim().isEmpty) {
+  //     return '-'; // or any default placeholder
+  //   }
+  //
+  //   try {
+  //     // Try ISO format first (e.g. "2025-10-27T00:00:00Z" or "2025-10-27")
+  //     final dateTime = DateTime.parse(dateTimeString);
+  //     return DateFormat('dd MMM, yyyy').format(dateTime);
+  //   } catch (e) {
+  //     try {
+  //       // Try MySQL-style format (e.g. "2025-10-27 11:00:00")
+  //       final inputFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+  //       final dateTime = inputFormat.parse(dateTimeString);
+  //       return DateFormat('dd MMM, yyyy').format(dateTime);
+  //     } catch (e) {
+  //       try {
+  //         // Try if the date has extra words (e.g. "2025-10-27 at 11")
+  //         final cleaned = dateTimeString.split(' ').first;
+  //         final dateTime = DateTime.parse(cleaned);
+  //         return DateFormat('dd MMM, yyyy').format(dateTime);
+  //       } catch (e) {
+  //         debugPrint('⚠️ Invalid date format: $dateTimeString');
+  //         return dateTimeString; // fallback
+  //       }
+  //     }
+  //   }
+  // }
+
+  /// Calculate days from start date and end date
+  /// Converts various date formats to 'dd MMM, yyyy'
+  String formatDateTime(String? dateTimeString) {
+    if (dateTimeString == null || dateTimeString.trim().isEmpty) return '-';
+    try {
+      final dateTime = DateTime.parse(dateTimeString);
+      return DateFormat('dd MMM, yyyy').format(dateTime);
+    } catch (e) {
+      try {
+        final inputFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+        final dateTime = inputFormat.parse(dateTimeString);
+        return DateFormat('dd MMM, yyyy').format(dateTime);
+      } catch (e) {
+        debugPrint('⚠️ Invalid date format: $dateTimeString');
+        return '-';
+      }
+    }
+  }
+
+  /// Calculates day difference between two formatted dates
+  int calculateDays(String start, String end) {
+    try {
+      if (start == '-' || end == '-' || start.isEmpty || end.isEmpty) return 0;
+      final DateFormat formatter = DateFormat('dd MMM, yyyy');
+      final DateTime startDate = formatter.parse(start);
+      final DateTime endDate = formatter.parse(end);
+      return endDate.difference(startDate).inDays + 1;
+    } catch (e) {
+      debugPrint('⚠️ Error parsing date: $e');
+      return 0;
+    }
   }
 
   String formatTime(String time) {
@@ -139,17 +232,54 @@ class HomeController extends GetxController {
     }
   }
 
-  // Share a Lead
+  /// Share Lead
   void shareLead(Post lead) async {
+    // 🕓 Handle date and time based on trip type
+    String dateSection;
+
+    if (lead.tripType == 0 || lead.tripType == 2) {
+      //One-way / Rental Trip  → show single date + time
+      final date = formatDateTime(lead.date);
+      final time = lead.time ?? '-';
+      dateSection = '*Date*: $date | $time';
+    } else {
+      // Return Trip → show start and end date
+      final startDate = formatDateTime(lead.startDate);
+      final endDate = formatDateTime(lead.endDate);
+      dateSection = '*Start*: $startDate | *End*: $endDate';
+    }
+
+    // Trip type
+    String tripTypeText;
+    switch (lead.tripType) {
+      case 0:
+        tripTypeText = 'Oneway Trip';
+        break;
+      case 1:
+        tripTypeText = 'Return Trip';
+        break;
+      case 2:
+        tripTypeText = 'Rented Trip';
+        break;
+      default:
+        tripTypeText = '-';
+    }
+
+    // Build rental duration section only if trip type = 2
+    final rentalDurationSection = lead.tripType == 2 ? '*Rental Duration*: ${lead.rentalDuration ?? '-'}\n\n' : '';
+    // 🧾 Build WhatsApp message
     final message = Uri.encodeComponent(
-      '🚖 *QuickCab Lead Details*\n\n'
-      '👤 *Name*: ${lead.vendorName ?? '-'}\n\n'
-      '📅 *Date*: ${formatDateTime(lead.date!) ?? '-'} | ${lead.time}\n\n'
-      '📍 *From*: ${lead.locationFrom ?? '-'}\n\n'
-      '🏁 *To*: ${lead.toLocationArea ?? '-'}\n\n'
-      '🚗 *Car*: ${lead.carModel ?? '-'}\n\n'
-      '💰 *Amount*: ₹${lead.fare ?? '-'}\n\n'
-      '📞 *Contact*: ${lead.vendorContact ?? '-'}',
+      '*QuickCab Booking Details*\n\n'
+      '*Name*: ${lead.vendorName ?? '-'}\n\n'
+      '$dateSection\n\n'
+      '*From*: ${lead.locationFromArea ?? '-'}\n\n'
+      '*To*: ${lead.toLocationArea ?? '-'}\n\n'
+      '*Car*: ${lead.carModel ?? '-'}\n\n'
+      '*Trip Type*: ${tripTypeText ?? '-'}\n\n'
+      '*Toll Tax*: ${lead.tollTax ?? '-'}\n\n'
+      '${rentalDurationSection.isNotEmpty ? rentalDurationSection : ""}'
+      '*Amount*: ₹${lead.fare ?? '-'}\n\n'
+      '*Contact*: ${lead.vendorContact ?? '-'}',
     );
 
     final whatsappUrl = Uri.parse('https://wa.me/?text=$message');
@@ -305,8 +435,8 @@ class HomeController extends GetxController {
       errorMsg.value = '';
 
       final response = await activeLeadRepository.activeLeadApiCall(pageNumber, fromLocationController.text, toLocationController.text);
-      debugPrint('Fetched leads count: ${response.posts.length}');
-      activeLeads.assignAll(response.posts);
+      debugPrint('Fetched leads count: ${response.posts!.length}');
+      activeLeads.assignAll(response.posts ?? []);
       return response;
     } catch (e) {
       errorMsg.value = 'Failed to load active leads';

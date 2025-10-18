@@ -1,6 +1,7 @@
 import 'package:QuickCab/Screens/profile_module/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import '../../../api/api_manager.dart';
@@ -46,6 +47,17 @@ class SubscriptionController extends GetxController {
     packagesAPI();
   }
 
+  /// Formats ISO date string (e.g., "2025-10-18T07:16:31.680Z")
+  /// into a readable format (e.g., "18 Oct 2025, 12:46 PM")
+  String formatDateTime(String? isoString) {
+    if (isoString == null || isoString.isEmpty) return '-';
+    try {
+      final dateTime = DateTime.parse(isoString).toLocal(); // convert to local time zone
+      return DateFormat('dd MMM yyyy, hh:mm a').format(dateTime);
+    } catch (e) {
+      return '-';
+    }
+  }
   // -------------------- API CALLS --------------------
 
   /// Fetch packages
@@ -107,7 +119,7 @@ class SubscriptionController extends GetxController {
         showAppDialog(
           title: rechargeRazorModelResponse.value.message.toString(),
           message:
-              'Subscription Plan - ${rechargeRazorModelResponse.value.subscription!.plan}\nStart Date - ${rechargeRazorModelResponse.value.subscription!.startDate}\nEnd Date - ${rechargeRazorModelResponse.value.subscription!.endDate}',
+              'Subscription Plan - ${rechargeRazorModelResponse.value.subscription!.plan}\nStart Date - ${formatDateTime(rechargeRazorModelResponse.value.subscription!.startDate)}\nEnd Date - ${formatDateTime(rechargeRazorModelResponse.value.subscription!.endDate)}',
           icon: Icons.check_circle_rounded,
           buttonText: 'OK',
           onConfirm: () {

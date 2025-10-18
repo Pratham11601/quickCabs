@@ -181,7 +181,7 @@ class DocCard extends StatelessWidget {
       final d = controller.docs[index];
       final chip = d.status == DocStatus.verified
           ? Chip(text: 'Uploaded', color: ColorsForApp.orange)
-          : Chip(text: d.required ? 'Required' : 'Optional', color: ColorsForApp.orange);
+          : Chip(text: (d.isRequired ?? false) ? 'Required' : 'Optional', color: ColorsForApp.orange);
 
       return Container(
         padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
@@ -214,7 +214,7 @@ class DocCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text(d.subtitle, style: TextHelper.size18.copyWith(height: 1.35, color: ColorsForApp.blackColor)),
+                      Text(d.subtitle ?? '', style: TextHelper.size18.copyWith(height: 1.35, color: ColorsForApp.blackColor)),
                     ],
                   ),
                 ),
@@ -313,26 +313,38 @@ class FooterProceedButton extends StatelessWidget {
     return Obx(() {
       final remaining = controller.remainingRequiredCount();
       final allUploaded = remaining == 0;
+      final isLoading = userRegistrationController.isLoading.value;
 
-      final text = allUploaded ? 'Proceed to verify' : '$remaining more documents needed';
+      final text = isLoading
+          ? 'Please wait...'
+          : allUploaded
+              ? 'Proceed to verify'
+              : '$remaining more documents needed';
 
       return GestureDetector(
-        onTap: allUploaded
+        onTap: (allUploaded && !isLoading)
             ? () async {
                 if (signupController.leadBy.value.isEmpty && signupController.leadById.value == 0) {
                   ShowSnackBar.info(message: "Please select who referred you");
                 } else {
-                  bool result = await userRegistrationController.registerVendor(
-                      email: userRegistrationController.emailController.text,
-                      password: signupController.passCtrl.text.trim(),
-                      businessName: userRegistrationController.businessNameController.text,
-                      // city: userRegistrationController.cityName.value,
-                      vendorCat: userRegistrationController.selectedService.value,
-                      currentAddress: userRegistrationController.currentAddressController.text,
-                      referredBy: signupController.leadById.value,
-                      phoneNumber: signupController.phoneCtrl.text.trim());
-                  if (result) {
-                    Get.offAllNamed(Routes.LOGIN_SCREEN);
+                  userRegistrationController.isLoading.value = true;
+                  try {
+                    bool result = await userRegistrationController.registerVendor(
+                        email: userRegistrationController.emailController.text,
+                        password: signupController.passCtrl.text.trim(),
+                        businessName: userRegistrationController.businessNameController.text,
+                        // city: userRegistrationController.cityName.value,
+                        vendorCat: userRegistrationController.selectedService.value,
+                        currentAddress: userRegistrationController.currentAddressController.text,
+                        referredBy: signupController.leadById.value,
+                        phoneNumber: signupController.phoneCtrl.text.trim());
+                    if (result) {
+                      Get.offAllNamed(Routes.LOGIN_SCREEN);
+                    }
+                  } catch (e) {
+                    print(e);
+                  } finally {
+                    userRegistrationController.isLoading.value = false; // 🔓 Re-enable button
                   }
                 }
               }
