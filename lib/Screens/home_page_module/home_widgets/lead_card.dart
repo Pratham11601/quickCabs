@@ -394,9 +394,21 @@ class LeadCard extends StatelessWidget {
             ],
           ),
           height(1.h),
-          Text("End Date - ${lead['end_date'] ?? '-'}", style: TextHelper.size18),
+          Row(
+            children: [
+              Icon(Icons.calendar_month_outlined, size: 16, color: ColorsForApp.blackColor),
+              width(1.w),
+              Text("End Date - ${lead['end_date'] ?? '-'}", style: TextHelper.size18),
+            ],
+          ),
           height(1.h),
-          Text("Return Trip Days - ${lead['days'] ?? '-'}", style: TextHelper.size18),
+          Row(
+            children: [
+              Icon(Icons.keyboard_return_outlined, size: 16, color: ColorsForApp.blackColor),
+              width(1.w),
+              Text("Return Trip Days - ${lead['days'] ?? '-'}", style: TextHelper.size18),
+            ],
+          ),
         ],
       );
     } else {
