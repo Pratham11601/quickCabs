@@ -382,7 +382,17 @@ class LeadCard extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Start Date - ${lead['start_date'] ?? '-'}", style: TextHelper.size18),
+          Row(
+            children: [
+              Icon(Icons.calendar_month_outlined, size: 16, color: ColorsForApp.blackColor),
+              width(1.w),
+              Text("Start Date - ${lead['start_date'] ?? '-'} |", style: TextHelper.size18),
+              width(1.w),
+              Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
+              width(1.w),
+              Text("Pick up Time - ${lead['time'] ?? '-'}", style: TextHelper.size18),
+            ],
+          ),
           height(1.h),
           Text("End Date - ${lead['end_date'] ?? '-'}", style: TextHelper.size18),
           height(1.h),
@@ -415,7 +425,7 @@ class LeadCard extends StatelessWidget {
           style: TextHelper.size18.copyWith(color: ColorsForApp.whiteColor, fontFamily: semiBoldFont),
         ),
         onPressed: () async {
-          if (onCheckSubscription != null) {
+          /*if (onCheckSubscription != null) {
             final isSubscribed = await onCheckSubscription!();
             if (isSubscribed) {
               onWhatsApp?.call(lead['phone']);
@@ -424,7 +434,9 @@ class LeadCard extends StatelessWidget {
             }
           } else {
             onWhatsApp?.call(lead['phone']);
-          }
+          }*/
+
+          onWhatsApp?.call(lead['phone']);
         },
       );
 
@@ -439,7 +451,7 @@ class LeadCard extends StatelessWidget {
           style: TextHelper.size18.copyWith(color: ColorsForApp.whiteColor, fontFamily: semiBoldFont),
         ),
         onPressed: () async {
-          if (onCheckSubscription != null) {
+          /*if (onCheckSubscription != null) {
             final isSubscribed = await onCheckSubscription!();
             if (isSubscribed) {
               onCall?.call(lead['phone']);
@@ -448,7 +460,8 @@ class LeadCard extends StatelessWidget {
             }
           } else {
             onCall?.call(lead['phone']);
-          }
+          }*/
+          onCall?.call(lead['phone']);
         },
       );
 }

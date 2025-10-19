@@ -231,6 +231,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../../utils/app_colors.dart';
 import '../../../utils/text_styles.dart';
+import '../../../widgets/constant_widgets.dart';
 import '../model/mylead_model.dart';
 
 class LeadCard extends StatelessWidget {
@@ -417,22 +418,26 @@ class LeadCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.calendar_today, size: 16, color: ColorsForApp.blackColor),
-                      SizedBox(width: 6),
+                      Icon(Icons.calendar_month_outlined, size: 16, color: ColorsForApp.blackColor),
+                      width(1.w),
                       Text(
-                        "Start Date - ${myLeadsController.formatDateTime(lead.startDate) ?? '-'}"
+                        "Start Date - ${myLeadsController.formatDateTime(lead.startDate) ?? '-'} |"
                         // ignore: unnecessary_null_comparison
                         ,
                         style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                         overflow: TextOverflow.ellipsis,
                       ),
+                      width(1.w),
+                      Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
+                      width(1.w),
+                      Text("Pick up Time - ${lead.time ?? '-'}", style: TextHelper.size18),
                     ],
                   ),
                   SizedBox(height: 10.sp),
                   Row(
                     children: [
-                      Icon(Icons.calendar_today, size: 16, color: ColorsForApp.blackColor),
-                      SizedBox(width: 6),
+                      Icon(Icons.calendar_month_outlined, size: 16, color: ColorsForApp.blackColor),
+                      width(1.w),
                       Text(
                         "End Date - ${myLeadsController.formatDateTime(lead.endDate) ?? '-'}",
                         style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),

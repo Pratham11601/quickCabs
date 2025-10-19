@@ -143,13 +143,29 @@ class MyLeadsController extends GetxController {
   }
 
   TimeOfDay parseTimeOfDay(String? timeString) {
-    if (timeString == null || timeString.isEmpty) {
+    if (timeString == null || timeString.trim().isEmpty) {
       return TimeOfDay.now();
     }
-    final parts = timeString.split(":");
-    final hour = int.tryParse(parts[0]) ?? 0;
-    final minute = int.tryParse(parts.length > 1 ? parts[1] : "0") ?? 0;
-    return TimeOfDay(hour: hour, minute: minute);
+
+    // Normalize and detect AM/PM
+    final lower = timeString.toLowerCase().trim();
+    final isPM = lower.contains('pm');
+    final isAM = lower.contains('am');
+
+    // Remove AM/PM before splitting
+    final clean = lower.replaceAll(RegExp(r'(am|pm)'), '').trim();
+
+    final parts = clean.split(':');
+    final hourPart = int.tryParse(parts[0]) ?? 0;
+    final minutePart = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
+
+    var hour = hourPart;
+
+    // Convert 12-hour format to 24-hour
+    if (isPM && hour != 12) hour += 12;
+    if (isAM && hour == 12) hour = 0;
+
+    return TimeOfDay(hour: hour, minute: minutePart);
   }
 
   // Method to set lead data before editing
@@ -157,8 +173,8 @@ class MyLeadsController extends GetxController {
     // isEditing.value = false; // 🚫 disable debounce during prefill
 
     // fill values
-    fromLocation.value = lead.locationFrom ?? '';
-    toLocation.value = lead.toLocation ?? '';
+    fromLocation.value = lead.locationFromArea ?? '';
+    toLocation.value = lead.toLocationArea ?? '';
 
     fromLocationController.text = fromLocation.value;
     toLocationController.text = toLocation.value;
@@ -174,12 +190,19 @@ class MyLeadsController extends GetxController {
       selectedDate.value = null;
     }
 
+    if (lead.startDate != null && lead.startDate!.isNotEmpty) {
+      selectedDate.value = DateTime.parse(lead.startDate!);
+    } else {
+      selectedDate.value = null;
+    }
+
     // For time (assuming lead.time is String like "14:30")
     if (lead.time != null && lead.time!.isNotEmpty) {
       selectedTime.value = parseTimeOfDay(lead.time!);
     } else {
       selectedTime.value = null;
     }
+
     // enable debounce after short delay (so UI settles)
     // Future.delayed(const Duration(milliseconds: 300), () {
     //   isEditing.value = true; // ✅ now user typing will trigger debounce
@@ -395,6 +418,7 @@ class MyLeadsController extends GetxController {
       "fare": fareController.text.trim(),
       "cab_number": "",
       "vendor_contact": vendorMobile.value,
+      "start_date": DateFormat('yyyy-MM-dd').format(selectedDate.value!),
     };
 
     try {

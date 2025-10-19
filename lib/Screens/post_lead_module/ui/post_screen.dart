@@ -31,8 +31,7 @@ class PostScreen extends StatelessWidget {
               end: Alignment.bottomRight,
             ),
           ),
-          padding:
-              const EdgeInsets.only(left: 16, right: 16, top: 40, bottom: 20),
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 40, bottom: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -42,13 +41,10 @@ class PostScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("share_new_lead".tr,
-                          style: TextHelper.h5.copyWith(
-                              color: Colors.white, fontFamily: semiBoldFont)),
+                      Text("share_new_lead".tr, style: TextHelper.h5.copyWith(color: Colors.white, fontFamily: semiBoldFont)),
                       Obx(() => Text(
                             "step ${controller.step.value} of 3".tr,
-                            style: TextHelper.size18.copyWith(
-                                color: Colors.white, fontFamily: semiBoldFont),
+                            style: TextHelper.size18.copyWith(color: Colors.white, fontFamily: semiBoldFont),
                           )),
                     ],
                   ),
@@ -61,23 +57,18 @@ class PostScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(children: [
-                    const Icon(Icons.navigation_outlined,
-                        color: Colors.white, size: 30),
+                    const Icon(Icons.navigation_outlined, color: Colors.white, size: 30),
                     const SizedBox(width: 8),
-                    Text("route_details".tr,
-                        style: TextHelper.size20.copyWith(
-                            color: Colors.white, fontFamily: semiBoldFont)),
+                    Text("route_details".tr, style: TextHelper.size20.copyWith(color: Colors.white, fontFamily: semiBoldFont)),
                   ]),
                   Obx(() => Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           color: Colors.white24,
                         ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                         child: Text(controller.progressPercentLabel,
-                            style: TextHelper.size17.copyWith(
-                                color: Colors.white, fontFamily: semiBoldFont)),
+                            style: TextHelper.size17.copyWith(color: Colors.white, fontFamily: semiBoldFont)),
                       )),
                 ],
               ),
@@ -90,8 +81,7 @@ class PostScreen extends StatelessWidget {
                       value: controller.progress,
                       minHeight: 6,
                       backgroundColor: Colors.white24,
-                      valueColor:
-                          const AlwaysStoppedAnimation<Color>(Colors.white),
+                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   )),
               const SizedBox(height: 10),
@@ -102,8 +92,7 @@ class PostScreen extends StatelessWidget {
                     children: [
                       stepCircle("route".tr, controller.currentStep.value == 0),
                       stepCircle("trip".tr, controller.currentStep.value == 1),
-                      stepCircle(
-                          "pricing".tr, controller.currentStep.value == 2),
+                      stepCircle("pricing".tr, controller.currentStep.value == 2),
                     ],
                   )),
             ],
@@ -134,8 +123,7 @@ class PostScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   child: Obx(() {
                     bool isRouteDetails = controller.currentStep.value == 0;
-                    final isLastStep = controller.currentStep.value ==
-                        2; // Last page (Price Confirmation)
+                    final isLastStep = controller.currentStep.value == 2; // Last page (Price Confirmation)
 
                     return Row(
                       children: [
@@ -153,13 +141,11 @@ class PostScreen extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               backgroundColor: Colors.grey.shade200,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                             ),
                             child: Text(
                               isRouteDetails ? "cancel".tr : "previous".tr,
-                              style: TextHelper.size20
-                                  .copyWith(color: ColorsForApp.blackColor),
+                              style: TextHelper.size20.copyWith(color: ColorsForApp.blackColor),
                             ),
                           ),
                         ),
@@ -169,15 +155,12 @@ class PostScreen extends StatelessWidget {
                             onPressed: controller.isFormValid.value
                                 ? () async {
                                     if (controller.currentStep.value == 2) {
-                                      if (priceFormKey.currentState!
-                                          .validate()) {
+                                      if (priceFormKey.currentState!.validate()) {
                                         await controller.submitRideLead();
                                       }
-                                    } else if (controller.currentStep.value ==
-                                        1) {
+                                    } else if (controller.currentStep.value == 1) {
                                       // Trip Info Validation (Date, Time, Seats)
-                                      if (controller
-                                          .validateTripInformation()) {
+                                      if (controller.validateTripInformation()) {
                                         controller.nextStep();
                                       }
                                     } else {
@@ -186,10 +169,8 @@ class PostScreen extends StatelessWidget {
                                   }
                                 : null,
                             style: ButtonStyle(
-                              minimumSize: MaterialStateProperty.all(
-                                  const Size(double.infinity, 50)),
-                              backgroundColor:
-                                  MaterialStateProperty.resolveWith<Color>(
+                              minimumSize: MaterialStateProperty.all(const Size(double.infinity, 50)),
+                              backgroundColor: MaterialStateProperty.resolveWith<Color>(
                                 (states) {
                                   if (states.contains(MaterialState.disabled)) {
                                     return ColorsForApp.cta;
@@ -198,14 +179,12 @@ class PostScreen extends StatelessWidget {
                                 },
                               ),
                               shape: MaterialStateProperty.all(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8)),
+                                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                               ),
                             ),
                             child: Text(
                               isLastStep ? "share_lead".tr : "next_step".tr,
-                              style: TextHelper.size20
-                                  .copyWith(color: Colors.white),
+                              style: TextHelper.size20.copyWith(color: Colors.white),
                             ),
                           ),
                         ),
@@ -283,8 +262,7 @@ class PostScreen extends StatelessWidget {
 
   // ─────────────────────────────────── Step 1: Route Details ───────────────────────────────────
   Widget _buildRouteDetails(BuildContext context) {
-    final PostController locCtrl =
-        Get.find<PostController>(); // your controller
+    final PostController locCtrl = Get.find<PostController>(); // your controller
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -313,15 +291,13 @@ class PostScreen extends StatelessWidget {
                 child: LinearProgressIndicator(minHeight: 2),
               );
             }
-            if (!locCtrl.showPickupSuggestions.value ||
-                locCtrl.pickupSuggestions.isEmpty) {
+            if (!locCtrl.showPickupSuggestions.value || locCtrl.pickupSuggestions.isEmpty) {
               return const SizedBox.shrink();
             }
             return Card(
               margin: const EdgeInsets.only(bottom: 8),
               elevation: 2,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxHeight: 220),
                 child: ListView.separated(
@@ -334,17 +310,10 @@ class PostScreen extends StatelessWidget {
                     return ListTile(
                       leading: const Icon(Icons.location_on_outlined),
                       title: Text(item['name'] ?? '',
-                          style: TextHelper.size18.copyWith(
-                              color: ColorsForApp.blackColor,
-                              fontFamily: semiBoldFont)),
+                          style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
                       subtitle: Text(item['address'] ?? '',
-                          style: TextHelper.size16.copyWith(
-                              color: ColorsForApp.blackColor,
-                              fontFamily: regularFont)),
-                      onTap: () => locCtrl.selectSuggestion(
-                          isPickup: true,
-                          name: item['name'] ?? '',
-                          address: item['address'] ?? ''),
+                          style: TextHelper.size16.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont)),
+                      onTap: () => locCtrl.selectSuggestion(isPickup: true, name: item['name'] ?? '', address: item['address'] ?? ''),
                     );
                   },
                 ),
@@ -371,15 +340,13 @@ class PostScreen extends StatelessWidget {
               );
             }
 
-            if (!locCtrl.showDropSuggestions.value ||
-                locCtrl.dropSuggestions.isEmpty) {
+            if (!locCtrl.showDropSuggestions.value || locCtrl.dropSuggestions.isEmpty) {
               return const SizedBox.shrink();
             }
             return Card(
               margin: const EdgeInsets.only(bottom: 8),
               elevation: 2,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxHeight: 220),
                 child: ListView.separated(
@@ -393,18 +360,11 @@ class PostScreen extends StatelessWidget {
                       leading: const Icon(Icons.location_on, color: Colors.red),
                       title: Text(
                         item['name'] ?? '',
-                        style: TextHelper.size18.copyWith(
-                            color: ColorsForApp.blackColor,
-                            fontFamily: semiBoldFont),
+                        style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
                       ),
                       subtitle: Text(item['address'] ?? '',
-                          style: TextHelper.size16.copyWith(
-                              color: ColorsForApp.blackColor,
-                              fontFamily: regularFont)),
-                      onTap: () => locCtrl.selectSuggestion(
-                          isPickup: false,
-                          name: item['name'] ?? '',
-                          address: item['address'] ?? ''),
+                          style: TextHelper.size16.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont)),
+                      onTap: () => locCtrl.selectSuggestion(isPickup: false, name: item['name'] ?? '', address: item['address'] ?? ''),
                     );
                   },
                 ),
@@ -455,8 +415,7 @@ class PostScreen extends StatelessWidget {
         children: [
           Text(
             "trip_information".tr,
-            style: TextHelper.h7
-                .copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont),
+            style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont),
           ),
           const SizedBox(height: 16),
           Column(
@@ -464,20 +423,16 @@ class PostScreen extends StatelessWidget {
             children: [
               Text(
                 'Toll Type',
-                style: TextHelper.size19.copyWith(
-                    color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+                style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
               ),
               const SizedBox(height: 10),
               Obx(() {
                 return DropdownButtonFormField<String>(
-                  value: controller.selectedTollType.value.isNotEmpty
-                      ? controller.selectedTollType.value
-                      : null, // ✅ fix null safety
+                  value: controller.selectedTollType.value.isNotEmpty ? controller.selectedTollType.value : null, // ✅ fix null safety
                   icon: const Icon(Icons.keyboard_arrow_down_rounded),
                   decoration: InputDecoration(
                     isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 14),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                     filled: true,
                     fillColor: Colors.white,
                     enabledBorder: OutlineInputBorder(
@@ -489,8 +444,7 @@ class PostScreen extends StatelessWidget {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                          color: ColorsForApp.orange, width: 1),
+                      borderSide: const BorderSide(color: ColorsForApp.orange, width: 1),
                     ),
                   ),
                   style: TextHelper.size19.copyWith(
@@ -510,8 +464,7 @@ class PostScreen extends StatelessWidget {
                           value: item,
                           child: Text(
                             item,
-                            style: TextHelper.size18
-                                .copyWith(color: ColorsForApp.blackColor),
+                            style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                           ),
                         ),
                       )
@@ -519,8 +472,7 @@ class PostScreen extends StatelessWidget {
                   onChanged: (v) {
                     if (v != null) {
                       controller.selectedTollType.value = v;
-                      debugPrint(
-                          "Selected toll type: ${controller.selectedTollType.value}");
+                      debugPrint("Selected toll type: ${controller.selectedTollType.value}");
                     }
                   },
                 );
@@ -535,8 +487,7 @@ class PostScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   'Rental Duration',
-                  style: TextHelper.size19.copyWith(
-                      color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+                  style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
                 ),
                 const SizedBox(height: 10),
                 Obx(() {
@@ -547,8 +498,7 @@ class PostScreen extends StatelessWidget {
                     icon: const Icon(Icons.keyboard_arrow_down_rounded),
                     decoration: InputDecoration(
                       isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 14),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                       filled: true,
                       fillColor: Colors.white,
                       enabledBorder: OutlineInputBorder(
@@ -560,8 +510,7 @@ class PostScreen extends StatelessWidget {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                            color: ColorsForApp.orange, width: 1),
+                        borderSide: const BorderSide(color: ColorsForApp.orange, width: 1),
                       ),
                     ),
                     style: TextHelper.size19.copyWith(
@@ -581,8 +530,7 @@ class PostScreen extends StatelessWidget {
                             value: item,
                             child: Text(
                               item,
-                              style: TextHelper.size18
-                                  .copyWith(color: ColorsForApp.blackColor),
+                              style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
                             ),
                           ),
                         )
@@ -590,8 +538,7 @@ class PostScreen extends StatelessWidget {
                     onChanged: (v) {
                       if (v != null) {
                         controller.selectedRentalDuration.value = v;
-                        debugPrint(
-                            "Selected Duration type: ${controller.selectedRentalDuration.value}");
+                        debugPrint("Selected Duration type: ${controller.selectedRentalDuration.value}");
                       }
                     },
                   );
@@ -603,19 +550,15 @@ class PostScreen extends StatelessWidget {
 
           Text(
             "vehicle_type".tr,
-            style: TextHelper.size19.copyWith(
-                color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+            style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
           ),
           const SizedBox(height: 8),
 
           /// Vehicle / Subtype Grid
           Obx(() {
             final selectedIdx = controller.selectedVehicleIndex.value;
-            final vehicleName = selectedIdx != null
-                ? controller.vehicles[selectedIdx]["name"] as String
-                : null;
-            final hasSubTypes = vehicleName != null &&
-                controller.vehicleSubTypes.containsKey(vehicleName);
+            final vehicleName = selectedIdx != null ? controller.vehicles[selectedIdx]["name"] as String : null;
+            final hasSubTypes = vehicleName != null && controller.vehicleSubTypes.containsKey(vehicleName);
 
             if (!hasSubTypes || controller.showMainVehicles.value) {
               // Show main vehicle grid
@@ -632,8 +575,7 @@ class PostScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final vehicle = controller.vehicles[index];
                   return Obx(() {
-                    final isSelected =
-                        controller.selectedVehicleIndex.value == index;
+                    final isSelected = controller.selectedVehicleIndex.value == index;
                     final Color color = vehicle["color"] as Color;
                     final String name = vehicle["name"] as String;
                     final String seats = (vehicle["seats"] as String?) ?? "";
@@ -649,20 +591,10 @@ class PostScreen extends StatelessWidget {
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: isSelected
-                              ? color.withOpacity(0.2)
-                              : Colors.white,
-                          border: Border.all(
-                              color: isSelected ? color : Colors.grey.shade300,
-                              width: 2),
+                          color: isSelected ? color.withOpacity(0.2) : Colors.white,
+                          border: Border.all(color: isSelected ? color : Colors.grey.shade300, width: 2),
                           borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.shade200,
-                                blurRadius: 6,
-                                spreadRadius: 1,
-                                offset: const Offset(0, 3))
-                          ],
+                          boxShadow: [BoxShadow(color: Colors.grey.shade200, blurRadius: 6, spreadRadius: 1, offset: const Offset(0, 3))],
                         ),
                         child: Center(
                           child: Column(
@@ -674,17 +606,13 @@ class PostScreen extends StatelessWidget {
                                 child: Text(
                                   name,
                                   textAlign: TextAlign.center,
-                                  style: TextHelper.size17.copyWith(
-                                      fontFamily: semiBoldFont,
-                                      color: ColorsForApp.blackColor),
+                                  style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor),
                                 ),
                               ),
                               if (seats.isNotEmpty)
                                 Text(
                                   seats,
-                                  style: TextHelper.size17.copyWith(
-                                      color: ColorsForApp.subTitleColor,
-                                      fontFamily: regularFont),
+                                  style: TextHelper.size17.copyWith(color: ColorsForApp.subTitleColor, fontFamily: regularFont),
                                 ),
                             ],
                           ),
@@ -704,19 +632,14 @@ class PostScreen extends StatelessWidget {
                   // Selected Vehicle Card
                   Card(
                     color: Colors.grey.shade200,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Row(
                         children: [
-                          Icon(Icons.directions_car,
-                              color: controller.vehicles[selectedIdx!]["color"]
-                                  as Color),
+                          Icon(Icons.directions_car, color: controller.vehicles[selectedIdx!]["color"] as Color),
                           const SizedBox(width: 12),
-                          Text(vehicleName,
-                              style: TextHelper.size18
-                                  .copyWith(fontFamily: semiBoldFont)),
+                          Text(vehicleName, style: TextHelper.size18.copyWith(fontFamily: semiBoldFont)),
                           const Spacer(),
                           GestureDetector(
                             onTap: () {
@@ -724,8 +647,7 @@ class PostScreen extends StatelessWidget {
                               controller.selectedVehicleIndex.value = null;
                               controller.selectedSubTypeIndex.value = null;
                             },
-                            child:
-                                Icon(Icons.edit, color: Colors.grey.shade700),
+                            child: Icon(Icons.edit, color: Colors.grey.shade700),
                           )
                         ],
                       ),
@@ -738,8 +660,7 @@ class PostScreen extends StatelessWidget {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: subTypes.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
@@ -750,26 +671,16 @@ class PostScreen extends StatelessWidget {
                       final Color color = subType["color"] as Color;
                       final String name = subType["name"] as String;
                       return Obx(() {
-                        final isSelected =
-                            controller.selectedSubTypeIndex.value == index;
+                        final isSelected = controller.selectedSubTypeIndex.value == index;
                         return GestureDetector(
                           onTap: () => controller.selectSubType(index),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: isSelected
-                                  ? color.withOpacity(0.2)
-                                  : Colors.white,
-                              border: Border.all(
-                                  color:
-                                      isSelected ? color : Colors.grey.shade300,
-                                  width: 2),
+                              color: isSelected ? color.withOpacity(0.2) : Colors.white,
+                              border: Border.all(color: isSelected ? color : Colors.grey.shade300, width: 2),
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
-                                BoxShadow(
-                                    color: Colors.grey.shade200,
-                                    blurRadius: 6,
-                                    spreadRadius: 1,
-                                    offset: const Offset(0, 3))
+                                BoxShadow(color: Colors.grey.shade200, blurRadius: 6, spreadRadius: 1, offset: const Offset(0, 3))
                               ],
                             ),
                             child: Center(
@@ -782,9 +693,7 @@ class PostScreen extends StatelessWidget {
                                     child: Text(
                                       name,
                                       textAlign: TextAlign.center,
-                                      style: TextHelper.size17.copyWith(
-                                          fontFamily: semiBoldFont,
-                                          color: ColorsForApp.blackColor),
+                                      style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor),
                                     ),
                                   ),
                                 ],
@@ -805,17 +714,13 @@ class PostScreen extends StatelessWidget {
           // Seat Configuration (if applicable)
           Obx(() {
             final int? idx = controller.selectedVehicleIndex.value;
-            final bool showConfig =
-                idx != null && (controller.vehicles[idx]["seatConfig"] == true);
+            final bool showConfig = idx != null && (controller.vehicles[idx]["seatConfig"] == true);
             if (!showConfig) return const SizedBox.shrink();
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("seat_configuration".tr,
-                    style: TextHelper.size19.copyWith(
-                        color: ColorsForApp.blackColor,
-                        fontFamily: semiBoldFont)),
+                Text("seat_configuration".tr, style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
                 const SizedBox(height: 8),
                 GridView.count(
                   crossAxisCount: 3,
@@ -843,8 +748,7 @@ class PostScreen extends StatelessWidget {
 
           // Date & Time pickers
           Visibility(
-            visible: controller.tripType.value == 0 ||
-                controller.tripType.value == 2,
+            visible: controller.tripType.value == 0 || controller.tripType.value == 2,
             child: Row(
               children: [
                 Expanded(
@@ -873,44 +777,61 @@ class PostScreen extends StatelessWidget {
           // Dates pickers
           Visibility(
             visible: controller.tripType.value == 1,
-            child: Row(
+            child: Column(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "Start Date",
-                      style: TextHelper.size17.copyWith(
-                          fontFamily: semiBoldFont,
-                          color: ColorsForApp.blackColor),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Start Date",
+                          style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor),
+                        ),
+                        SizedBox(height: 1.h),
+                        GestureDetector(
+                          onTap: () => controller.selectStartDate(context),
+                          child: Obx(() => _buildInputBox(
+                                icon: Icons.calendar_today,
+                                text: controller.formattedStartDate,
+                              )),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 1.h),
-                    GestureDetector(
-                      onTap: () => controller.selectStartDate(context),
-                      child: Obx(() => _buildInputBox(
-                            icon: Icons.calendar_today,
-                            text: controller.formattedStartDate,
-                          )),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Pick up Time",
+                          style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor),
+                        ),
+                        SizedBox(height: 1.h),
+                        GestureDetector(
+                          onTap: () => controller.selectFromTime(context),
+                          child: Obx(() => _buildInputBox(
+                                icon: Icons.access_time,
+                                text: controller.formattedTime(context),
+                              )),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "End Date",
-                      style: TextHelper.size17.copyWith(
-                          fontFamily: semiBoldFont,
-                          color: ColorsForApp.blackColor),
-                    ),
-                    SizedBox(height: 1.h),
-                    GestureDetector(
-                      onTap: () => controller.selectEndDate(context),
-                      child: Obx(() => _buildInputBox(
-                            icon: Icons.calendar_today,
-                            text: controller.formattedEndDate,
-                          )),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "End Date",
+                          style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor),
+                        ),
+                        SizedBox(height: 1.h),
+                        GestureDetector(
+                          onTap: () => controller.selectEndDate(context),
+                          child: Obx(() => _buildInputBox(
+                                icon: Icons.calendar_today,
+                                text: controller.formattedEndDate,
+                              )),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -925,8 +846,7 @@ class PostScreen extends StatelessWidget {
   // ─────────────────────────────────── Widgets: small helpers ─────────────────────────────────
 
   // Trip Type Card (reactive)
-  Widget _tripTypeCard(
-      int index, String title, String subtitle, IconData icon, Color color) {
+  Widget _tripTypeCard(int index, String title, String subtitle, IconData icon, Color color) {
     return Obx(() {
       final bool isSelected = controller.tripType.value == index;
       return GestureDetector(
@@ -936,36 +856,19 @@ class PostScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-                color: isSelected
-                    ? ColorsForApp.primaryColor
-                    : Colors.grey.shade300),
+            border: Border.all(color: isSelected ? ColorsForApp.primaryColor : Colors.grey.shade300),
             color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.grey.shade200,
-                  blurRadius: 6,
-                  spreadRadius: 1,
-                  offset: const Offset(0, 3))
-            ],
+            boxShadow: [BoxShadow(color: Colors.grey.shade200, blurRadius: 6, spreadRadius: 1, offset: const Offset(0, 3))],
           ),
           child: Row(
             children: [
-              CircleAvatar(
-                  backgroundColor: color.withOpacity(0.1),
-                  child: Icon(icon, color: color)),
+              CircleAvatar(backgroundColor: color.withOpacity(0.1), child: Icon(icon, color: color)),
               const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: TextHelper.size18.copyWith(
-                          color: ColorsForApp.blackColor,
-                          fontFamily: semiBoldFont)),
-                  Text(subtitle,
-                      style: TextHelper.size17.copyWith(
-                          color: ColorsForApp.blackColor,
-                          fontFamily: regularFont)),
+                  Text(title, style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+                  Text(subtitle, style: TextHelper.size17.copyWith(color: ColorsForApp.blackColor, fontFamily: regularFont)),
                 ],
               ),
             ],
@@ -985,9 +888,7 @@ class PostScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: isSelected ? Colors.blue.shade50 : Colors.white,
-            border: Border.all(
-                color: isSelected ? Colors.blue : Colors.grey.shade300,
-                width: 2),
+            border: Border.all(color: isSelected ? Colors.blue : Colors.grey.shade300, width: 2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Center(
@@ -1016,9 +917,7 @@ class PostScreen extends StatelessWidget {
       child: Row(children: [
         Icon(icon, color: ColorsForApp.primaryColor),
         const SizedBox(width: 8),
-        Text(text,
-            style: TextHelper.size18.copyWith(
-                color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
+        Text(text, style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
       ]),
     );
   }
@@ -1030,14 +929,11 @@ class PostScreen extends StatelessWidget {
       child: Form(
         key: priceFormKey,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text("pricing_distance".tr,
-              style: TextHelper.h7.copyWith(
-                  color: ColorsForApp.blackColor, fontFamily: boldFont)),
+          Text("pricing_distance".tr, style: TextHelper.h7.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont)),
           const SizedBox(height: 6),
           Text(
             "pricing_message".tr,
-            style: TextHelper.size18.copyWith(
-                color: ColorsForApp.subTitleColor, fontFamily: regularFont),
+            style: TextHelper.size18.copyWith(color: ColorsForApp.subTitleColor, fontFamily: regularFont),
           ),
           const SizedBox(height: 16),
 

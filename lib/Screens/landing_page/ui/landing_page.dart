@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
-import '../../../routes/routes.dart';
 import '../../../utils/app_colors.dart';
 import '../../../widgets/common_widgets.dart';
 import '../../../widgets/constant_widgets.dart';
@@ -121,7 +120,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     // Post Lead (restricted)
                     GestureDetector(
                       onTap: () async {
-                        // Check subscription status before navigating
+                        /*// Check subscription status before navigating
                         await controller.checkSubscriptionStatus();
 
                         if (controller.isSubscribed.value) {
@@ -137,7 +136,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               Get.toNamed(Routes.SUBSCRIPTION);
                             },
                           );
-                        }
+                        }*/
+                        controller.currentIndex.value = 2;
                       },
                       child: buildNavItem(
                         icon: Icons.add_circle_outline,

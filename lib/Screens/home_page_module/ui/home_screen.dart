@@ -503,7 +503,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 // ✅ Accept button logic (subscription-checked)
                 onAccept: () async {
-                  await dashboardController.checkSubscriptionStatus();
+                  /* await dashboardController.checkSubscriptionStatus();
                   if (dashboardController.isSubscribed.value) {
                     homeController.acceptLead(lead);
                   } else {
@@ -513,7 +513,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Your subscription is not active. Please subscribe to post a lead.',
                       () => Get.toNamed(Routes.SUBSCRIPTION),
                     );
-                  }
+                  }*/
+
+                  homeController.acceptLead(lead);
                 },
 
                 // ✅ WhatsApp & Call handled directly (subscription checked inside LeadCard)
@@ -522,7 +524,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 // ✅ Share button logic (subscription-checked)
                 onShare: () async {
-                  await dashboardController.checkSubscriptionStatus();
+                  /*await dashboardController.checkSubscriptionStatus();
                   if (dashboardController.isSubscribed.value) {
                     homeController.shareLead(lead);
                   } else {
@@ -532,10 +534,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Your subscription is not active. Please subscribe to post a lead.',
                       () => Get.toNamed(Routes.SUBSCRIPTION),
                     );
-                  }
+                  }*/
+                  homeController.shareLead(lead);
                 },
 
-                // ✅ Generic subscription check (used by WhatsApp/Call buttons)
+                /*// ✅ Generic subscription check (used by WhatsApp/Call buttons)
                 onCheckSubscription: () async {
                   await dashboardController.checkSubscriptionStatus();
                   return dashboardController.isSubscribed.value;
@@ -549,7 +552,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     'Your subscription is not active. Please subscribe to use this feature.',
                     () => Get.toNamed(Routes.SUBSCRIPTION),
                   );
-                },
+                },*/
               ),
             );
           },

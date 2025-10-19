@@ -15,7 +15,7 @@ class ProfileInfoCard extends StatelessWidget {
   final String phone;
   final String email;
   final String profileImage;
-  final String subscriptionStatus;
+  // final String subscriptionStatus;
 
   const ProfileInfoCard({
     super.key,
@@ -23,7 +23,7 @@ class ProfileInfoCard extends StatelessWidget {
     required this.phone,
     required this.email,
     required this.profileImage,
-    required this.subscriptionStatus,
+    // required this.subscriptionStatus,
   });
 
   @override
@@ -90,14 +90,14 @@ class ProfileInfoCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 4),
-                Row(
+                /*Row(
                   children: [
                     Icon(Icons.workspace_premium_outlined, size: 18, color: ColorsForApp.subtitle),
                     const SizedBox(width: 6),
                     Text("Subscription - $subscriptionStatus",
                         style: TextHelper.size17.copyWith(color: ColorsForApp.subtitle, fontFamily: semiBoldFont)),
                   ],
-                ),
+                ),*/
               ],
             ),
           )

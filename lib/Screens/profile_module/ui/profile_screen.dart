@@ -38,7 +38,7 @@ class ProfileScreen extends StatelessWidget {
                       name: controller.userDetails.value?.fullname ?? "Unknown",
                       phone: controller.userDetails.value?.phone ?? "-",
                       email: controller.userDetails.value?.email ?? "-",
-                      subscriptionStatus: dashboardController.isSubscribed.value ? "Active ✅" : "Not Subscribed ❌",
+                      // subscriptionStatus: dashboardController.isSubscribed.value ? "Active ✅" : "Not Subscribed ❌",
                       profileImage:
                           (controller.userDetails.value?.profileImgUrl != null && controller.userDetails.value!.profileImgUrl!.isNotEmpty)
                               ? "${Config.baseUrl}${controller.userDetails.value!.profileImgUrl}"
@@ -56,6 +56,7 @@ class ProfileScreen extends StatelessWidget {
                         Get.toNamed(Routes.MY_DOCUMENTS);
                       },
                     ),
+/*
                     SettingItem(
                       icon: Icons.workspace_premium_outlined,
                       title: "Subscription".tr,
@@ -72,29 +73,6 @@ class ProfileScreen extends StatelessWidget {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            /* // Status
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: "Status - ",
-                                    style: TextHelper.size18.copyWith(
-                                      color: ColorsForApp.blackColor,
-                                      fontFamily: semiBoldFont,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: isSubscribed ? "Active ✅" : "Not Subscribed ❌",
-                                    style: TextHelper.size18.copyWith(
-                                      color: isSubscribed ? ColorsForApp.green : Colors.redAccent,
-                                      fontFamily: semiBoldFont,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            height(0.4.h),*/
-
                             // Plan name
                             RichText(
                               text: TextSpan(
@@ -208,6 +186,7 @@ class ProfileScreen extends StatelessWidget {
                         );
                       }),
                     ),
+*/
                     SettingItem(
                       icon: Icons.notifications_outlined,
                       title: "notifications".tr,
