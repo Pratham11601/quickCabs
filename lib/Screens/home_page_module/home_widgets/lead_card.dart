@@ -185,8 +185,9 @@ class LeadCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       _buildCallButton(),
                       const Spacer(),
-                      if ((lead['userId']) == (lead['vendor_id']))
-                        Container(
+                      Visibility(
+                        visible: lead['userId'] == lead['vendor_id'],
+                        child: Container(
                           decoration: BoxDecoration(
                             color: ColorsForApp.primaryDarkColor,
                             borderRadius: BorderRadius.circular(50),
@@ -197,6 +198,7 @@ class LeadCard extends StatelessWidget {
                             tooltip: "Share Lead",
                           ),
                         ),
+                      ),
                     ],
                   ),
               ],

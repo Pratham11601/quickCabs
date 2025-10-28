@@ -250,8 +250,9 @@ class HomeController extends GetxController {
     } else {
       // Return Trip → show start and end date
       final startDate = formatDateTime(lead.startDate);
+      final startTime = lead.time ?? '-';
       final endDate = formatDateTime(lead.endDate);
-      dateSection = '*Start*: $startDate | *End*: $endDate';
+      dateSection = '*Start*: $startDate , $startTime | *End*: $endDate';
     }
 
     // Trip type

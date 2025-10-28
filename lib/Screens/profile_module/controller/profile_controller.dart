@@ -94,7 +94,7 @@ class ProfileController extends GetxController {
 
       final place = placemarks.first;
 
-      currentCity.value = (place.postalCode ?? '')
+      currentCity.value = (place.locality ?? '')
           .replaceAll(RegExp(r'(, )+'), ', ') // clean extra commas
           .replaceAll(RegExp(r'(, )*$'), '') // trim trailing commas
           .trim();
