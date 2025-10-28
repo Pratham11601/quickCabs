@@ -813,7 +813,10 @@ class LoadingOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        child,
+        IgnorePointer(
+          ignoring: isLoading, // ✅ only blocks taps when loading = true
+          child: child,
+        ),
         if (isLoading)
           Container(
             color: Colors.black.withAlpha(80),

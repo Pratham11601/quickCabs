@@ -76,6 +76,8 @@ class _LeadHistoryScreenState extends State<LeadHistoryScreen> {
                         'lead_status': lead.leadStatus ?? '',
                         'id': lead.id ?? '',
                         'trip_type': lead.tripType ?? '',
+                        'carrier_type': lead.carrier,
+                        'fuel_type': lead.fuelType,
                         'acceptedBy': lead.acceptedBy,
                       },
                     ),

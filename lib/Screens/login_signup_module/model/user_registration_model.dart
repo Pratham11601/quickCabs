@@ -42,6 +42,7 @@ class Vendor {
   String? profileImgUrl;
   String? shopImgUrl;
   String? documentImgUrl;
+  String? documentImgUrlBack;
   String? licenseImgUrl;
   String? updatedAt;
   String? createdAt;
@@ -66,6 +67,7 @@ class Vendor {
       this.profileImgUrl,
       this.shopImgUrl,
       this.documentImgUrl,
+      this.documentImgUrlBack,
       this.licenseImgUrl,
       this.updatedAt,
       this.createdAt});
@@ -90,6 +92,7 @@ class Vendor {
     profileImgUrl = json['profileImgUrl'];
     shopImgUrl = json['shopImgUrl'];
     documentImgUrl = json['documentImgUrl'];
+    documentImgUrlBack = json['documentImgUrlBack'];
     licenseImgUrl = json['licenseImgUrl'];
     updatedAt = json['updatedAt'];
     createdAt = json['createdAt'];
@@ -116,6 +119,7 @@ class Vendor {
     data['profileImgUrl'] = profileImgUrl;
     data['shopImgUrl'] = shopImgUrl;
     data['documentImgUrl'] = documentImgUrl;
+    data['documentImgUrlBack'] = documentImgUrlBack;
     data['licenseImgUrl'] = licenseImgUrl;
     data['updatedAt'] = updatedAt;
     data['createdAt'] = createdAt;

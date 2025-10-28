@@ -6,6 +6,8 @@ import 'package:QuickCab/Screens/profile_module/model/logout_model.dart';
 import 'package:QuickCab/Screens/profile_module/model/profile_details_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image/image.dart' as img;
@@ -15,6 +17,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/api_manager.dart';
 import '../../../notificaton/notifications_services.dart';
@@ -37,6 +40,81 @@ class ProfileController extends GetxController {
 
   /// Account Section
   var documentsStatus = "Incomplete".obs;
+
+  /// Location Section
+  RxBool isMyLocationEnabled = false.obs;
+  RxString currentCity = ''.obs;
+
+  Future<void> fetchCurrentLocation() async {
+    try {
+      // Step 1: Check if location services are enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        Get.snackbar(
+          'Location Disabled',
+          'Please enable location services in your device settings.',
+        );
+        return;
+      }
+
+      // Step 2: Check current permission
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        // Step 3: Request permission
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          Get.snackbar(
+            'Permission Denied',
+            'Location permission is required to get your current city.',
+          );
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        // Step 4: Permission denied forever → open settings
+        Get.snackbar(
+          'Permission Denied Forever',
+          'Please enable location access from app settings.',
+        );
+        await Geolocator.openAppSettings();
+        return;
+      }
+
+      // Step 5: Permission granted → get current position
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      // Step 6: Reverse geocode to get city name
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      final place = placemarks.first;
+
+      currentCity.value = (place.postalCode ?? '')
+          .replaceAll(RegExp(r'(, )+'), ', ') // clean extra commas
+          .replaceAll(RegExp(r'(, )*$'), '') // trim trailing commas
+          .trim();
+
+      debugPrint("📍 Current City: ${currentCity.value}");
+    } catch (e) {
+      debugPrint('❌ Error fetching location: $e');
+      Get.snackbar('Error', 'Unable to fetch current location.');
+    }
+  }
+
+  Future<void> saveLocationPreference(bool val) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isMyLocationEnabled', val);
+  }
+
+  Future<void> loadLocationPreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    isMyLocationEnabled.value = prefs.getBool('isMyLocationEnabled') ?? false;
+  }
 
   /// Support Section
   var selectedLanguage = "English".obs;
@@ -140,6 +218,8 @@ class ProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    loadLocationPreference();
+
     // Load saved language if exists
     getProfileDetails();
     dashboardController.checkSubscriptionStatus();
@@ -173,12 +253,12 @@ class ProfileController extends GetxController {
   final RxList<DocItem> reUploadDocs = <DocItem>[].obs;
 
   /// pick from Camera/Gallery/Files
-  Future<void> uploadDoc(int index, UploadSource source) async {
+  Future<void> uploadDoc(UploadSource source, String title) async {
     try {
       isDocLoading.value = true;
 
       final picker = ImagePicker();
-      final pickedFile;
+      XFile? pickedFile;
 
       switch (source) {
         case UploadSource.camera:
@@ -191,37 +271,71 @@ class ProfileController extends GetxController {
 
       if (pickedFile == null) return;
 
-      selectedFile.value = File(pickedFile.path);
-
-      if (selectedFile.value == null) {
-        throw Exception("No picture selected.");
+      // Save the picked file to app-local directory and use that path
+      final savedPath = await _copyPickedFileToAppDir(pickedFile);
+      if (savedPath == null) {
+        throw Exception("Failed to save picked file.");
       }
 
-      // Use pickedFile.path directly instead of savedPath
-      final filePath = pickedFile.path;
-      final fileName = pickedFile.name; // requires image_picker 1.0.0+ (supports .name)
+      selectedFile.value = File(savedPath);
+      final filePath = savedPath;
+      final fileName = pickedFile.name;
 
-      // ✅ Update your model safely
-      reUploadDocs[index] = reUploadDocs[index].copyWith(
-        filePath: filePath,
-        fileName: fileName,
-        status: DocStatus.verified,
-        date: DateTime.now(),
-      );
+      // Update existing DocItem or add a new one
+      final existingIndex = reUploadDocs.indexWhere((d) => d.title?.trim() == title.trim());
+
+      if (existingIndex != -1) {
+        reUploadDocs[existingIndex] = reUploadDocs[existingIndex].copyWith(
+          filePath: filePath,
+          fileName: fileName,
+          status: DocStatus.verified,
+          date: DateTime.now(),
+        );
+      } else {
+        reUploadDocs.add(
+          DocItem(
+            title: title,
+            filePath: filePath,
+            fileName: fileName,
+            status: DocStatus.verified,
+            date: DateTime.now(),
+          ),
+        );
+      }
+
+      // Force notify listeners so UI updates immediately
+      reUploadDocs.refresh();
     } catch (e, st) {
       debugPrint('Upload failed: $e\n$st');
+      ShowSnackBar.error(message: "Upload failed. Please try again.");
     } finally {
       isDocLoading.value = false;
     }
   }
 
-  void openUploadSheet(int index, bool? onlyTakePhoto) {
+  /// Copies picked XFile to app documents directory and returns the saved path.
+  Future<String?> _copyPickedFileToAppDir(XFile pickedFile) async {
+    try {
+      final file = File(pickedFile.path);
+      if (!await file.exists()) return null;
+      final dir = await getApplicationDocumentsDirectory();
+      final ext = pickedFile.path.split('.').last;
+      final newPath = "${dir.path}/${DateTime.now().millisecondsSinceEpoch}.$ext";
+      final newFile = await file.copy(newPath);
+      return newFile.path;
+    } catch (e, st) {
+      debugPrint('Copy picked file failed: $e\n$st');
+      return null;
+    }
+  }
+
+  void openUploadSheet(String title, bool? onlyTakePhoto) {
     Get.bottomSheet(
       UploadSheet(
         onlyTakePhoto: onlyTakePhoto,
         onPick: (src) async {
           Get.back();
-          await uploadDoc(index, src);
+          await uploadDoc(src, title);
         },
       ),
       backgroundColor: ColorsForApp.whiteColor,
@@ -235,77 +349,50 @@ class ProfileController extends GetxController {
   Future<bool> reuploadDocumentsApi() async {
     try {
       isLoading.value = true;
-
-      // 1️⃣ Prepare text params
-      final Map<String, dynamic> params = {};
-
-      // 2️⃣ Prepare byteFiles map
+      final params = <String, dynamic>{};
       final byteFiles = <String, List<int>>{};
 
-      /// Helper: compress image and add to byteFiles
       Future<void> addCompressedByteFile(String key, String? path) async {
-        if (path != null && path.isNotEmpty) {
-          final localPath = await saveFileToLocalDir(path); // ✅ always permanent
-          if (localPath != null) {
-            final file = File(localPath);
-            if (await file.exists()) {
-              final bytes = await file.readAsBytes();
-              final compressedBytes = await compressImage(bytes);
-              byteFiles[key] = compressedBytes;
-            }
+        if (path != null && path.isNotEmpty && !path.startsWith('http')) {
+          final file = File(path);
+          if (await file.exists()) {
+            final bytes = await file.readAsBytes();
+            final compressedBytes = await compressImage(bytes);
+            byteFiles[key] = compressedBytes;
+            print("✅ Added $key (${compressedBytes.length} bytes)");
+          } else {
+            print("⚠️ File not found: $path");
           }
         }
       }
 
-      // 3️⃣ Add all docs
-      await addCompressedByteFile(
-        'documentImage',
-        reUploadDocs.firstWhereOrNull((d) => d.title == "Aadhar Card Front")?.filePath,
-      );
-      await addCompressedByteFile(
-        'documentImageBack',
-        reUploadDocs.firstWhereOrNull((d) => d.title == "Aadhar Card Back")?.filePath,
-      );
-      await addCompressedByteFile(
-        'profileImgUrl',
-        reUploadDocs.firstWhereOrNull((d) => d.title == "Selfie Photo")?.filePath,
-      );
-      await addCompressedByteFile(
-        'shopImgUrl',
-        reUploadDocs.firstWhereOrNull((d) => d.title == "Shop Photo")?.filePath,
-      );
-      await addCompressedByteFile(
-        'vehicleImgUrl',
-        reUploadDocs.firstWhereOrNull((d) => d.title == "Vehicle Photo")?.filePath,
-      );
-      await addCompressedByteFile(
-        'licenseImgUrl',
-        reUploadDocs.firstWhereOrNull((d) => d.title == "Driving License")?.filePath,
-      );
+      await addCompressedByteFile('documentImage', reUploadDocs.firstWhereOrNull((d) => d.title == "Aadhar Card Front")?.filePath);
+      await addCompressedByteFile('documentImageBack', reUploadDocs.firstWhereOrNull((d) => d.title == "Aadhar Card Back")?.filePath);
+      await addCompressedByteFile('profileImgUrl', reUploadDocs.firstWhereOrNull((d) => d.title == "Selfie Photo")?.filePath);
+      await addCompressedByteFile('shopImgUrl', reUploadDocs.firstWhereOrNull((d) => d.title == "Shop Photo")?.filePath);
+      await addCompressedByteFile('vehicleImgUrl', reUploadDocs.firstWhereOrNull((d) => d.title == "Vehicle Photo")?.filePath);
+      await addCompressedByteFile('licenseImgUrl', reUploadDocs.firstWhereOrNull((d) => d.title == "Driving License")?.filePath);
 
-      // 4️⃣ Debug prints
-      print("📌 Params:");
-      params.forEach((k, v) => print("   $k: $v"));
+      if (byteFiles.isEmpty) {
+        ShowSnackBar.error(message: "Please reupload at least one document.");
+        return false;
+      }
 
-      print("📌 Byte files:");
-      byteFiles.forEach((k, v) => print("   $k: ${v.length} bytes"));
-
-      // 5️⃣ Call repository with byteFiles
       final response = await profileRepository.reuploadDocuments(
         params: params,
-        byteFiles: byteFiles.isEmpty ? null : byteFiles,
+        byteFiles: byteFiles,
       );
 
-      // 6️⃣ Handle response
       if (response.status == true) {
-        ShowSnackBar.success(message: "Images uploaded successful!");
+        ShowSnackBar.success(message: "Documents uploaded successfully!");
+        await getProfileDetails();
         return true;
       } else {
-        ShowSnackBar.error(message: response.message ?? "upload failed.");
+        ShowSnackBar.error(message: response.message ?? "Upload failed.");
         return false;
       }
     } catch (e, st) {
-      debugPrint('"Images uploaded error: $e\n$st');
+      debugPrint('❌ Upload error: $e\n$st');
       ShowSnackBar.error(message: e.toString());
       return false;
     } finally {

@@ -1,3 +1,4 @@
+import 'package:QuickCab/Screens/home_page_module/controller/home_controller.dart';
 import 'package:QuickCab/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,6 +22,7 @@ class ProfileScreen extends StatelessWidget {
 
   final ProfileController controller = Get.find();
   final DashboardController dashboardController = Get.find();
+  final HomeController homeController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +51,65 @@ class ProfileScreen extends StatelessWidget {
                 SettingsCard(
                   sectionTitle: "Account",
                   items: [
+                    SettingItem(
+                      icon: Icons.location_on_outlined,
+                      title: "Show leads from My Location",
+                      hasSwitch: true,
+                      switchValue: controller.isMyLocationEnabled.value,
+                      toggleValue: controller.isMyLocationEnabled,
+                      onToggle: (val) async {
+                        // Immediately update toggle visually
+                        controller.isMyLocationEnabled.value = val;
+
+                        if (val) {
+                          // Show loader
+                          Get.dialog(
+                            const Center(child: CircularProgressIndicator()),
+                            barrierDismissible: false,
+                          );
+
+                          // Fetch current location (fills controller.currentCity)
+                          await controller.fetchCurrentLocation();
+
+                          // Close loader
+                          Get.back();
+
+                          // If fetch failed or empty, inform user
+                          final current = controller.currentCity.value.trim();
+                          if (current.isEmpty) {
+                            ShowSnackBar.error(message: "Unable to fetch current city. Please try again.");
+                            // also persist the OFF state
+                            await controller.saveLocationPreference(false);
+                            controller.isMyLocationEnabled.value = false;
+                            return;
+                          }
+
+                          // Persist preference
+                          await controller.saveLocationPreference(true);
+                          // Update home controller text field AND pass the location explicitly to the API call
+                          homeController.fromLocationController.text = current;
+
+                          // ✅ Tell HomeScreen to reload
+                          homeController.globalActiveLeadsPagingController?.refresh();
+                          // Fetch leads passing the explicit location to avoid race conditions
+                          await homeController.fetchActiveLeads(1,
+                              fromLocation: current, toLocation: homeController.toLocationController.text.trim());
+                        } else {
+                          // Turn OFF: clear filter or reload unfiltered leads
+                          await controller.saveLocationPreference(false);
+                          homeController.fromLocationController.clear();
+                          homeController.globalActiveLeadsPagingController?.refresh();
+
+                          await homeController.fetchActiveLeads(1,
+                              fromLocation: '', toLocation: homeController.toLocationController.text.trim());
+                        }
+
+                        // ensure UI shows home/dashboard
+                        dashboardController.currentIndex.value = 0;
+
+                        debugPrint("📍 Location filter toggled: $val — city: ${controller.currentCity.value}");
+                      },
+                    ),
                     SettingItem(
                       icon: Icons.description_outlined,
                       title: "documents".tr,

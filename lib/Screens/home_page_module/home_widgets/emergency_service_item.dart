@@ -49,8 +49,8 @@ class EmergencyServicesSection extends StatelessWidget {
                   },
                   child: buildServiceCard(
                     Image.asset(
-                      Assets.iconsPuncture,
-                      height: 32,
+                      Assets.imagesPunctureRb,
+                      height: 40,
                     ),
                     "puncture".tr,
                     Colors.green.shade50,
@@ -63,8 +63,8 @@ class EmergencyServicesSection extends StatelessWidget {
                   },
                   child: buildServiceCard(
                       Image.asset(
-                        Assets.iconsHospital,
-                        height: 32,
+                        Assets.imagesHospitalsRb,
+                        height: 40,
                       ),
                       "Hospital",
                       Colors.blue.shade50,
@@ -76,8 +76,8 @@ class EmergencyServicesSection extends StatelessWidget {
                   },
                   child: buildServiceCard(
                       Image.asset(
-                        Assets.iconsHotel,
-                        height: 32,
+                        Assets.imagesHotelsRb,
+                        height: 40,
                       ),
                       "Hotel",
                       Colors.red.shade50,
@@ -89,8 +89,8 @@ class EmergencyServicesSection extends StatelessWidget {
                   },
                   child: buildServiceCard(
                       Image.asset(
-                        Assets.iconsCab,
-                        height: 32,
+                        Assets.imagesCabImage,
+                        height: 40,
                       ),
                       "Cab",
                       Colors.orange.shade50,
@@ -102,8 +102,8 @@ class EmergencyServicesSection extends StatelessWidget {
                   },
                   child: buildServiceCard(
                       Image.asset(
-                        Assets.iconsDriver,
-                        height: 32,
+                        Assets.imagesDriverImage,
+                        height: 40,
                       ),
                       "Driver",
                       Colors.lightGreen.shade50,
@@ -115,8 +115,8 @@ class EmergencyServicesSection extends StatelessWidget {
                   },
                   child: buildServiceCard(
                       Image.asset(
-                        Assets.iconsFuel,
-                        height: 32,
+                        Assets.imagesFuelsRb,
+                        height: 40,
                       ),
                       "Fuel",
                       Colors.red.shade50,
@@ -128,8 +128,8 @@ class EmergencyServicesSection extends StatelessWidget {
                   },
                   child: buildServiceCard(
                       Image.asset(
-                        Assets.iconsTowing,
-                        height: 32,
+                        Assets.imagesTowingRb,
+                        height: 40,
                       ),
                       "Towing",
                       Colors.blueGrey.shade50,
@@ -141,8 +141,8 @@ class EmergencyServicesSection extends StatelessWidget {
                   },
                   child: buildServiceCard(
                       Image.asset(
-                        Assets.iconsCarSell,
-                        height: 32,
+                        Assets.imagesCarRepairingRb,
+                        height: 40,
                       ),
                       "Car Sell",
                       Colors.blue.shade50,

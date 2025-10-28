@@ -5,6 +5,7 @@ import '../../../api/api_manager.dart';
 import '../../history_module/lead_history_model.dart';
 import '../model/active_lead_model.dart';
 import '../model/all_live_lead_model.dart';
+import '../model/news_model.dart';
 
 class ActiveLeadRepository {
   final APIManager apiManager;
@@ -32,6 +33,14 @@ class ActiveLeadRepository {
       url: '/advertise/get',
     );
     var response = BannerModel.fromJson(jsonData);
+    return response;
+  }
+
+  Future<NewsModel> fetchNewsApiCall() async {
+    var jsonData = await apiManager.getAPICall(
+      url: '/announcements/all',
+    );
+    var response = NewsModel.fromJson(jsonData);
     return response;
   }
 

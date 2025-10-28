@@ -67,8 +67,14 @@ class PostController extends GetxController {
   };
 
   RxString selectedTollType = "".obs;
+  RxString selectedFuelType = "".obs;
 
   RxList<String> tollTypeList = <String>['Included', 'Excluded'].obs;
+
+  /// For selection of Carrier
+  RxString selectedCarrierType = "".obs;
+
+  RxList<String> carrierTypeList = <String>['Without Carrier', 'With Carrier'].obs;
 
   RxList<String> rentalDurationList = <String>[
     '4 hours 40 km',
@@ -196,10 +202,22 @@ class PostController extends GetxController {
   }
 
   Future<void> selectFromTime(BuildContext context) async {
+    // Get current time
+    final now = TimeOfDay.now();
+    final nowDateTime = DateTime.now();
+
+    // Add 5 minutes to current time
+    final fiveMinsLater = nowDateTime.add(const Duration(minutes: 5));
+
+    // Convert that to TimeOfDay
+    final initialTime = TimeOfDay.fromDateTime(fiveMinsLater);
+
+    // Show picker with 5-mins-ahead initial time
     final picked = await AppDateTimePicker.pickTime(
       context,
-      initialTime: TimeOfDay.now(),
+      initialTime: initialTime,
     );
+
     if (picked != null) {
       selectedTime.value = picked;
     }
@@ -208,57 +226,106 @@ class PostController extends GetxController {
   var currentStep = 0.obs;
   var isFormValid = false.obs; // this will control the Next button enabled/disabled
 
+  bool validatePickupAndDrop() {
+    final pickup = pickupController.text.replaceAll(RegExp(r'\s+'), ' ').trim();
+    final drop = dropController.text.replaceAll(RegExp(r'\s+'), ' ').trim();
+
+    if (pickup.isEmpty) {
+      ShowSnackBar.info(title: "Pickup Location", message: "Please enter a valid pick-up location.");
+      pickupFocus.requestFocus();
+      return false;
+    }
+
+    if (drop.isEmpty) {
+      ShowSnackBar.info(title: "Drop Location", message: "Please enter a valid drop-off location.");
+      dropFocus.requestFocus();
+      return false;
+    }
+
+    if (pickup == drop) {
+      ShowSnackBar.info(title: "Pickup & Drop", message: "Pickup and drop-off locations cannot be the same.");
+      return false;
+    }
+
+    return true; // ✅ valid case
+  }
+
   bool validateTripInformation() {
+    // Validate Toll Type
     if (selectedTollType.value.isEmpty) {
       ShowSnackBar.info(title: 'Toll', message: "Please select a Toll Type");
       return false;
     }
 
+    // Validate Carrier Type
+    if (selectedCarrierType.value.isEmpty) {
+      ShowSnackBar.info(title: 'Carrier', message: "Please select a carrier Type");
+      return false;
+    }
+
+    //  Validate Vehicle Type (main or subtype)
+    final int? idx = selectedVehicleIndex.value;
+    if (idx == null) {
+      ShowSnackBar.info(title: 'Vehicle Type', message: "Please select a Vehicle Type");
+      return false;
+    }
+
+    // Check SubType if applicable
+    final selectedVehicle = vehicles[idx];
+    final vehicleName = selectedVehicle["name"];
+    final hasSubTypes = vehicleSubTypes.containsKey(vehicleName);
+    if (hasSubTypes && selectedSubTypeIndex.value == null) {
+      ShowSnackBar.info(title: 'Vehicle Subtype', message: "Please select a Vehicle Subtype");
+      return false;
+    }
+
+    //  Validate Seat Configuration (only if required)
+    final seatConfig = selectedVehicle["seatConfig"] == true || selectedVehicle["seatConfig"].toString() == 'true';
+    if (seatConfig && selectedSeatConfig.value == null) {
+      ShowSnackBar.info(title: 'Seat Configuration', message: "Please select a Seat Configuration");
+      return false;
+    }
+
+    // Validate Carrier Type
+    if (selectedFuelType.value.isEmpty) {
+      ShowSnackBar.info(title: 'Fuel Type', message: "Please select a fuel Type");
+      return false;
+    }
+
+    // Validate Trip Type and Dates
     if (tripType.value == 0 || tripType.value == 2) {
-      // Validate Date
+      // One-way or Rental
       if (selectedDate.value == null) {
-        ShowSnackBar.info(title: 'Date', message: "Please select a date");
-        return false;
-      }
-      // Validate Time
-      if (selectedTime.value == null) {
-        ShowSnackBar.info(title: 'Time', message: "Please select a time");
+        ShowSnackBar.info(title: 'Date', message: "Please select a Date");
         return false;
       }
 
-      if (tripType.value == 2) {
-        // Validate rental duration
-        if (selectedRentalDuration.value.isEmpty) {
-          ShowSnackBar.info(title: 'Rental Duration', message: "Please select rental duration");
-          return false;
-        }
+      if (tripType.value == 2 && selectedRentalDuration.value.isEmpty) {
+        ShowSnackBar.info(title: 'Rental Duration', message: "Please select a Rental Duration");
+        return false;
       }
     }
 
     if (tripType.value == 1) {
-      // Validate start Date
+      // Round Trip
       if (selectedStartDate.value == null) {
-        ShowSnackBar.info(title: 'Start Date', message: "Please select Start date");
+        ShowSnackBar.info(title: 'Start Date', message: "Please select a Start Date");
         return false;
       }
-      // Validate end date
+
       if (selectedEndDate.value == null) {
-        ShowSnackBar.info(title: 'End Date', message: "Please select End Date");
+        ShowSnackBar.info(title: 'End Date', message: "Please select an End Date");
         return false;
       }
     }
 
-    // Validate Seat Selection (if seatConfig true)
-    final int? idx = selectedVehicleIndex.value;
-    if (idx != null && vehicles[idx]["seatConfig"] == true) {
-      if (selectedSeatConfig.value == null) {
-        ShowSnackBar.info(title: 'Select Seat', message: "Please select a Seat Configuration");
-
-        return false;
-      }
+    // Validate Time
+    if (selectedTime.value == null) {
+      ShowSnackBar.info(title: 'Time', message: "Please select a time");
+      return false;
     }
 
-    return true;
+    return true; // All Validations passed
   }
 
   void nextStep() {
@@ -412,7 +479,7 @@ class PostController extends GetxController {
 
   /// Called when pickup text changes
   void onPickupChanged(String val) {
-    final query = val.trim();
+    final query = val.replaceAll(RegExp(r'\s+'), ' ').trim();
 
     if (query.isEmpty) {
       // ✅ Cancel old debounce task
@@ -421,7 +488,7 @@ class PostController extends GetxController {
       showPickupSuggestions.value = false;
     } else {
       _pickupDebouncer.run(() {
-        final latest = pickupController.text.trim();
+        final latest = pickupController.text.replaceAll(RegExp(r'\s+'), ' ').trim();
         if (latest.isNotEmpty) {
           fetchLocations(latest, isPickup: true);
         }
@@ -431,7 +498,7 @@ class PostController extends GetxController {
 
   /// Called when drop text changes
   void onDropChanged(String val) {
-    final query = val.trim();
+    final query = val.replaceAll(RegExp(r'\s+'), ' ').trim();
 
     if (query.isEmpty) {
       _dropDebouncer.cancel();
@@ -439,7 +506,7 @@ class PostController extends GetxController {
       showDropSuggestions.value = false;
     } else {
       _dropDebouncer.run(() {
-        final latest = dropController.text.trim();
+        final latest = dropController.text.replaceAll(RegExp(r'\s+'), ' ').trim();
         if (latest.isNotEmpty) {
           fetchLocations(latest, isPickup: false);
         }
@@ -505,6 +572,9 @@ class PostController extends GetxController {
   final PostLeadRepository postLeadRepository = PostLeadRepository(APIManager());
 
   Future<void> submitRideLead({bool isLoaderShow = true}) async {
+    if (tripType.value == 1) {
+      selectedDate.value = selectedStartDate.value;
+    }
     final params = {
       "date": selectedDate.value == null ? '' : DateFormat('yyyy-MM-dd').format(selectedDate.value!),
       "time": selectedTime.value == null ? '' : formatTime12Hour(selectedTime.value!),
@@ -516,6 +586,8 @@ class PostController extends GetxController {
       "add_on": "",
       "fare": int.tryParse(fareController.text.trim()) ?? 0,
       "cab_number": "",
+      "fuel_type": selectedFuelType.value.isNotEmpty ? selectedFuelType.value : 'Petrol',
+      "carrier": selectedCarrierType.value.isNotEmpty ? selectedCarrierType.value : "With Carrier",
       "toll_tax": selectedTollType.value.isNotEmpty ? selectedTollType.value : '',
       "start_date": selectedStartDate.value == null ? null : DateFormat('yyyy-MM-dd').format(selectedStartDate.value!),
       "end_date": selectedEndDate.value == null ? null : DateFormat('yyyy-MM-dd').format(selectedEndDate.value!),
@@ -523,7 +595,7 @@ class PostController extends GetxController {
       "vendor_contact": "",
       "trip_type": tripType.value,
     };
-    print("-------------------------------->${params}");
+    debugPrint("-------------------------------->$params");
 
     try {
       isLoading.value = true;

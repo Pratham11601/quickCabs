@@ -15,11 +15,6 @@ class DashboardController extends GetxController {
     currentIndex.value = index;
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-  }
-
   RxBool isSubscribed = false.obs;
   Rx<SubscriptionStatusModel> subscriptionStatusModel = SubscriptionStatusModel().obs;
   RxString subscriptionPlan = "".obs;

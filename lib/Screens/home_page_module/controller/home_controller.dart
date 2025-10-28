@@ -8,11 +8,13 @@ import 'package:QuickCab/Screens/home_page_module/repository/home_repository.dar
 import 'package:QuickCab/widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../api/api_manager.dart';
 import '../../../utils/date_time_picker.dart';
+import '../../profile_module/controller/profile_controller.dart';
 import '../home_widgets/accept_lead_popup.dart';
 import '../model/active_lead_model.dart';
 import '../model/all_live_lead_model.dart';
@@ -27,7 +29,9 @@ class HomeController extends GetxController {
   Timer? countdownTimer;
 
   RxInt userId = 0.obs;
-
+  final ProfileController profileController = Get.find<ProfileController>();
+// make paging controller accessible to other screens
+  PagingController<int, Post>? globalActiveLeadsPagingController;
   void start24HourCountdown(String updatedAt) {
     final updatedAtTime = DateTime.parse(updatedAt).toLocal();
     countdownTimer?.cancel(); // Cancel old timer if already running
@@ -62,6 +66,7 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     fetchBanners();
+    fetchNews();
   }
 
   /// Emergency services list (can come from API later)
@@ -277,6 +282,8 @@ class HomeController extends GetxController {
       '*Car*: ${lead.carModel ?? '-'}\n\n'
       '*Trip Type*: ${tripTypeText ?? '-'}\n\n'
       '*Toll Tax*: ${lead.tollTax ?? '-'}\n\n'
+      '*Carrier*: ${lead.carrier ?? '-'}\n\n'
+      '*Fuel Type*: ${lead.fuelType ?? '-'}\n\n'
       '${rentalDurationSection.isNotEmpty ? rentalDurationSection : ""}'
       '*Amount*: ₹${lead.fare ?? '-'}\n\n'
       '*Contact*: ${lead.vendorContact ?? '-'}',
@@ -312,6 +319,39 @@ class HomeController extends GetxController {
       debugPrint("Error fetching banners: $e");
     } finally {
       isBannerLoading(false);
+    }
+  }
+
+  /// Fetch the scrolling news announcement
+
+  var isNewsLoading = true.obs;
+  var announcement = ''.obs; // to store the announcement message
+  void fetchNews() async {
+    try {
+      isNewsLoading(true);
+
+      final response = await activeLeadRepository.fetchNewsApiCall();
+
+      // Example: response.data contains the JSON response body
+      if (response != null && response.data != null) {
+        final data = response.data;
+
+        if (response.success == true) {
+          announcement.value = data!.announcement.toString() ?? '';
+          debugPrint("📰 Announcement fetched: ${announcement.value}");
+        } else {
+          debugPrint("⚠️ No announcement data found.");
+          announcement.value = '';
+        }
+      } else {
+        debugPrint("⚠️ Empty response from API.");
+        announcement.value = '';
+      }
+    } catch (e) {
+      debugPrint("❌ Error fetching news: $e");
+      announcement.value = '';
+    } finally {
+      isNewsLoading(false);
     }
   }
 
@@ -427,15 +467,25 @@ class HomeController extends GetxController {
 
   ///active api logic method and variables
   RxList<Post> activeLeads = <Post>[].obs;
+  RxList<Post> filteredLeads = <Post>[].obs;
   RxList<Leads> leadsHistory = <Leads>[].obs;
 
-  Future<ActiveLeadModel> fetchActiveLeads(dynamic pageNumber) async {
+  Future<ActiveLeadModel> fetchActiveLeads(
+    dynamic pageNumber, {
+    String? fromLocation,
+    String? toLocation,
+  }) async {
     try {
       isLoadingActiveLeads.value = true;
       errorMsg.value = '';
 
-      final response = await activeLeadRepository.activeLeadApiCall(pageNumber, fromLocationController.text, toLocationController.text);
+      // Use explicit parameters if provided, otherwise fallback to controller's text fields
+      final from = (fromLocation ?? fromLocationController.text ?? '').trim();
+      final to = (toLocation ?? toLocationController.text ?? '').trim();
+
+      final response = await activeLeadRepository.activeLeadApiCall(pageNumber, from, to);
       debugPrint('Fetched leads count: ${response.posts!.length}');
+      activeLeads.clear();
       activeLeads.assignAll(response.posts ?? []);
       return response;
     } catch (e) {
@@ -486,7 +536,7 @@ class HomeController extends GetxController {
 // Update driver availability
   Rx<DriverAvailabilityModel> updateDriverAvailabilityModel = DriverAvailabilityModel().obs;
 
-  Future<bool> updatetDriverAvailability({
+  Future<bool> updateDriverAvailability({
     bool isLoaderShow = true,
     required int status,
     required int leadId,

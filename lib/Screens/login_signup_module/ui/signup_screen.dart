@@ -22,6 +22,7 @@ class _SignupScreenState extends State<SignupScreen> {
     final paddingH = horizontalPadding(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7FA),
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Obx(() {
           return LoadingOverlay(

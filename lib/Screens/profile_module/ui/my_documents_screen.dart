@@ -103,29 +103,60 @@ class MyDocumentsPage extends StatelessWidget {
           children: [
             // Documents list
             Expanded(
-              child: docs.isEmpty
-                  ? const Center(child: Text("No documents uploaded"))
-                  : ListView.separated(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: docs.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final doc = docs[index];
-                        return DocumentCard(
-                          docName: doc["name"] as String,
-                          docStatus: doc["status"] as String,
-                          icon: doc["icon"] as IconData,
-                          documentImageUrl: doc["url"] as String,
-                          reason: '',
-                          docStatusCode: vendor.status,
-                          onReupload: () {
-                            controller.openUploadSheet(index, false);
-                          },
-                        );
-                      },
-                    ),
+              child: Obx(() {
+                final reuploadList = controller.reUploadDocs;
+
+                if (docs.isEmpty && reuploadList.isEmpty) {
+                  return const Center(child: Text("No documents uploaded"));
+                }
+
+                // Make a copy of existing server docs
+                final combinedDocs = List<Map<String, dynamic>>.from(docs);
+
+                // ✅ Replace or append using title-based logic
+                for (final reDoc in reuploadList) {
+                  final matchIndex = combinedDocs.indexWhere(
+                    (d) => (d["name"]?.trim() ?? "") == (reDoc.title?.trim() ?? ""),
+                  );
+
+                  if (matchIndex != -1) {
+                    // ✅ Update correct doc
+                    combinedDocs[matchIndex]["url"] = reDoc.filePath;
+                    combinedDocs[matchIndex]["status"] = "Updated";
+                  } else {
+                    // ✅ Add new doc if not found
+                    combinedDocs.add({
+                      "name": reDoc.title ?? "Document",
+                      "status": "Uploaded",
+                      "icon": Icons.insert_drive_file,
+                      "url": reDoc.filePath,
+                    });
+                  }
+                }
+
+                return ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: combinedDocs.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final doc = combinedDocs[index];
+                    final imageUrl = doc["url"];
+                    final isLocal = imageUrl != null && (imageUrl.startsWith('/') || imageUrl.startsWith('file://'));
+
+                    return DocumentCard(
+                      docName: doc["name"] as String,
+                      docStatus: doc["status"] as String,
+                      icon: doc["icon"] as IconData,
+                      documentImageUrl: imageUrl,
+                      isLocalImage: isLocal,
+                      reason: '',
+                      docStatusCode: vendor.status,
+                      onReupload: () => controller.openUploadSheet(doc["name"], false),
+                    );
+                  },
+                );
+              }),
             ),
-// ✅ Show Proceed button only when KYC is rejected
             if (vendor.status == 2) // assuming 2 = rejected
               Padding(
                 padding: const EdgeInsets.all(12.0),

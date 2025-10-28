@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:marquee/marquee.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -42,7 +43,18 @@ class _HomeScreenState extends State<HomeScreen> {
   late final activeLeadsPagingController = PagingController<int, Post>(
     getNextPageKey: (state) => state.lastPageIsEmpty ? null : state.nextIntPageKey,
     fetchPage: (int pageKey) async {
-      final response = await homeController.fetchActiveLeads(pageKey);
+      // Use current filters explicitly (trim them)
+      final from = homeController.fromLocationController.text.trim();
+      final to = homeController.toLocationController.text.trim();
+
+      debugPrint('📡 Paging fetchPage: page=$pageKey from="$from" to="$to"');
+
+      final response = await homeController.fetchActiveLeads(
+        pageKey,
+        fromLocation: from,
+        toLocation: to,
+      );
+
       final items = response.posts;
       return items ?? [];
     },
@@ -69,14 +81,22 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     callAsyncAPI();
+    homeController.globalActiveLeadsPagingController = activeLeadsPagingController;
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    homeController.globalActiveLeadsPagingController = null;
+    super.dispose();
   }
 
   Future<void> callAsyncAPI() async {
     try {
       // Profile check
       // await homeController.checkProfileCompletion();
-
+      homeController.fetchBanners();
+      homeController.fetchNews();
       await profileController.getProfileDetails();
       homeController.userId.value = profileController.userDetails.value!.id!;
       if (profileController.userDetails.value!.status == 0) {
@@ -262,7 +282,68 @@ class _HomeScreenState extends State<HomeScreen> {
           child: EmergencyServicesSection(),
         ),
       ),
-      SliverToBoxAdapter(child: const SizedBox(height: 16)),
+      SliverToBoxAdapter(child: const SizedBox(height: 8)),
+
+      // News: shimmer during loading or carousel when loaded
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
+          child: Obx(() {
+            if (homeController.isNewsLoading.value) {
+              // 🔄 Shimmer while loading news
+              return Shimmer.fromColors(
+                baseColor: Colors.grey.shade300,
+                highlightColor: Colors.grey.shade100,
+                child: Container(
+                  height: 35,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              );
+            }
+
+            // 📰 No announcement case
+            if (homeController.announcement.value.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            // ✅ Marquee announcement bar
+            return Container(
+              height: 35,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.amber.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                children: [
+                  const Icon(Icons.campaign_outlined, color: Colors.red, size: 22),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Marquee(
+                      text: homeController.announcement.value,
+                      style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: boldFont),
+                      blankSpace: 50.0,
+                      velocity: 40.0,
+                      pauseAfterRound: Duration(seconds: 1),
+                      startPadding: 10.0,
+                      accelerationDuration: Duration(milliseconds: 500),
+                      decelerationDuration: Duration(milliseconds: 500),
+                      decelerationCurve: Curves.easeOut,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ),
+      ),
+
+      SliverToBoxAdapter(child: const SizedBox(height: 8)),
 
       // Banner: shimmer during loading or carousel when loaded
       SliverToBoxAdapter(
@@ -333,6 +414,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }),
         ),
       ),
+
       SliverToBoxAdapter(child: const SizedBox(height: 20)),
 
       // Shared Leads Header + Filter
@@ -499,7 +581,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   'trip_type': lead.tripType,
                   'rental_duration': lead.rentalDuration,
                   'toll_tax': lead.tollTax,
+                  'carrier_type': lead.carrier,
+                  'fuel_type': lead.fuelType,
                   'acceptedBy_fullname': lead.acceptedByFullname,
+                  // 'acceptedByPhone': lead.acceptedByPhone,
                 },
                 // ✅ Accept button logic (subscription-checked)
                 onAccept: () async {
@@ -684,7 +769,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           if (newStatus == 0) {
                             myAvailablityPagingController.refresh();
                           }
-                          await homeController.updatetDriverAvailability(
+                          await homeController.updateDriverAvailability(
                             status: newStatus,
                             leadId: lead.id!,
                             car: lead.car ?? "",

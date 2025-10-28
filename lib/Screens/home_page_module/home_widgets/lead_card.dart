@@ -156,6 +156,10 @@ class LeadCard extends StatelessWidget {
                 _buildTollInfo(),
                 height(1.h),
 
+                /// ---------------- Toll Tax & Rental Duration ----------------
+                _buildCarrierInfo(),
+                height(1.h),
+
                 /// ---------------- Date & Time ----------------
                 _buildDateTime(),
                 height(1.h),
@@ -243,7 +247,7 @@ class LeadCard extends StatelessWidget {
     }
   }
 
-  String _getBookedBy(Map<String, dynamic> lead) {
+  /*String _getBookedBy(Map<String, dynamic> lead) {
     final acceptedBy = lead['acceptedBy'];
     final acceptedByFullname = lead['acceptedBy_fullname'];
     if (acceptedByFullname is String && acceptedByFullname.trim().isNotEmpty) {
@@ -252,6 +256,42 @@ class LeadCard extends StatelessWidget {
     if (acceptedBy is Map && acceptedBy['fullname'] != null) {
       return acceptedBy['fullname'];
     }
+    return 'NA';
+  }*/
+
+  String _getBookedBy(Map<String, dynamic> lead) {
+    final acceptedByFullname = lead['acceptedBy_fullname'];
+    final acceptedByPhone = lead['acceptedBy_phone'];
+    final acceptedBy = lead['acceptedBy']; // fallback for older structure
+
+    String? name;
+    String? phone;
+
+    // ✅ Direct fields (new API)
+    if (acceptedByFullname is String && acceptedByFullname.trim().isNotEmpty) {
+      name = acceptedByFullname.trim();
+    }
+    if (acceptedByPhone is String && acceptedByPhone.trim().isNotEmpty) {
+      phone = acceptedByPhone.trim();
+    }
+
+    // ✅ Fallback: old nested "acceptedBy" map
+    if (name == null && acceptedBy is Map && acceptedBy['fullname'] != null) {
+      name = acceptedBy['fullname'].toString().trim();
+    }
+    if (phone == null && acceptedBy is Map && acceptedBy['phone'] != null) {
+      phone = acceptedBy['phone'].toString().trim();
+    }
+
+    // ✅ Combine smartly
+    if (name != null && phone != null) {
+      return "$name ($phone)";
+    } else if (name != null) {
+      return name;
+    } else if (phone != null) {
+      return phone;
+    }
+
     return 'NA';
   }
 
@@ -377,6 +417,37 @@ class LeadCard extends StatelessWidget {
         ],
       );
 
+  Widget _buildCarrierInfo() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.local_shipping_outlined, size: 16, color: ColorsForApp.blackColor),
+              width(1.w),
+              Expanded(
+                child: Text(
+                  "Carrier - ${lead['carrier_type'] ?? '-'}",
+                  style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                ),
+              ),
+            ],
+          ),
+          height(1.h),
+          Row(
+            children: [
+              Icon(Icons.local_gas_station_outlined, size: 16, color: ColorsForApp.blackColor),
+              width(1.w),
+              Expanded(
+                child: Text(
+                  "Fuel Type - ${lead['fuel_type'] ?? '-'}",
+                  style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+
   Widget _buildDateTime() {
     if (lead['trip_type'] == 1) {
       return Column(
@@ -386,11 +457,23 @@ class LeadCard extends StatelessWidget {
             children: [
               Icon(Icons.calendar_month_outlined, size: 16, color: ColorsForApp.blackColor),
               width(1.w),
-              Text("Start Date - ${lead['start_date'] ?? '-'} |", style: TextHelper.size18),
-              width(1.w),
+              Expanded(
+                child: Text(
+                  "Start Date - ${lead['start_date'] ?? '-'} |",
+                  style: TextHelper.size18,
+                  overflow: TextOverflow.ellipsis, // 👈 Prevents overflow
+                ),
+              ),
+              width(0.5.w),
               Icon(Icons.access_time, size: 16, color: ColorsForApp.blackColor),
               width(1.w),
-              Text("Pick up Time - ${lead['time'] ?? '-'}", style: TextHelper.size18),
+              Flexible(
+                child: Text(
+                  "Pick up Time - ${lead['time'] ?? '-'}",
+                  style: TextHelper.size18,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
           height(1.h),

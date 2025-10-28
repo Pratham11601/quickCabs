@@ -1,4 +1,5 @@
 import 'package:QuickCab/widgets/common_widgets.dart';
+import 'package:QuickCab/widgets/constant_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
@@ -154,17 +155,25 @@ class PostScreen extends StatelessWidget {
                           child: ElevatedButton(
                             onPressed: controller.isFormValid.value
                                 ? () async {
-                                    if (controller.currentStep.value == 2) {
-                                      if (priceFormKey.currentState!.validate()) {
-                                        await controller.submitRideLead();
+                                    // Step 0: Route Details Validation
+                                    if (controller.currentStep.value == 0) {
+                                      if (controller.validatePickupAndDrop()) {
+                                        controller.nextStep();
                                       }
-                                    } else if (controller.currentStep.value == 1) {
-                                      // Trip Info Validation (Date, Time, Seats)
+                                    }
+
+                                    // Step 1: Trip Information Validation
+                                    else if (controller.currentStep.value == 1) {
                                       if (controller.validateTripInformation()) {
                                         controller.nextStep();
                                       }
-                                    } else {
-                                      controller.nextStep();
+                                    }
+
+                                    // Step 2: Final Step (Price Confirmation)
+                                    else if (controller.currentStep.value == 2) {
+                                      if (priceFormKey.currentState!.validate()) {
+                                        await controller.submitRideLead();
+                                      }
                                     }
                                   }
                                 : null,
@@ -479,6 +488,69 @@ class PostScreen extends StatelessWidget {
               }),
             ],
           ),
+          const SizedBox(height: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Carrier Type',
+                style: TextHelper.size19.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont),
+              ),
+              const SizedBox(height: 10),
+              Obx(() {
+                return DropdownButtonFormField<String>(
+                  value: controller.selectedCarrierType.value.isNotEmpty ? controller.selectedCarrierType.value : null, // ✅ fix null safety
+                  icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: ColorsForApp.blackColor.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: ColorsForApp.orange, width: 1),
+                    ),
+                  ),
+                  style: TextHelper.size19.copyWith(
+                    color: ColorsForApp.blackColor,
+                    fontFamily: semiBoldFont,
+                  ),
+                  hint: Text(
+                    'Select Carrier Type',
+                    style: TextHelper.size19.copyWith(
+                      color: ColorsForApp.subTitleColor,
+                      fontFamily: semiBoldFont,
+                    ),
+                  ),
+                  items: controller.carrierTypeList
+                      .map(
+                        (item) => DropdownMenuItem<String>(
+                          value: item,
+                          child: Text(
+                            item,
+                            style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (v) {
+                    if (v != null) {
+                      controller.selectedCarrierType.value = v;
+                      debugPrint("Selected carrier type: ${controller.selectedCarrierType.value}");
+                    }
+                  },
+                );
+              }),
+            ],
+          ),
+          const SizedBox(height: 16),
           Visibility(
             visible: controller.tripType.value == 2,
             child: Column(
@@ -744,6 +816,36 @@ class PostScreen extends StatelessWidget {
             );
           }),
 
+          // Fuel Type Configuration
+          Obx(() {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "fuel_type".tr,
+                  style: TextHelper.size19.copyWith(
+                    color: ColorsForApp.blackColor,
+                    fontFamily: semiBoldFont,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                GridView.count(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                  childAspectRatio: 1.5,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    _fuelOption("CNG", Icons.eco_outlined), // or Icons.eco_outlined
+                    _fuelOption("Petrol", Icons.local_gas_station_outlined),
+                    _fuelOption("Diesel", Icons.oil_barrel_outlined),
+                  ],
+                ),
+              ],
+            );
+          }),
+
           const SizedBox(height: 16),
 
           // Date & Time pickers
@@ -754,7 +856,7 @@ class PostScreen extends StatelessWidget {
                 Expanded(
                   child: GestureDetector(
                     onTap: () => controller.selectFromDate(context),
-                    child: Obx(() => _buildInputBox(
+                    child: Obx(() => buildInputBox(
                           icon: Icons.calendar_today,
                           text: controller.formattedDate,
                         )),
@@ -764,7 +866,7 @@ class PostScreen extends StatelessWidget {
                 Expanded(
                   child: GestureDetector(
                     onTap: () => controller.selectFromTime(context),
-                    child: Obx(() => _buildInputBox(
+                    child: Obx(() => buildInputBox(
                           icon: Icons.access_time,
                           text: controller.formattedTime(context),
                         )),
@@ -777,66 +879,48 @@ class PostScreen extends StatelessWidget {
           // Dates pickers
           Visibility(
             visible: controller.tripType.value == 1,
-            child: Column(
-              children: [
-                Row(
+            child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Start Date",
-                          style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor),
-                        ),
-                        SizedBox(height: 1.h),
-                        GestureDetector(
+                    Flexible(
+                      flex: 1,
+                      child: Obx(
+                        () => buildDateColumn(
+                          title: "Start Date",
+                          icon: Icons.calendar_today,
                           onTap: () => controller.selectStartDate(context),
-                          child: Obx(() => _buildInputBox(
-                                icon: Icons.calendar_today,
-                                text: controller.formattedStartDate,
-                              )),
+                          text: controller.formattedStartDate,
                         ),
-                      ],
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Pick up Time",
-                          style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor),
-                        ),
-                        SizedBox(height: 1.h),
-                        GestureDetector(
+                    SizedBox(width: 2.w),
+                    Flexible(
+                      flex: 1,
+                      child: Obx(
+                        () => buildDateColumn(
+                          title: "Pick up Time",
+                          icon: Icons.access_time,
                           onTap: () => controller.selectFromTime(context),
-                          child: Obx(() => _buildInputBox(
-                                icon: Icons.access_time,
-                                text: controller.formattedTime(context),
-                              )),
+                          text: controller.formattedTime(context),
                         ),
-                      ],
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "End Date",
-                          style: TextHelper.size17.copyWith(fontFamily: semiBoldFont, color: ColorsForApp.blackColor),
-                        ),
-                        SizedBox(height: 1.h),
-                        GestureDetector(
+                    SizedBox(width: 2.w),
+                    Flexible(
+                      flex: 1,
+                      child: Obx(
+                        () => buildDateColumn(
+                          title: "End Date",
+                          icon: Icons.calendar_today,
                           onTap: () => controller.selectEndDate(context),
-                          child: Obx(() => _buildInputBox(
-                                icon: Icons.calendar_today,
-                                text: controller.formattedEndDate,
-                              )),
+                          text: controller.formattedEndDate,
                         ),
-                      ],
+                      ),
                     ),
                   ],
-                ),
-              ],
-            ),
+                )),
           ),
         ],
       ),
@@ -905,20 +989,30 @@ class PostScreen extends StatelessWidget {
     });
   }
 
-  // Simple input-like box for date/time display (kept local for styling)
-  Widget _buildInputBox({required IconData icon, required String text}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300, width: 2),
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
+  // Fuel option
+  Widget _fuelOption(String label, IconData icon) {
+    final isSelected = controller.selectedFuelType.value == label;
+
+    return GestureDetector(
+      onTap: () => controller.selectedFuelType.value = label,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue.shade50 : Colors.white,
+          border: Border.all(color: isSelected ? Colors.blue : Colors.grey.shade300, width: 2),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: ColorsForApp.colorBlue),
+              height(0.5.h),
+              Text(label, style: TextHelper.size18),
+            ],
+          ),
+        ),
       ),
-      child: Row(children: [
-        Icon(icon, color: ColorsForApp.primaryColor),
-        const SizedBox(width: 8),
-        Text(text, style: TextHelper.size18.copyWith(color: ColorsForApp.blackColor, fontFamily: semiBoldFont)),
-      ]),
     );
   }
 

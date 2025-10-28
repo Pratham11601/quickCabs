@@ -72,12 +72,15 @@ class Post {
   String? startDate;
   String? endDate;
   String? tollTax;
+  String? carrier;
+  String? fuelType;
   String? vendorFullname;
   String? vendorEmail;
   String? vendorCity;
   String? profileImgUrl;
   String? acceptedByFullname;
   String? acceptedByEmail;
+  String? acceptedByPhone;
 
   Post(
       {this.id,
@@ -105,12 +108,15 @@ class Post {
       this.startDate,
       this.endDate,
       this.tollTax,
+      this.carrier,
+      this.fuelType,
       this.vendorFullname,
       this.vendorEmail,
       this.vendorCity,
       this.profileImgUrl,
       this.acceptedByFullname,
-      this.acceptedByEmail});
+      this.acceptedByEmail,
+      this.acceptedByPhone});
 
   Post.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -138,12 +144,15 @@ class Post {
     startDate = json['start_date'];
     endDate = json['end_date'];
     tollTax = json['toll_tax'];
+    carrier = json['carrier'];
+    fuelType = json['fuel_type'];
     vendorFullname = json['vendor_fullname'];
     vendorEmail = json['vendor_email'];
     vendorCity = json['vendor_city'];
     profileImgUrl = json['profileImgUrl'];
     acceptedByFullname = json['acceptedBy_fullname'];
     acceptedByEmail = json['acceptedBy_email'];
+    acceptedByPhone = json['acceptedBy_phone'];
   }
 
   Map<String, dynamic> toJson() {
@@ -173,12 +182,15 @@ class Post {
     data['start_date'] = startDate;
     data['end_date'] = endDate;
     data['toll_tax'] = tollTax;
+    data['carrier'] = carrier;
+    data['fuel_type'] = fuelType;
     data['vendor_fullname'] = vendorFullname;
     data['vendor_email'] = vendorEmail;
     data['vendor_city'] = vendorCity;
     data['profileImgUrl'] = profileImgUrl;
     data['acceptedBy_fullname'] = acceptedByFullname;
     data['acceptedBy_email'] = acceptedByEmail;
+    data['acceptedBy_phone'] = acceptedByPhone;
     return data;
   }
 }

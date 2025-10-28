@@ -50,6 +50,8 @@ class Leads {
   String? vendorContact;
   String? vendorCat;
   int? tripType;
+  String? carrier;
+  String? fuelType;
   String? otp;
   int? acceptedById;
   String? leadStatus;
@@ -79,6 +81,8 @@ class Leads {
       this.vendorContact,
       this.vendorCat,
       this.tripType,
+      this.carrier,
+      this.fuelType,
       this.otp,
       this.acceptedById,
       this.leadStatus,
@@ -113,6 +117,8 @@ class Leads {
     leadStatus = json['lead_status'];
     rentalDuration = json['rental_duration'];
     tollTax = json['toll_tax'];
+    carrier = json['carrier'];
+    fuelType = json['fuel_type'];
     startDate = json['start_date'];
     endDate = json['end_date'];
     createdAt = json['createdAt'];
@@ -144,6 +150,8 @@ class Leads {
     data['lead_status'] = leadStatus;
     data['rental_duration'] = rentalDuration;
     data['toll_tax'] = tollTax;
+    data['carrier'] = carrier;
+    data['fuel_type'] = fuelType;
     data['start_date'] = startDate;
     data['end_date'] = endDate;
     data['createdAt'] = createdAt;
