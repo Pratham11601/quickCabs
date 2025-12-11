@@ -35,7 +35,7 @@ android {
 
     defaultConfig {
         applicationId = "com.quickcabpune.quickcab"
-        minSdk = 23
+        minSdkVersion = flutter.minSdkVersion
         targetSdk = 36
 //        ndkVersion "28.0.130"
         versionCode = flutter.versionCode

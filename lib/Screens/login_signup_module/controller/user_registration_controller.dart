@@ -487,19 +487,24 @@ class UserRegistrationController extends GetxController {
   }
 
   void openUploadSheet(int index, bool? onlyTakePhoto) {
-    Get.bottomSheet(
-      UploadSheet(
-        onlyTakePhoto: onlyTakePhoto,
-        onPick: (src) async {
-          Get.back();
-          await uploadDoc(index, src);
-        },
-      ),
+    showModalBottomSheet(
+      context: Get.context!,
       backgroundColor: ColorsForApp.whiteColor,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      builder: (context) {
+        return SafeArea(
+          child: UploadSheet(
+            onlyTakePhoto: onlyTakePhoto,
+            onPick: (src) async {
+              Navigator.pop(context);
+              await uploadDoc(index, src);
+            },
+          ),
+        );
+      },
     );
   }
 }

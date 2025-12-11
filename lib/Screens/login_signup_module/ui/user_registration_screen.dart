@@ -11,25 +11,33 @@ import '../controller/user_registration_controller.dart';
 class UserRegistrationScreen extends StatelessWidget {
   UserRegistrationScreen({super.key});
   final UserRegistrationController controller = Get.put(UserRegistrationController());
+
   final GlobalKey<FormState> userDetailsFormKey = GlobalKey<FormState>();
-  final ScrollController scrollController = ScrollController();
-  // 🔑 Keys for each field
+
+  // Keys for error scroll
+  final GlobalKey<FormFieldState> nameKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> aadhaarKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> carNumberKey = GlobalKey<FormFieldState>();
-  final GlobalKey<FormFieldState> emailKey = GlobalKey<FormFieldState>();
-  final GlobalKey<FormFieldState> pinCodeKey = GlobalKey<FormFieldState>();
-  final GlobalKey<FormFieldState> nameKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> businessNameKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> cityNameKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> pinCodeKey = GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> currentAddressKey = GlobalKey<FormFieldState>();
+  final GlobalKey<FormFieldState> emailKey = GlobalKey<FormFieldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
+
+      // ------------------------------------------------------
+      // APP BAR
+      // ------------------------------------------------------
       appBar: AppBar(
-        title: Text("User Registration", style: TextHelper.size20.copyWith(fontFamily: boldFont, color: ColorsForApp.whiteColor)),
+        title: Text(
+          "User Registration",
+          style: TextHelper.size20.copyWith(fontFamily: boldFont, color: ColorsForApp.whiteColor),
+        ),
         centerTitle: true,
         backgroundColor: ColorsForApp.gradientTop,
         flexibleSpace: Container(
@@ -41,416 +49,46 @@ class UserRegistrationScreen extends StatelessWidget {
             ),
           ),
         ),
-        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () {
             if (Get.previousRoute.isNotEmpty) {
-              Get.offAllNamed(Routes.SIGNUP_SCREEN); // Fallback if opened directly
+              Get.offAllNamed(Routes.SIGNUP_SCREEN);
             } else {
-              Get.offAllNamed(Routes.LOGIN_SCREEN); // Fallback if opened directly
+              Get.offAllNamed(Routes.LOGIN_SCREEN);
             }
           },
         ),
       ),
+
+      // ------------------------------------------------------
+      // FIXED BODY (NO INTRINSIC HEIGHT)
+      // ------------------------------------------------------
       body: SafeArea(
         child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, // optional improvement
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 2.h),
-            child: Form(
-              key: userDetailsFormKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 2.h),
-                  Text("Personal Information",
-                      style: TextHelper.h7.copyWith(
-                        fontFamily: boldFont,
-                      )),
-                  SizedBox(height: 1.h),
-                  Text("Full Name",
-                      style: TextHelper.size19.copyWith(
-                        fontFamily: semiBoldFont,
-                      )),
-                  SizedBox(height: 1.h),
-                  TextFormField(
-                    key: nameKey,
-                    controller: controller.fullNameController,
-                    style: TextHelper.size18.copyWith(
-                      fontFamily: regularFont,
-                    ),
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.person,
-                        color: ColorsForApp.primaryDarkColor,
-                      ),
-                      hintText: "Enter your full name",
-                      hintStyle: TextHelper.size18.copyWith(
-                        fontFamily: regularFont,
-                      ),
-                      errorStyle: TextStyle(fontSize: 13.sp),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your full name';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 1.h),
-                  Text("Gender",
-                      style: TextHelper.size19.copyWith(
-                        fontFamily: semiBoldFont,
-                      )),
-                  SizedBox(height: 1.h),
-                  Obx(() => DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
-                          errorText: controller.genderError.value ? "Please select Gender" : null,
-                        ),
-                        hint: Text(
-                          "Select Gender",
-                          style: TextHelper.size18.copyWith(
-                            fontFamily: regularFont,
-                          ),
-                        ),
-                        value: controller.selectedGender.value.isEmpty ? null : controller.selectedGender.value,
-                        items: controller.genders
-                            .map((gender) => DropdownMenuItem(
-                                  value: gender,
-                                  child: Text(
-                                    gender,
-                                    style: TextHelper.size18.copyWith(
-                                      fontFamily: regularFont,
-                                    ),
-                                  ),
-                                ))
-                            .toList(),
-                        onChanged: (value) {
-                          if (value != null) controller.setGender(value);
-                        },
-                      )),
-                  SizedBox(height: 1.h),
-                  Text("Aadhaar Number",
-                      style: TextHelper.size19.copyWith(
-                        fontFamily: semiBoldFont,
-                      )),
-                  SizedBox(height: 1.h),
-                  TextFormField(
-                    key: aadhaarKey,
-                    controller: controller.aadhaarNumberController,
-                    maxLength: 12,
-                    keyboardType: TextInputType.number,
-                    style: TextHelper.size18.copyWith(
-                      fontFamily: regularFont,
-                    ),
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.credit_card,
-                        color: ColorsForApp.primaryDarkColor,
-                      ),
-                      hintText: "Enter your aadhaar number",
-                      errorStyle: TextHelper.size16.copyWith(
-                        fontFamily: regularFont,
-                      ),
-                      hintStyle: TextHelper.size18.copyWith(
-                        fontFamily: regularFont,
-                      ),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your aadhaar number';
-                      } else if (value.length < 12) {
-                        return 'Please enter correct aadhaar number';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 1.h),
-                  Text("Car Number",
-                      style: TextHelper.size19.copyWith(
-                        fontFamily: semiBoldFont,
-                      )),
-                  SizedBox(height: 1.h),
-                  TextFormField(
-                    key: carNumberKey,
-                    controller: controller.carNumberController,
-                    style: TextHelper.size18.copyWith(
-                      fontFamily: regularFont,
-                    ),
-                    textCapitalization: TextCapitalization.characters,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.credit_card,
-                        color: ColorsForApp.primaryDarkColor,
-                      ),
-                      hintText: "Enter your car number",
-                      errorStyle: TextHelper.size16.copyWith(
-                        fontFamily: regularFont,
-                      ),
-                      hintStyle: TextHelper.size18.copyWith(
-                        fontFamily: regularFont,
-                      ),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
-                    ),
-                    validator: (value) {
-                      final trimmedValue = value?.trimRight();
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: EdgeInsets.symmetric(horizontal: 7.w, vertical: 2.h),
+          child: Form(
+            key: userDetailsFormKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildFormFields(context),
 
-                      // final vehicleRegExp = RegExp(r'^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$');
-
-                      if (trimmedValue == null || trimmedValue.isEmpty) {
-                        return 'Please enter your car number';
-                      }
-                      // else if (!vehicleRegExp.hasMatch(trimmedValue.toUpperCase())) {
-                      //   return 'Please enter a valid car number';
-                      // }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 1.h),
-                  Text("Business Name",
-                      style: TextHelper.size19.copyWith(
-                        fontFamily: semiBoldFont,
-                      )),
-                  SizedBox(height: 1.h),
-                  TextFormField(
-                    key: businessNameKey,
-                    controller: controller.businessNameController,
-                    style: TextHelper.size18.copyWith(
-                      fontFamily: regularFont,
-                    ),
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.business,
-                        color: ColorsForApp.primaryDarkColor,
-                      ),
-                      hintText: "Enter your business name",
-                      errorStyle: TextHelper.size16.copyWith(
-                        fontFamily: regularFont,
-                      ),
-                      hintStyle: TextHelper.size18.copyWith(
-                        fontFamily: regularFont,
-                      ),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your business name';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 1.h),
-                  Text("City Name",
-                      style: TextHelper.size19.copyWith(
-                        fontFamily: semiBoldFont,
-                      )),
-                  SizedBox(height: 1.h),
-                  TextFormField(
-                    key: cityNameKey,
-                    controller: controller.cityNameController,
-                    style: TextHelper.size18.copyWith(
-                      fontFamily: regularFont,
-                    ),
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.business,
-                        color: ColorsForApp.primaryDarkColor,
-                      ),
-                      hintText: "Enter your city name",
-                      errorStyle: TextHelper.size16.copyWith(
-                        fontFamily: regularFont,
-                      ),
-                      hintStyle: TextHelper.size18.copyWith(
-                        fontFamily: regularFont,
-                      ),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your city name';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 1.h),
-                  Text("Pincode",
-                      style: TextHelper.size19.copyWith(
-                        fontFamily: semiBoldFont,
-                      )),
-                  SizedBox(height: 1.h),
-                  TextFormField(
-                    key: pinCodeKey,
-                    controller: controller.pinCodeController,
-                    maxLength: 6,
-                    keyboardType: TextInputType.number,
-                    style: TextHelper.size18.copyWith(
-                      fontFamily: regularFont,
-                    ),
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.business,
-                        color: ColorsForApp.primaryDarkColor,
-                      ),
-                      hintText: "Enter your pincode",
-                      errorStyle: TextHelper.size16.copyWith(
-                        fontFamily: regularFont,
-                      ),
-                      hintStyle: TextHelper.size18.copyWith(
-                        fontFamily: regularFont,
-                      ),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your pincode';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 1.h),
-                  Text("Current Address",
-                      style: TextHelper.size19.copyWith(
-                        fontFamily: semiBoldFont,
-                      )),
-                  SizedBox(height: 1.h),
-                  TextFormField(
-                    key: currentAddressKey,
-                    controller: controller.currentAddressController,
-                    style: TextHelper.size18.copyWith(
-                      fontFamily: regularFont,
-                    ),
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.place,
-                        color: ColorsForApp.primaryDarkColor,
-                      ),
-                      hintText: "Enter your current address",
-                      errorStyle: TextHelper.size16.copyWith(
-                        fontFamily: semiBoldFont,
-                      ),
-                      hintStyle: TextHelper.size18.copyWith(
-                        fontFamily: regularFont,
-                      ),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
-                    ),
-                    inputFormatters: [
-                      // Limit input to 100 characters
-                    ],
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your current address';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 1.h),
-                  Text("Email Address",
-                      style: TextHelper.size19.copyWith(
-                        fontFamily: semiBoldFont,
-                      )),
-                  SizedBox(height: 1.h),
-                  TextFormField(
-                    key: emailKey,
-                    controller: controller.emailController,
-                    style: TextHelper.size18.copyWith(
-                      fontFamily: regularFont,
-                    ),
-                    decoration: InputDecoration(
-                      errorStyle: TextHelper.size16.copyWith(
-                        fontFamily: regularFont,
-                      ),
-                      prefixIcon: Icon(
-                        Icons.email,
-                        color: ColorsForApp.primaryDarkColor,
-                      ),
-                      hintText: "Enter your email address",
-                      hintStyle: TextHelper.size18.copyWith(
-                        fontFamily: regularFont,
-                      ),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
-                    ),
-                    validator: (value) {
-                      if (controller.emailController.text.isEmpty) {
-                        return 'Please enter your email address';
-                      }
-                      // Simple email regex
-                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(controller.emailController.text)) {
-                        return 'Please enter a valid email address';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 4.h),
-                  Text("Service Types",
-                      style: TextHelper.h7.copyWith(
-                        fontFamily: boldFont,
-                      )),
-                  SizedBox(height: 0.6.h),
-                  Text(
-                    "Select the services you want to provide",
-                    style: TextHelper.size18.copyWith(
-                      fontFamily: regularFont,
-                    ),
-                  ),
-                  SizedBox(height: 1.h),
-                  Obx(() => GridView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: controller.serviceTypes.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 2.w,
-                          mainAxisSpacing: 1.5.h,
-                          childAspectRatio: 1,
-                        ),
-                        itemBuilder: (context, index) {
-                          final type = controller.serviceTypes[index];
-                          return Obx(() {
-                            final isSelected = controller.selectedService.value == type;
-                            return Padding(
-                              padding: EdgeInsets.only(bottom: 1.5.h),
-                              child: GestureDetector(
-                                onTap: () => controller.toggleServiceType(type),
-                                child: Container(
-                                  key: ValueKey(type),
-                                  decoration: BoxDecoration(
-                                    color: isSelected ? Colors.orange.shade100.withOpacity(0.32) : Colors.white,
-                                    border: Border.all(
-                                      color: isSelected ? Colors.orange : Colors.grey.shade300,
-                                      width: isSelected ? 2 : 1,
-                                    ),
-                                    borderRadius: BorderRadius.circular(9),
-                                  ),
-                                  child: ListTile(
-                                    title: Center(
-                                      child: Text(type,
-                                          style: TextHelper.size18.copyWith(
-                                              fontFamily: regularFont, color: isSelected && type == 'None' ? Colors.orange : Colors.black)),
-                                    ),
-                                    // trailing: Icon(Icons.chevron_right, color: Colors.grey),
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 2.w),
-                                  ),
-                                ),
-                              ),
-                            );
-                          });
-                        },
-                      )),
-                  SizedBox(height: 2.h),
-                ],
-              ),
+                SizedBox(height: 12.h), // Space for bottom button
+              ],
             ),
           ),
         ),
       ),
-      bottomNavigationBar: SizedBox(
-        height: 8.h,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
+
+      // ------------------------------------------------------
+      // BOTTOM BUTTON
+      // ------------------------------------------------------
+      bottomNavigationBar: SafeArea(
+        minimum: const EdgeInsets.all(8),
+        child: SizedBox(
+          height: 8.h,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorsForApp.gradientTop,
@@ -467,30 +105,14 @@ class UserRegistrationScreen extends StatelessWidget {
                   Get.toNamed(Routes.DOCUMENT_VERIFICATION_PAGE);
                 }
               } else {
-                // find which field failed
-                final fieldKeys = [
-                  nameKey,
-                  emailKey,
-                  aadhaarKey,
-                  carNumberKey,
-                  businessNameKey,
-                  cityNameKey,
-                  pinCodeKey,
-                  currentAddressKey,
-                ];
-
-                for (final key in fieldKeys) {
-                  final currentState = key.currentState;
-                  if (currentState != null && !currentState.isValid) {
-                    _scrollToError(key);
-                    break; // stop after first error
-                  }
-                }
-                // add more checks as needed
+                _scrollToFirstError();
               }
             },
             child: Center(
-              child: Text("Complete Registration", style: TextHelper.size20.copyWith(color: ColorsForApp.whiteColor, fontFamily: boldFont)),
+              child: Text(
+                "Complete Registration",
+                style: TextHelper.size20.copyWith(color: ColorsForApp.whiteColor, fontFamily: boldFont),
+              ),
             ),
           ),
         ),
@@ -498,14 +120,248 @@ class UserRegistrationScreen extends StatelessWidget {
     );
   }
 
-  void _scrollToError(GlobalKey<FormFieldState> fieldKey) {
-    final context = fieldKey.currentContext;
-    if (context != null) {
-      Scrollable.ensureVisible(
-        context,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
+  // ------------------------------------------------------
+  // FORM WIDGETS (NO UI CHANGES)
+  // ------------------------------------------------------
+  Widget buildFormFields(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 2.h),
+        Text("Personal Information", style: TextHelper.h7.copyWith(fontFamily: boldFont)),
+        SizedBox(height: 1.h),
+
+        // FULL NAME
+        buildTitle("Full Name"),
+        TextFormField(
+          key: nameKey,
+          controller: controller.fullNameController,
+          style: TextHelper.size18.copyWith(fontFamily: regularFont),
+          decoration: _input("Enter your full name", Icons.person),
+          validator: (value) => value == null || value.isEmpty ? 'Please enter your full name' : null,
+        ),
+
+        SizedBox(height: 1.h),
+
+        // GENDER
+        buildTitle("Gender"),
+        Obx(() => DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
+                errorText: controller.genderError.value ? "Please select Gender" : null,
+              ),
+              hint: Text("Select Gender", style: TextHelper.size18),
+              value: controller.selectedGender.value.isEmpty ? null : controller.selectedGender.value,
+              items: controller.genders.map((g) => DropdownMenuItem(value: g, child: Text(g, style: TextHelper.size18))).toList(),
+              onChanged: (v) => controller.setGender(v!),
+            )),
+
+        SizedBox(height: 1.h),
+
+        // AADHAAR
+        buildTitle("Aadhaar Number"),
+        TextFormField(
+          key: aadhaarKey,
+          controller: controller.aadhaarNumberController,
+          maxLength: 12,
+          keyboardType: TextInputType.number,
+          style: TextHelper.size18,
+          decoration: _input("Enter your aadhaar number", Icons.credit_card),
+          validator: (value) {
+            if (value == null || value.isEmpty) return 'Please enter your aadhaar number';
+            if (value.length < 12) return 'Please enter correct aadhaar number';
+            return null;
+          },
+        ),
+
+        SizedBox(height: 1.h),
+
+        // CAR NUMBER
+        buildTitle("Car Number"),
+        TextFormField(
+          key: carNumberKey,
+          controller: controller.carNumberController,
+          textCapitalization: TextCapitalization.characters,
+          style: TextHelper.size18,
+          decoration: _input("Enter your car number", Icons.credit_card),
+          validator: (value) => value == null || value.trim().isEmpty ? 'Please enter your car number' : null,
+        ),
+
+        SizedBox(height: 1.h),
+
+        // BUSINESS NAME
+        buildTitle("Business Name"),
+        TextFormField(
+          key: businessNameKey,
+          controller: controller.businessNameController,
+          style: TextHelper.size18,
+          decoration: _input("Enter your business name", Icons.business),
+          validator: (value) => value == null || value.isEmpty ? 'Please enter your business name' : null,
+        ),
+
+        SizedBox(height: 1.h),
+
+        // CITY NAME
+        buildTitle("City Name"),
+        TextFormField(
+          key: cityNameKey,
+          controller: controller.cityNameController,
+          style: TextHelper.size18,
+          decoration: _input("Enter your city name", Icons.location_city),
+          validator: (value) => value == null || value.isEmpty ? 'Please enter your city name' : null,
+        ),
+
+        SizedBox(height: 1.h),
+
+        // PINCODE
+        buildTitle("Pincode"),
+        TextFormField(
+          key: pinCodeKey,
+          controller: controller.pinCodeController,
+          maxLength: 6,
+          keyboardType: TextInputType.number,
+          style: TextHelper.size18,
+          decoration: _input("Enter your pincode", Icons.pin),
+          validator: (value) => value == null || value.isEmpty ? 'Please enter your pincode' : null,
+        ),
+
+        SizedBox(height: 1.h),
+
+        // CURRENT ADDRESS
+        buildTitle("Current Address"),
+        TextFormField(
+          key: currentAddressKey,
+          controller: controller.currentAddressController,
+          style: TextHelper.size18,
+          decoration: _input("Enter your current address", Icons.place),
+          validator: (value) => value == null || value.isEmpty ? 'Please enter your current address' : null,
+        ),
+
+        SizedBox(height: 1.h),
+
+        // EMAIL
+        buildTitle("Email Address"),
+        TextFormField(
+          key: emailKey,
+          controller: controller.emailController,
+          style: TextHelper.size18,
+          decoration: _input("Enter your email address", Icons.email),
+          validator: (value) {
+            if (value == null || value.isEmpty) return 'Please enter your email address';
+            if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) return 'Please enter a valid email address';
+            return null;
+          },
+        ),
+
+        SizedBox(height: 3.h),
+
+        // SERVICE TYPES
+        buildTitle("Service Types"),
+        Text("Select the services you want to provide", style: TextHelper.size18.copyWith(fontFamily: regularFont)),
+        SizedBox(height: 1.h),
+
+        Obx(() {
+          return GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: controller.serviceTypes.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 2.w,
+              mainAxisSpacing: 1.5.h,
+              childAspectRatio: 1,
+            ),
+            itemBuilder: (context, i) {
+              final type = controller.serviceTypes[i];
+              // Observe selectedService for each tile
+              final isSelected = controller.selectedService.value == type;
+
+              return GestureDetector(
+                onTap: () {
+                  // Directly set the reactive value so the UI updates immediately.
+                  // Toggle behavior: if already selected, deselect; otherwise select.
+                  if (controller.selectedService.value == type) {
+                    controller.selectedService.value = '';
+                  } else {
+                    controller.selectedService.value = type;
+                  }
+
+                  // If your controller has side-effects you still want (e.g. analytics),
+                  // you can keep calling that method as well:
+                  // controller.toggleServiceType?.call(type);
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isSelected ? Colors.orange.shade100.withOpacity(.32) : Colors.white,
+                    border: Border.all(
+                      color: isSelected ? Colors.orange : Colors.grey.shade300,
+                      width: isSelected ? 2 : 1,
+                    ),
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                  child: Center(
+                    child: Text(
+                      type,
+                      style: TextHelper.size18.copyWith(
+                        color: isSelected && type == 'None' ? Colors.orange : Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        })
+      ],
+    );
+  }
+
+  // ------------------------------------------------------
+  // INPUT DECORATION BUILDER (keeps UI same)
+  // ------------------------------------------------------
+  InputDecoration _input(String hint, IconData icon) {
+    return InputDecoration(
+      prefixIcon: Icon(icon, color: ColorsForApp.primaryDarkColor),
+      hintText: hint,
+      hintStyle: TextHelper.size18,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(9)),
+    );
+  }
+
+  // ------------------------------------------------------
+  // TITLE BUILDER
+  // ------------------------------------------------------
+  Widget buildTitle(String text) => Padding(
+        padding: EdgeInsets.only(bottom: 1.h),
+        child: Text(text, style: TextHelper.size19.copyWith(fontFamily: semiBoldFont)),
       );
+
+  // ------------------------------------------------------
+  // SCROLL TO FIRST ERROR FIELD
+  // ------------------------------------------------------
+  void _scrollToFirstError() {
+    final keys = [
+      nameKey,
+      emailKey,
+      aadhaarKey,
+      carNumberKey,
+      businessNameKey,
+      cityNameKey,
+      pinCodeKey,
+      currentAddressKey,
+    ];
+
+    for (final key in keys) {
+      final state = key.currentState;
+      if (state != null && !state.isValid) {
+        Scrollable.ensureVisible(
+          state.context,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
+        );
+        break;
+      }
     }
   }
 }
